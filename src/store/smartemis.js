@@ -171,6 +171,13 @@ export const useSmartemis = defineStore('smartemis', () => {
             };
         });
         const sortedResult = await mappedResult.sort((a, b) => b.dateTime - a.dateTime);
+        let dateTime15Min = new Date();
+        dateTime15Min.setMinutes(dateTime15Min.getMinutes() - 15);
+        if (new Date() > dateTime15Min) {
+            return {
+                identifiant: "Aucune intervention en cours",
+            }
+        }
         const typeInter = await getInterventionType(sortedResult[0].notificationTitre);
         const sortedMappedResult = await sortedResult.map(intervention => {
             return {

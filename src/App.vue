@@ -23,9 +23,11 @@ import { useSmartemis } from './store/smartemis';
 
 const smartemis = useSmartemis();
 
-setTimeout( async () => {
+const waitForInter = setInterval( async () => {
   const data = await smartemis.getInterventionsList();
-  console.log(data);
+  if (data.identifiant === 'Aucune intervention en cours'){
+    return;
+  }
   handleIntervention({
     lon: parseFloat(data.notificationLon),
     lat: parseFloat(data.notificationLat),
@@ -36,9 +38,9 @@ setTimeout( async () => {
     numeroInter: data.numeroInter,
     enginsInter: data.notificationEngins,
     dateTimeInter: data.dateTime,
-    
   });
-}, 5000);
+  clearInterval(waitForInter);
+}, 10000);
 
 </script>
 

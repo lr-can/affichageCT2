@@ -33,8 +33,8 @@ const flyToLocation = (lng, lat, zoomLevel, pitch = 0, duration = 2000) => {
     mapInstance.value.flyTo({
       center: [lng, lat],
       zoom: zoomLevel,
-      speed: 1, // Vitesse d'animation
-      curve: 1.5, // Courbure de l'animation
+      speed: 1.5, // Vitesse d'animation
+      curve: 2, // Courbure de l'animation
       easing: (t) => t, // Fonction d'adoucissement
       duration, // Durée en ms
       pitch: pitch, // Angle de vue
@@ -76,9 +76,7 @@ const handleMapReady = (map) => {
   }, 10000);
   setTimeout(() => {
     flyToLocation(props.lon, props.lat, 17.5, 60); // Deuxième flyTo
-  }, 15000);
-  setTimeout(() => {
-  }, 25000);
+  }, 16000);
 };
 
 const giveFireUnitClass = (type) => {

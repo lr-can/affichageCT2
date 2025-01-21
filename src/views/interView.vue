@@ -84,7 +84,7 @@ onMounted(() => {
     let elapsed = new Date().getTime() - (endingTime.value - 10 * 60 * 1000);
     let initialDuration = 10 * 60 * 1000; // 10 minutes in milliseconds
     let deltaPerc = (elapsed / initialDuration) * 100;
-    loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "100%";
+    loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "110%";
 }, 500);
 });
 
@@ -443,6 +443,7 @@ div {
     height: 100%;
     background-image: linear-gradient(to right, transparent 5%,  #f60700 100%);
     transition: all 0.5s ease-in-out;
+    clip-path: polygon(99% 0%, 100% 50%, 99% 100%, 0% 100%, 25% 50%, 0% 0%);
 }
 
 
