@@ -171,9 +171,10 @@ export const useSmartemis = defineStore('smartemis', () => {
             };
         });
         const sortedResult = await mappedResult.sort((a, b) => b.dateTime - a.dateTime);
-        let dateTime15Min = new Date();
-        dateTime15Min.setMinutes(dateTime15Min.getMinutes() - 15);
-        if (new Date() > dateTime15Min) {
+        let dateTimePlus15Min = mappedResult[0].dateTime;
+        dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 15);
+        let now = new Date();
+        if (now > dateTimePlus15Min) {
             return {
                 identifiant: "Aucune intervention en cours",
             }

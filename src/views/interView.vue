@@ -35,7 +35,7 @@
                         <span>En attente d'agents...</span>
                     </div>
                 </div>
-                <div v-else id="agentList">
+                <div v-else id="agentList" style="min-height: 25vh;">
                     <div v-for="agent in agentList" :key="agent.matricule" class="agent">
                         <div class="agentGrade">
                             <img :src="giveAgentGrade(agent.grade)" alt="" width="30px" height="auto">
@@ -194,6 +194,9 @@ setTimeout(() => {
         await getStatus();
     }, 15000);
 }, 15000);
+setTimeout(() => {
+    getAgents();
+}, 120000)
 </script>
 <style scoped>
 div {
@@ -422,7 +425,8 @@ div {
 #agentList {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two columns */
-    gap: 1rem; /* Space between items */
+    row-gap: 0;
+    padding-bottom: 1rem;
     padding-left: 2rem;
     z-index: 102;
 }

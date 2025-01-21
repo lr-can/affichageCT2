@@ -23,7 +23,7 @@ import { useSmartemis } from './store/smartemis';
 
 const smartemis = useSmartemis();
 
-const waitForInter = setInterval( async () => {
+const waitForInter = setInterval(async () => {
   const data = await smartemis.getInterventionsList();
   if (data.identifiant === 'Aucune intervention en cours'){
     return;
