@@ -1,0 +1,684 @@
+{
+	"vehicleStates": [
+		{
+			"code": "??",
+			"name": "Non créé/detruit",
+			"backgroundColor": "CCCCCC",
+			"backgroundColorName": "non visualise",
+			"foregroundColor": "000000",
+			"foregroundColorName": "non visualise",
+			"grpEtatEng": [
+				"DISPO",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "AG",
+			"name": "Alerte/GI",
+			"backgroundColor": "FFCC00",
+			"backgroundColorName": "Jaune",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"OK_RENFORT",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "AH",
+			"name": "Arrivée Hôpital",
+			"backgroundColor": "FFFFFF",
+			"backgroundColorName": "Blanc",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"VICT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "AL",
+			"name": "Alerte",
+			"backgroundColor": "FFCC00",
+			"backgroundColorName": "Jaune",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"ALERTE",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "AR",
+			"name": "Engin/itv arrêté",
+			"backgroundColor": "CCCCCC",
+			"backgroundColorName": "non visualise",
+			"foregroundColor": "000000",
+			"foregroundColorName": "non visualise",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "AT",
+			"name": "En Attente",
+			"backgroundColor": "FE8F58",
+			"backgroundColorName": "Orange",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "CG",
+			"name": "Sur les lieux GI",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"TOUS",
+				"CP_XY_ITV",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "CO",
+			"name": "Depart Couv.Secteur",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"DEPART_CS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "CR",
+			"name": "Retour Couverture",
+			"backgroundColor": "6161FF",
+			"backgroundColorName": "Bleu2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "CS",
+			"name": "Arrivée au CS",
+			"backgroundColor": "505050",
+			"backgroundColorName": "Gris1",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "D?",
+			"name": "Dispo. Casernement",
+			"backgroundColor": "C3C3C3",
+			"backgroundColorName": "Gris3",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DI_CENTRE"
+			]
+		},
+		{
+			"code": "DE",
+			"name": "Delai départ écoulé",
+			"backgroundColor": "505050",
+			"backgroundColorName": "Gris1",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"ITV",
+				"SIT",
+				"PBDEP",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "DG",
+			"name": "Départ/groupe",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"DEPART_CS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "DH",
+			"name": "Dispo Hypothétique",
+			"backgroundColor": "9CFF9C",
+			"backgroundColorName": "Vert3",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DISOPE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "DI",
+			"name": "Disponible Armé",
+			"backgroundColor": "9CFF9C",
+			"backgroundColorName": "Vert3",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"TRF_BPV",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DISOPE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "DM",
+			"name": "Disponible matériel",
+			"backgroundColor": "C3C3C3",
+			"backgroundColorName": "Gris3",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"TRF_BPV",
+				"DISMECA",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "Dl",
+			"name": "Disponible Armé",
+			"backgroundColor": "9CFF9C",
+			"backgroundColorName": "Vert3",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DISOPE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "EP",
+			"name": "En prévision GI",
+			"backgroundColor": "FE8F58",
+			"backgroundColorName": "Orange",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"NON_AFF",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "IN",
+			"name": "Indisponible",
+			"backgroundColor": "000000",
+			"backgroundColorName": "Noir",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"SIN",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT"
+			]
+		},
+		{
+			"code": "MD",
+			"name": "Manoeuvre disponible",
+			"backgroundColor": "C300C3",
+			"backgroundColorName": "Magenta",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"ITV",
+				"TOUS",
+				"CP_XY_ITV",
+				"TRF_BPV",
+				"OK_RENFORT",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISOPE",
+				"DI_CENTRE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "MI",
+			"name": "Manoeuvre indispo.",
+			"backgroundColor": "C300C3",
+			"backgroundColorName": "Magenta",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"CP_XY_ITV",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "ND",
+			"name": "Non Départ : Refus",
+			"backgroundColor": "505050",
+			"backgroundColorName": "Gris1",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"SIT",
+				"PBDEP",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "OD",
+			"name": "Opération différée",
+			"backgroundColor": "FFCC00",
+			"backgroundColorName": "Jaune",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"ITV",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "PA",
+			"name": "Parti/intervention",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"DEPART_CS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "PC",
+			"name": "Prise en charge vict",
+			"backgroundColor": "FFFFFF",
+			"backgroundColorName": "Blanc",
+			"foregroundColor": "00D600",
+			"foregroundColorName": "Vert1",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"VICT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "PP",
+			"name": "Problème Départ",
+			"backgroundColor": "505050",
+			"backgroundColorName": "Gris1",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"ITV",
+				"REFUS_DEP",
+				"TOUS",
+				"SIT",
+				"PBDEP",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "PS",
+			"name": "Prompt Secours",
+			"backgroundColor": "9CFF9C",
+			"backgroundColorName": "Vert3",
+			"foregroundColor": "FF0000",
+			"foregroundColorName": "Rouge2",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "QH",
+			"name": "Quitte Hôpital",
+			"backgroundColor": "FFFFFF",
+			"backgroundColorName": "Blanc",
+			"foregroundColor": "FE8F58",
+			"foregroundColorName": "Orange",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"VICT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "RD",
+			"name": "Retour Disponible",
+			"backgroundColor": "6161FF",
+			"backgroundColorName": "Bleu2",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"ITV",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"AJOUT",
+				"DISPROCHE",
+				"DISOPE",
+				"DI_CENTRE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "RE",
+			"name": "Retenu",
+			"backgroundColor": "00D600",
+			"backgroundColorName": "Vert1",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "RI",
+			"name": "Retour Indisponible",
+			"backgroundColor": "6161FF",
+			"backgroundColorName": "Bleu2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "RP",
+			"name": "Remplace",
+			"backgroundColor": "CCCCCC",
+			"backgroundColorName": "non visualise",
+			"foregroundColor": "000000",
+			"foregroundColorName": "non visualise",
+			"grpEtatEng": [
+				"DISPO",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI"
+			]
+		},
+		{
+			"code": "RS",
+			"name": "Réservé disponible",
+			"backgroundColor": "FE8F58",
+			"backgroundColorName": "Orange",
+			"foregroundColor": "D60000",
+			"foregroundColorName": "Rouge1",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "RV",
+			"name": "Réservé indisponible",
+			"backgroundColor": "FE8F58",
+			"backgroundColorName": "Orange",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir"
+		},
+		{
+			"code": "SD",
+			"name": "S.Lieux disponible",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"DISPO",
+				"ITV",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCHE",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "SG",
+			"name": "Regroupement",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"DISPO",
+				"TOUS",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DISPROCH"
+			]
+		},
+		{
+			"code": "SL",
+			"name": "Sur les lieux",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"SUR_LIEUX",
+				"ITV",
+				"SUR_SECT",
+				"TOUS",
+				"CP_XY_ITV",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "SLR",
+			"name": "Sur les lieux ss rem",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir"
+		},
+		{
+			"code": "TE",
+			"name": "Engin/itv rentre",
+			"backgroundColor": "C3C3C3",
+			"backgroundColorName": "Gris3",
+			"foregroundColor": "000000",
+			"foregroundColorName": "Noir",
+			"grpEtatEng": [
+				"DISPO",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP",
+				"SDI",
+				"DI_CENTRE"
+			]
+		},
+		{
+			"code": "TH",
+			"name": "Transport Hôpital",
+			"backgroundColor": "FFFFFF",
+			"backgroundColorName": "Blanc",
+			"foregroundColor": "0000FF",
+			"foregroundColorName": "Bleu1",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"VICT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "TI",
+			"name": "Transfert C.Secteur",
+			"backgroundColor": "FF0000",
+			"backgroundColorName": "Rouge2",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"DISPO_OP"
+			]
+		},
+		{
+			"code": "TR",
+			"name": "Transféré",
+			"backgroundColor": "505050",
+			"backgroundColorName": "Gris1",
+			"foregroundColor": "FFFFFF",
+			"foregroundColorName": "Blanc",
+			"grpEtatEng": [
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT"
+			]
+		}
+	]
+}
