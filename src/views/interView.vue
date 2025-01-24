@@ -41,6 +41,7 @@
                             <img :src="giveAgentGrade(agent.grade)" alt="" width="30px" height="auto">
                         </div>
                         <div class="agentNom">{{ agent.nom }} {{ agent.prenom }}</div>
+                        <div class="matricule">{{ agent.matricule }}</div>
                     </div>
                 </div>
                 <div style="color: #d3d3d3;font-size: 0.8rem;">
@@ -338,6 +339,11 @@ div {
     padding: 0.5rem;
     border-radius: 0.3rem;
     margin-right: 0.5rem;
+}
+.matricule{
+    color: #bdbdbd;
+    font-size: 0.8rem;
+    font-style: italic;
 }
 .Vurbs {
     background-color: #E4794A;

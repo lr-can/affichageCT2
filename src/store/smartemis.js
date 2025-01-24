@@ -172,7 +172,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         });
         const sortedResult = await mappedResult.sort((a, b) => b.dateTime - a.dateTime);
         let dateTimePlus15Min = mappedResult[0].dateTime;
-        dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 15);
+        dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 30);
         let now = new Date();
         if (now > dateTimePlus15Min) {
             return {
