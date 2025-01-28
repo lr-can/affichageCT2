@@ -69,6 +69,7 @@ const enginsInter = ref();
 const dateTimeInter = ref();
 const endingTime = ref();
 const startEnd = ref(0);
+const loaderWidth = ref("0%");
 onMounted(() => {
     libelleInter.value = props.data.libelleInter;
     adresseInter.value = props.data.adresseInter;
@@ -82,14 +83,13 @@ onMounted(() => {
     let deltaSec = Math.floor(delta / 1000);
     startEnd.value = deltaSec;
     setInterval(() => {
-    let elapsed = new Date().getTime() - (endingTime.value - 10 * 60 * 1000);
+    let elapsed = new Date().getTime() - dateTimeInter.value.getTime();
     let initialDuration = 10 * 60 * 1000; // 10 minutes in milliseconds
     let deltaPerc = (elapsed / initialDuration) * 100;
     loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "110%";
 }, 500);
 });
 
-const loaderWidth = ref("0%");
 
 const smartemis = useSmartemis();
 const vehicules = ref([]);

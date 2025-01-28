@@ -5,11 +5,15 @@
   <div v-if="interventionCheck" class="blurAndShadow"></div>
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
+  <div class="fullView">
+    <weatherView/>
 
+  </div>
 </template>
 <script setup>
 import regularBackground from './components/regularBackground.vue';
 import interView from './views/interView.vue';
+import weatherView from './views/weatherView.vue';
 import { ref } from 'vue';
 
 const interventionCheck = ref(false);
@@ -64,6 +68,14 @@ const waitForInter = setInterval(async () => {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 99;
+}
+.fullView {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  z-index: 1;
 }
 .logo{
     position: absolute;
