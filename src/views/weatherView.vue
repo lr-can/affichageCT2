@@ -34,6 +34,26 @@
                 <p>{{ Math.round(day.values.temperature) }}°C</p>
             </div>
         </div>
+        <div class="forecast vigilance" v-if="alertData">
+            <h3 :class="`${alertData.alerteSeverite}` + 'Background' + ' ' +`${alertData.alerteSeverite}` + 'Foreground' + ' coolPadding'">
+             {{ alertData.alerteCouleur }}
+            </h3>
+            <div class="flexx">
+                <div v-if="imgURL">
+                    <img :src="imgURL" alt="Alerte météo" style="width: 200px; height: auto;">
+                </div>
+                <div v-for="alert in alertData.icon.split(', ')" :key="alert">
+                    <img :src="getImgUrl(alert)" alt="Alerte météo" :class="`${alertData.alerteSeverite}` + 'Img'" style="width: 50px; height: 50px; margin-top: 1rem;">
+                    <div class="bold">	
+                    <p>{{ alertData.alerteType }}</p>
+                    <p>{{ alertData.alerteDescription }}</p>
+                     </div>
+                </div>
+            </div>
+            <div style="text-align: justify; color: #d3d3d3;">
+                <p>{{ alertData.alerteMessage }}</p>
+            </div>
+        </div>
     </div>
 
 </template>
@@ -52,9 +72,13 @@ const weatherLabel = ref('');
 const limitedForecast = ref(null);
 const limitedForecast2 = ref(null);
 const now = ref(new Date());
+const alertData = ref(null);
+const imgURL = ref('');
 
 onMounted(async () => {
     await weatherStore.getWeather();
+    imgURL.value = await weatherStore.vigilanceMap();
+    alertData.value = await weatherStore.alertWeather();
     weather.value = weatherStore.weather;
     weatherForecast.value = weather.value.weatherForecast;
     weatherLabel.value = weather.value.weatherLabel;
@@ -82,6 +106,9 @@ const getDayName = (day) => {
             return 'Sam';
     }
 };
+const getImgUrl = (alert) => {
+    return new URL(`../assets/weather/${alert}.svg`, import.meta.url).href;
+};
 </script>
 <style scoped>
 
@@ -100,6 +127,12 @@ const getDayName = (day) => {
     justify-content: center;
     align-items: center;
     height: 100%;
+    width: 100%;
+}
+.flexx {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
     width: 100%;
 }
 .weathers > div {
@@ -122,6 +155,12 @@ const getDayName = (day) => {
 .currentWeather h1 {
     margin: 10px 0;
     font-size: 4em;
+    padding: 1rem;
+}
+.bold {
+    font-weight: bold;
+}
+.coolPadding {
     padding: 1rem;
 }
 .currentWeather p {
@@ -160,6 +199,9 @@ const getDayName = (day) => {
     background-color: #3498db20;
     width: 15%;
 }
+.vigilance{
+    width: 30%;
+}
 .forecast:nth-child(2){
     animation-delay: 200ms;
 }
@@ -175,4 +217,29 @@ const getDayName = (day) => {
     border-top: 1px solid grey;
     width: 100%;
 }
+.AdvisoryBackground {
+    background-color: #f1c40f30;
+    border-radius: 30px;
+}
+.AdvisoryForeground {
+    color: #f1c40f;
+}
+.WatchBackground {
+    border-radius: 30px;
+    background-color: rgba(249, 207, 159, 0.171);
+}
+.WatchForeground {
+    color: #e67e22;
+}
+.WarningBackground {
+    border-radius: 30px;
+    background-color: rgba(245, 183, 177, 0.167);
+}
+.WarningForeground {
+    color: #e74c3c;
+}
+.AdvisoryImg{
+    filter: invert(100%) sepia(100%) saturate(1000%) hue-rotate(180deg) brightness(100%) contrast(100%);
+}
+
 </style>
