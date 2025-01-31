@@ -6,7 +6,8 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView">
-    <weatherView/>
+    <weatherView v-if="false"/>
+    <vehiculeView v-if="true"/>
 
   </div>
 </template>
@@ -14,6 +15,7 @@
 import regularBackground from './components/regularBackground.vue';
 import interView from './views/interView.vue';
 import weatherView from './views/weatherView.vue';
+import vehiculeView from './views/vehiculeView.vue';
 import { ref } from 'vue';
 
 const interventionCheck = ref(false);
