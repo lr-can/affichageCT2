@@ -1,6 +1,6 @@
 <template>
-    <div class="background">
-        <weatherBckGrnd />
+    <div id="Title">
+            <h1>Météo</h1>
     </div>
     <div class="weathers">
         <div class="forecast" v-if="weatherForecast">
@@ -34,7 +34,7 @@
                 <p>{{ Math.round(day.values.temperature) }}°C</p>
             </div>
         </div>
-        <div class="forecast vigilance" v-if="alertData">
+        <div class="forecast vigilance" v-if="alertData && alertData.alerteSeverite">
             <h3 :class="`${alertData.alerteSeverite}` + 'Background' + ' ' +`${alertData.alerteSeverite}` + 'Foreground' + ' coolPadding'">
              {{ alertData.alerteCouleur }}
             </h3>
@@ -59,7 +59,6 @@
 </template>
 <script setup>
 import weatherIcon from '../components/weatherIcon.vue';
-import weatherBckGrnd from '../components/weatherBckGrnd.vue';
 import { onMounted, ref } from 'vue';
 import { useWeather } from '../store/weather';
 
@@ -111,23 +110,27 @@ const getImgUrl = (alert) => {
 };
 </script>
 <style scoped>
-
-
-.background {
+#Title {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(to bottom right, #3498db, #0074c2);
-    z-index: -1;
+    top: 1.2rem;
+    left: 2.5rem;
+    z-index: 4;
+    color: white;
+    font-size: 1em;
+    text-align: center;
+    text-transform: uppercase;
 }
+
 .weathers{
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
 }
 .flexx {
     display: flex;
@@ -207,6 +210,9 @@ const getImgUrl = (alert) => {
 }
 .forecast:nth-child(3){
     animation-delay: 300ms;
+}
+.forecast:nth-child(4){
+    animation-delay: 400ms;
 }
 .smallIcon {
     width: 50px;

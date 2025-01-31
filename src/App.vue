@@ -1,4 +1,7 @@
 <template>
+  <div class="clock-container">
+    <clockComponent />
+  </div>
   <div v-if="interventionCheck" id="interView">
     <interView :data="interventionData" />
   </div>
@@ -6,12 +9,22 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView">
-    <weatherView v-if="false"/>
-    <vehiculeView v-if="true"/>
-
+    <TransitionGroup name="cool">
+    <div class="backgroundWeather" v-if="!switchC" key="weatherBckGrnd"> 
+        <weatherBckGrnd />
+    </div>
+    <div v-show="!switchC" key="weather"> 
+      <weatherView />
+    </div>
+    <div v-show="switchC" key="vehicule">
+      <vehiculeView />
+    </div>
+    </TransitionGroup>
   </div>
 </template>
 <script setup>
+import clockComponent from './components/clockComponent.vue';
+import weatherBckGrnd from './components/weatherBckGrnd.vue';
 import regularBackground from './components/regularBackground.vue';
 import interView from './views/interView.vue';
 import weatherView from './views/weatherView.vue';
@@ -20,6 +33,13 @@ import { ref } from 'vue';
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
+const switchC = ref(false);
+
+setInterval(() => {
+  switchC.value = !switchC.value;
+}, 15000);
+
+
 
 const handleIntervention = (data) => {
   interventionData.value = data;
@@ -60,6 +80,15 @@ const waitForInter = setInterval(async () => {
   z-index: 100;
   background-color: transparent;
 }
+.backgroundWeather {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: -1;
+}
 .blurAndShadow {
   position: absolute;
   top: 0;
@@ -78,6 +107,7 @@ const waitForInter = setInterval(async () => {
   width: 100dvw;
   height: 100dvh;
   z-index: 1;
+  overflow: hidden;
 }
 .logo{
     position: absolute;
@@ -88,4 +118,11 @@ const waitForInter = setInterval(async () => {
     filter: blur(3px);
     overflow: hidden;
 }
+.cool-enter-active, .cool-leave-active {
+  transition: opacity 0.5s;
+}
+.cool-enter, .cool-leave-to {
+  opacity: 0;
+}
+
 </style>

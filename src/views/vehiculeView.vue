@@ -1,13 +1,13 @@
 <template>
     <div id="Background">
-        <img src="../assets/backgrounds/CTA.jpg" alt="Véhicule" style="width: 100vw; height: 100vh;">
+        <img src="../assets/backgrounds/CTA.jpg" alt="Véhicule" style="width: 110vw; height: 110vh;">
     </div>
     <div>
         <div id="Title">
             <h1>Synoptique des engins</h1>
         </div>
         <div class="agents" :style="{ backgroundColor: giveBackground(agents.available), color: giveForeground(agents.available) }" v-if="agents">
-            🧑‍🚒 {{ agents.available }} / {{ agents.total }}
+            <span :style="{fontSize : '2rem', fontWeight : 'bold'}">🧑‍🚒{{ agents.available }}</span> / {{ agents.total }}
         </div>
         <div class="vehiculeContainer" v-if="familles.length > 0">
             <div class="famille" v-for="famille in familles" :key="famille.famEngCod">
@@ -110,6 +110,7 @@ const giveForeground = (available) => {
     overflow: hidden;
     z-index: 1;
     filter: blur(5px) brightness(0.6);
+    scale: 1.1;
 }
 #Title {
     position: absolute;
@@ -132,8 +133,8 @@ const giveForeground = (available) => {
     justify-content: space-between;
     align-items: center;
     margin-top: 100px;
-    width: 80%;
-    height: 80%;
+    width: 85%;
+    height: 65%;
     padding: 1rem;
     border-radius: 30px;
     z-index: 3;
@@ -256,8 +257,8 @@ const giveForeground = (available) => {
 .enginTitle{
     border-radius: 1rem;
     padding: 0.3rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
     min-width: 4rem;
 }
 .familleTitle {
@@ -268,7 +269,7 @@ const giveForeground = (available) => {
 .info{
     position: absolute;
     bottom: 1.2rem;
-    right: 2.5rem;
+    left: 2.5rem;
     z-index: 4;
     color: white;
     font-size: 0.8rem;
