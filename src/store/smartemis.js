@@ -191,6 +191,18 @@ export const useSmartemis = defineStore('smartemis', () => {
         });
         return sortedMappedResult[0];
     }
+        const getEngins = async () => {
+            await getEnginsWithStatuts();
+            return famillesEngins.value;
+        }
+        const getLastUpdateEngins = async () => {
+            await getEnginsWithStatuts();
+            return lastUpdateEngins.value;
+        }
+        const getAgentsAvailable = async () => {
+            await getEnginsWithStatuts();
+            return personnelAvailable.value;
+        }
 
     return {
         statutsEngins,
@@ -203,6 +215,9 @@ export const useSmartemis = defineStore('smartemis', () => {
         agentsInterList,
         getAgentsInter,
         getInterventionsList,
+        getEngins,
+        getLastUpdateEngins,
+        getAgentsAvailable,
     };
 });
 
