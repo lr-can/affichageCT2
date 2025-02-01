@@ -55,10 +55,23 @@ export const useWeather = defineStore('weather', () => {
             console.error(error);
         } 
     }  
+
+    const getCurrentTeamAndNextTeam = async () => {
+        const options = {
+            method: 'GET',
+            headers: {accept: 'application/json', 'accept-encoding': 'deflate, gzip, br'}
+          };
+        const data = await fetch('https://api.cms-collonges.fr/getPlanning', options)
+        const planningData = await data.json();
+        return {
+            planningData
+        };
+    }
     return {
         weather,
         getWeather,
         alertWeather,
         vigilanceMap,
+        getCurrentTeamAndNextTeam,
     }
 });
