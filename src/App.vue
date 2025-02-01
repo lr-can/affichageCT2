@@ -66,7 +66,7 @@ const smartemis = useSmartemis();
 
 let regularTimeout = null;
 
-const initialize = () => {
+const initializeApp = () => {
   const now = new Date();
   const minutes = now.getMinutes();
   const reloadTime = minutes > 40 ? 25 * 60 * 1000 : 20 * 60 * 1000;
@@ -74,7 +74,7 @@ const initialize = () => {
     window.location.reload();
   }, reloadTime);
 }
-initialize();
+initializeApp();
 
 const waitForInter = setInterval(async () => {
   const data = await smartemis.getInterventionsList();
