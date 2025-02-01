@@ -19,7 +19,7 @@
     <div v-show="index == 1 || initialize" key="weather"> 
       <weatherView />
     </div>
-    <div v-show="index == 2 || initialize" key="vehicule">
+    <div v-show="index == 2 || initialize" key="vehicule" :v-if="backgroundIf('vehicule')">
       <vehiculeView />
     </div>
     <div v-show="index == 3 || initialize" key="lastInter">
@@ -73,6 +73,7 @@ const initializeApp = () => {
   regularTimeout = setTimeout(() => {
     window.location.reload();
   }, reloadTime);
+  console.log('App initialized, next update in ' + reloadTime / 1000 + ' seconds');
 }
 initializeApp();
 
