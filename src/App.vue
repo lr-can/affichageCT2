@@ -64,6 +64,18 @@ import { useSmartemis } from './store/smartemis';
 
 const smartemis = useSmartemis();
 
+let regularTimeout = null;
+
+const initialize = () => {
+  const now = new Date();
+  const minutes = now.getMinutes();
+  const reloadTime = minutes > 40 ? 25 * 60 * 1000 : 20 * 60 * 1000;
+  regularTimeout = setTimeout(() => {
+    window.location.reload();
+  }, reloadTime);
+}
+initialize();
+
 const waitForInter = setInterval(async () => {
   const data = await smartemis.getInterventionsList();
   if (data.identifiant === 'Aucune intervention en cours'){
@@ -81,6 +93,10 @@ const waitForInter = setInterval(async () => {
     dateTimeInter: data.dateTime,
   });
   clearInterval(waitForInter);
+  clearTimeout(regularTimeout);
+  regularTimeout = setTimeout(() => {
+    window.location.reload();
+  }, 15 * 60 * 1000);
 }, 10000);
 
 const index = ref(0);
@@ -99,8 +115,8 @@ const views = ref([
 const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
-    //index.value = (index.value + 1) % views.value.length;
-    index.value = 0;
+    index.value = (index.value + 1) % views.value.length;
+    //index.value = 0;
   }
 }
 main();

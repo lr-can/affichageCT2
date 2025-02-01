@@ -10,33 +10,60 @@
             {{ new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}
         </div>
         <div class="fullRow">
-            <div class="currentTeam" v-if="currentTeam">
-                <div class="title" :style="{color: teamColors[currentTeam]}">
-                    En cours
+            <div class="teamsContainer">
+                <div :style="{textTransform: 'uppercase', color: 'black'}">
+                    équipes
                 </div>
-                <div class="teamTitle" :style="{backgroundColor: teamColors[currentTeam]}">
-                    {{ currentTeam }}
+                <div class="currentTeam" v-if="currentTeam">
+                    <div class="title" :style="{color: teamColors[currentTeam]}">
+                        En cours
+                    </div>
+                    <div class="teamTitle" :style="{backgroundColor: teamColors[currentTeam]}">
+                        {{ currentTeam }}
+                    </div>
+                </div>
+                <div class="nextTeam" v-if="nextTeam">
+                    <div class="title" :style="{color: teamColors[nextTeam]}">
+                        Prochaine
+                    </div>
+                    <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam]}">
+                        {{ nextTeam }}
+                    </div>
                 </div>
             </div>
-            <div class="nextTeam" v-if="nextTeam">
-                <div class="title" :style="{color: teamColors[nextTeam]}">
-                    Prochaine
+            <div class="teamsContainer">
+                <div :style="{textTransform: 'uppercase', color: 'black'}">
+                        Prochaine réunion
                 </div>
-                <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam]}">
-                    {{ nextTeam }}
-                </div>
-            </div>
-            <div class="nextTeam">
-                <div class="title">
-                    Prochaine réunion
-                </div>
-                <div class="teamTitle">
-                    {{ giveDuration("nextReu")}} à 19h
+                <div class="nextTeam">
+                    <div class="teamTitle" :style="{fontSize: '1.2em'}">
+                        {{ giveDuration("nextReu")}} à 19h
+                    </div>
                 </div>
             </div>
         </div>
         <div class="fullRow">
+            <div class="eventContainer">
+                <div :style="{textTransform: 'uppercase', color: 'black', fontWeight: 'bold', fontSize: '1.5em'}">>
+                    Anniversaires
+                </div>
+                <div class="eventGroup" v-for="aniv in nextAniv" :key="aniv.Date">
+                    <div class="event" :style="{fontSize: '1.2em'}">
+                        {{ giveDurationBirthday(aniv.Date) }} - {{ aniv.anniversaire }}
+                    </div>
+                </div>
+            </div>
+            <div class="eventContainer">
+                <div :style="{textTransform: 'uppercase', color: 'black', fontWeight: 'bold', fontSize: '1.5em'}">>
+                    Événements
+                </div>
 
+            <div class="eventGroup" v-for="event in nextEvent" :key="event.Date">
+                <div class="event" :style="{fontSize: '1.2em'}">
+                    {{ giveDurationBirthday(event.Date) }} - {{ event.evenementNom }}
+                </div>
+            </div>
+            </div>
         </div>
     </div>
 </template>
@@ -47,6 +74,8 @@ const planning = useWeather();
 const currentTeam = ref(null);
 const nextTeam = ref(null);
 const nextReu = ref(null);
+const nextAniv = ref(null);
+const nextEvent = ref(null);
 
 const teamColors = ref({
     "A": "#A558A0",
@@ -63,7 +92,11 @@ onMounted(async () => {
     currentTeam.value = data.currentTeam;
     nextTeam.value = data.nextTeam;
     nextReu.value = new Date(data.nextReunion);
+    nextAniv.value = data.nextTwoBirthdays;
+    nextEvent.value = data.nextTwoEvents;
+
 });
+
 const giveDuration = (type) => {
     const now = new Date();
     if (type === "nextReu") {
@@ -73,9 +106,24 @@ const giveDuration = (type) => {
             return "Aujourd'hui";
         } else if (days === 1) {
             return "Demain";
+        } else if (days >= 7){
+            return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""}`;
         }
         return `Dans ${days} jours`;
     }
+}
+const giveDurationBirthday = (date) => {
+    const now = new Date();
+    const diff = new Date(date) - now;
+    const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+    if (days === 0) {
+        return "Aujourd'hui !";
+    } else if (days === 1) {
+        return "Demain";
+    } else if (days >= 7){
+        return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""}`;
+    }
+    return `Dans ${days} jours`;
 }
 
 </script>
@@ -124,34 +172,44 @@ img {
     overflow: hidden;
     flex-wrap: wrap;
 }
+
 .currentTeam, .nextTeam {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 50%;
-    background-color: #ffffff59;
     height: 100%;
 }
 .teamTitle {
     padding: 1rem;
     background-color: red;
-    font-size: 3em;
+    font-size: 2.5em;
     padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     color: white;
+    border-radius: 1rem;
+    font-weight: bold;
 }
 .fullRow {
     width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 33%;
+    height: 45%;
+    background-color: #ffffffad;
 }
 .fullRow:first-child {
     height: 10%;
-    font-size: 3rem;
-    color: white;
+    font-size: 2rem;
+    color: #666666;
     text-transform: uppercase;
+    background-color: #ffffffad;
+    border-bottom: 1px solid #a3a3a3;
+}
+.fullRow:nth-child(2) {
+    background-color: #ffffffad;
 }
 .title{
     font-size: 1.5em;
@@ -160,6 +218,65 @@ img {
     width: 100%;
     text-align: center;
     font-weight: bold;
+}
+.teamsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-basis: 60%;
+    padding: 1rem;
+}
+
+.teamsContainer:last-child {
+    flex-basis: 40%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #ffffff59;
+    margin-right: 2rem;
+}
+.teamsContainer:last-child > div {
+    padding: 1rem;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    flex-basis: 1;
+}
+.teamsContainer > div:first-child {
+    font-size: 1.5em;
+    color: red;
+    padding: 1rem;
+    width: 100%;
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    flex-basis: 1;
+}
+.eventContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-basis: 50%;
+    padding: 1rem;
+}
+.eventGroup {
+    padding: 0.2rem;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.event {
+    width: 100%;
+    text-align: center;
+    flex-basis: 1;
+    color: rgb(44, 44, 44);
+    border-bottom: 1px solid #a3a3a3;
 }
 
 </style>
