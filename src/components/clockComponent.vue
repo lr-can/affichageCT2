@@ -26,7 +26,8 @@
 }
 .seconds {
     font-size: 1.2rem;
-    color: grey;
+    color: rgb(160, 160, 160);
+    padding-left: 0.3rem;
 }
 .blink {
     animation: blink 2s infinite;

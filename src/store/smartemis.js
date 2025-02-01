@@ -151,7 +151,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         return result.type;
     }
 
-    const getInterventionsList = async () => {
+    const getInterNoFilter = async () => {
         const options = {
             method: 'GET',
             headers: {
@@ -171,7 +171,11 @@ export const useSmartemis = defineStore('smartemis', () => {
             };
         });
         const sortedResult = await mappedResult.sort((a, b) => b.dateTime - a.dateTime);
-        console.log(sortedResult);
+        return sortedResult;
+    };
+
+    const getInterventionsList = async () => {
+        const sortedResult = await getInterNoFilter();
         const initialDateTime = sortedResult[0].dateTime;
         let dateTimePlus15Min = new Date(sortedResult[0].dateTime);
         let verif = dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 15);
@@ -191,6 +195,9 @@ export const useSmartemis = defineStore('smartemis', () => {
         });
         return sortedMappedResult[0];
     }
+
+
+
         const getEngins = async () => {
             await getEnginsWithStatuts();
             return famillesEngins.value;
@@ -218,6 +225,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getEngins,
         getLastUpdateEngins,
         getAgentsAvailable,
+        getInterNoFilter,
     };
 });
 

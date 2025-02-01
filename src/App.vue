@@ -10,34 +10,49 @@
   <regularBackground />
   <div class="fullView">
     <TransitionGroup name="cool">
-    <div class="backgroundWeather" v-if="!switchC" key="weatherBckGrnd"> 
-        <weatherBckGrnd />
+    <div v-show="index == 0 || initialize" key="today">
+      <todayView />
     </div>
-    <div v-show="!switchC" key="weather"> 
+    <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather"> 
+        <ytbBackGround  VidId="GZJiui6Lj78" />
+    </div>
+    <div v-show="index == 1 || initialize" key="weather"> 
       <weatherView />
     </div>
-    <div v-show="switchC" key="vehicule">
+    <div v-show="index == 2 || initialize" key="vehicule">
       <vehiculeView />
+    </div>
+    <div v-show="index == 3 || initialize" key="lastInter">
+      <lastInter />
+    </div>
+    <div class="backgroundWeather" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 
+        <ytbBackGround  VidId="z545k7Tcb5o" />
+    </div>
+    <div v-show="index == 4 || initialize" key="traffic">
+      <trafficView />
     </div>
     </TransitionGroup>
   </div>
 </template>
 <script setup>
 import clockComponent from './components/clockComponent.vue';
-import weatherBckGrnd from './components/weatherBckGrnd.vue';
+import ytbBackGround from './components/ytbBackGround.vue';
 import regularBackground from './components/regularBackground.vue';
+import todayView from './views/todayView.vue';
+import trafficView from './views/trafficView.vue';
 import interView from './views/interView.vue';
+import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import { ref } from 'vue';
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
-const switchC = ref(false);
+const initialize = ref(true);
 
-setInterval(() => {
-  switchC.value = !switchC.value;
-}, 15000);
+setTimeout(() => {
+  initialize.value = false;
+}, 10000);
 
 
 
@@ -68,6 +83,33 @@ const waitForInter = setInterval(async () => {
   clearInterval(waitForInter);
 }, 10000);
 
+const index = ref(0);
+const views = ref([
+  {viewName : 'today',
+  time : 20},
+  {viewName : 'weather',
+  time : 20},
+  {viewName : 'vehicule',
+  time : 30},
+  {viewName : 'lastInter',
+  time : 30},
+  {viewName : 'traffic',
+  time : 20},
+]);
+const main = async () => {
+  while (true){
+    await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
+    index.value = (index.value + 1) % views.value.length;
+  }
+}
+main();
+
+const backgroundIf = (viewName) => {
+  const currentIndex = views.value.findIndex(view => view.viewName === viewName);
+  const previousIndex = (index.value - 1 + views.value.length) % views.value.length;
+  const nextIndex = (index.value + 1) % views.value.length;
+  return index.value === currentIndex || previousIndex === currentIndex || nextIndex === currentIndex;
+}
 </script>
 
 <style scoped>
@@ -119,7 +161,7 @@ const waitForInter = setInterval(async () => {
     overflow: hidden;
 }
 .cool-enter-active, .cool-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 1s;
 }
 .cool-enter, .cool-leave-to {
   opacity: 0;

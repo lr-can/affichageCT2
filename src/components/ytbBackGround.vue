@@ -1,6 +1,12 @@
 <script>
 export default {
   name: "YouTubeBackground",
+  props: {
+    VidId: {
+      type: String,
+      required: true,
+    },
+  },
   mounted() {
     // Optionnel : Assurez-vous que l'API YouTube est chargée
     const tag = document.createElement("script");
@@ -18,7 +24,7 @@ export default {
       type="text/html"
       width="100%"
       height="100%"
-      src="https://www.youtube.com/embed/GZJiui6Lj78?autoplay=1&mute=1&loop=1&playlist=GZJiui6Lj78&controls=0&showinfo=0&modestbranding=1&rel=0"
+      :src="`https://www.youtube.com/embed/${$props.VidId}?autoplay=1&mute=1&loop=1&playlist=${$props.VidId}&controls=0&showinfo=0&modestbranding=1&rel=0`"
       frameborder="0"
       allow="autoplay; encrypted-media"
       allowfullscreen
