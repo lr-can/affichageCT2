@@ -28,7 +28,7 @@
                 </div>
                 <div class="interInfo" v-if="FirstInterDisplay && okay">
                     <div>
-                        <div class="bold" :style="{marginTop: '2rem'}">Interventions récentes</div>
+                        <div class="bold" :style="{fontWeight: 'bold'}">Interventions récentes</div>
                     </div>
                     <div :key="FirstInterDisplay.numeroInter" class="displayInfo" :class="isSlider(1)">
                         <div class="date">{{ calculateDelta(FirstInterDisplay.dateTime) }}</div>

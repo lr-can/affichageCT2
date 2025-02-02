@@ -21,7 +21,7 @@
                                 {{ engin.lib }}
                             </div>
                             <div class="img">
-                                <img :src="giveEnginImg(engin)" alt="engin" style="height: 70px; width: auto;">
+                                <img :src="giveEnginImg(engin)" alt="engin" style="height: 60px; width: auto;">
                             </div>
                         </div>
                     </div>
