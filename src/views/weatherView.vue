@@ -19,7 +19,7 @@
             <div v-for="day in limitedForecast" :key="day.time">
                 <p class="newDay">{{ new Date(day.time).getHours() < 10 ? "0" + new Date(day.time).getHours() : new Date(day.time).getHours()}} h 00</p>
                 <div class="smallIcon">
-                    <weatherIcon :size="1" :iconSrc="`${day.values.weatherCode}${now.getHours() > 18 && now.getHours() < 6 ? '1' : '0'}`" />
+                    <weatherIcon :size="1" :iconSrc="`${day.values.weatherCode}${now.getHours() > 18 || now.getHours() < 6 ? '1' : '0'}`" />
                 </div>
                 <p>{{ Math.round(day.values.temperature) }}°C</p>
             </div>
@@ -82,7 +82,7 @@ onMounted(async () => {
     weatherForecast.value = weather.value.weatherForecast;
     weatherLabel.value = weather.value.weatherLabel;
     weatherCode.value = weatherForecast.value[1].values.weatherCode;
-    weatherCode.value +=  now.value.getHours() > 18 && now.value.getHours() < 6 ? '1' : '0';
+    weatherCode.value +=  now.value.getHours() > 18 || now.value.getHours() < 6 ? '1' : '0';
     limitedForecast.value = [weatherForecast.value[2], weatherForecast.value[4], weatherForecast.value[6]];
     limitedForecast2.value = [weatherForecast.value[25], weatherForecast.value[49], weatherForecast.value[73]];
 });
