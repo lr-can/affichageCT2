@@ -17,7 +17,7 @@
                 <div class="engins">
                     <div class="animation" v-for="engin in famille.engins" :key="engin.engCod">
                         <div class="enginContainer">
-                            <div class="enginTitle" :style="{ backgroundColor: engin.backgroundColor, color: engin.libColor }">
+                            <div class="enginTitle" :style="{ backgroundColor: engin.backgroundColor, color: engin.libColor, borderBottom: `1px solid ${colorConvert(engin.libColor)}` }">
                                 {{ engin.lib }}
                             </div>
                             <div class="img">
@@ -99,6 +99,13 @@ const giveForeground = (available) => {
         return '#0078f3';
     }
 }
+const colorConvert = (color) => {
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, 0.1)`;
+}
 </script>
 <style scoped>
 #Background {
@@ -137,7 +144,8 @@ const giveForeground = (available) => {
     height: 65%;
     padding: 1rem;
     border-radius: 30px;
-    background-color: #ffffff2a;
+    background-color: #ffffffe7;
+    backdrop-filter: blur(10px);
     z-index: 3;
 }
 .enginContainer {
@@ -167,7 +175,6 @@ const giveForeground = (available) => {
 .famille{
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
     opacity: 0;
-    backdrop-filter: blur(10px);
     border-radius: 1rem;
     animation: slideIn 0.5s ease-out forwards;
 }
@@ -261,8 +268,9 @@ const giveForeground = (available) => {
 }
 .familleTitle {
     text-align: left;
-    color: white;
-    border-bottom: 1px solid white;
+    color: #666666;
+    border-bottom: 1px solid #666666;
+    padding: 0.5rem;
 }
 .info{
     position: absolute;

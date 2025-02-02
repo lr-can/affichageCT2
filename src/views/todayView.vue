@@ -276,6 +276,7 @@ img {
     text-align: center;
     flex-basis: 1;
     color: rgb(44, 44, 44);
+    padding-bottom: 1rem;
     border-bottom: 1px solid #a3a3a3;
 }
 

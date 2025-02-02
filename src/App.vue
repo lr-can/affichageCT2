@@ -9,7 +9,7 @@
       </div>
       <div class="flexx">
         <div :style="{color: 'white', fontSize: '3rem'}">Chargement de l'affichage</div>
-        <img src="./assets/Rhombus.gif" alt="" width="200px" height="auto" :style="{opacity: 0.8}">
+        <img src="./assets/Rhombus.gif" alt="" width="100px" height="auto" :style="{opacity: 0.8}">
       </div>
     </div>
   </div>
@@ -129,13 +129,13 @@ const views = ref([
   {viewName : 'lastInter',
   time : 30},
   {viewName : 'traffic',
-  time : 20},
+  time : 30},
 ]);
 const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
     index.value = (index.value + 1) % views.value.length;
-    //index.value = 0;
+    //index.value = 4;
   }
 }
 main();

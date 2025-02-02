@@ -180,12 +180,12 @@ export const useSmartemis = defineStore('smartemis', () => {
         let dateTimePlus15Min = new Date(sortedResult[0].dateTime);
         let verif = dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 15);
         let now = new Date();
-        if (now > verif) {
+        if (now.getTime() > verif) {
             return {
                 identifiant: "Aucune intervention en cours",
             }
         }
-        mappedResult[0].dateTime = initialDateTime;
+        sortedResult[0].dateTime = initialDateTime;
         const typeInter = await getInterventionType(sortedResult[0].notificationTitre);
         const sortedMappedResult = await sortedResult.map(intervention => {
             return {
