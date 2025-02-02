@@ -211,7 +211,6 @@ const giveForeground = (available) => {
     padding-right: 0.7rem;
     margin-left: 0.7rem;
     margin-right: 0.7rem;
-    gap: 1rem;
 }
 .animation{
     opacity: 0;
