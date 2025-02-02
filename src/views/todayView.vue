@@ -102,21 +102,21 @@ const giveDuration = (type) => {
     if (type === "nextReu") {
         const diff = nextReu.value - now;
         const days = Math.floor(diff / 1000 / 60 / 60 / 24);
-        if (days === 0) {
+        if (days === 0 || days < 0) {
             return "Aujourd'hui";
-        } else if (days === 1) {
+        } else if (days === 1 || days < 1) {
             return "Demain";
         } else if (days >= 7){
-            return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""}`;
+            return `Vendredi prochain`;
         }
-        return `Dans ${days} jours`;
+        return `Ce vendredi`;
     }
 }
 const giveDurationBirthday = (date) => {
     const now = new Date();
     const diff = new Date(date) - now;
     const days = Math.floor(diff / 1000 / 60 / 60 / 24);
-    if (days === 0) {
+    if (days === 0 || days < 0) {
         return "Aujourd'hui !";
     } else if (days === 1) {
         return "Demain";
