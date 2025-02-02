@@ -118,10 +118,13 @@ const giveDurationBirthday = (date) => {
     const days = Math.floor(diff / 1000 / 60 / 60 / 24);
     if (days === 0 || days < 0) {
         return "Aujourd'hui !";
-    } else if (days === 1) {
+    } else if (days === 1 || days < 1) {
         return "Demain";
     } else if (days >= 7){
-        return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""}`;
+        if (days <= 14) {
+            return `La semaine prochaine`;
+        }
+        return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""} environ`;
     }
     return `Dans ${days} jours`;
 }
