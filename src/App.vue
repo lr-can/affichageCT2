@@ -2,6 +2,17 @@
   <div class="clock-container">
     <clockComponent />
   </div>
+  <div v-if="initialize" class="appear">
+    <div class="loading">
+      <div>
+        <img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto" :style="{opacity: 0.2, filter: 'blur(3px)'}">
+      </div>
+      <div class="flexx">
+        <div :style="{color: 'white', fontSize: '3rem'}">Chargement de l'affichage</div>
+        <img src="./assets/Rhombus.gif" alt="" width="200px" height="auto" :style="{opacity: 0.8}">
+      </div>
+    </div>
+  </div>
   <div v-if="interventionCheck" id="interView">
     <interView :data="interventionData" />
   </div>
@@ -45,14 +56,21 @@ import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import { ref } from 'vue';
+import { watchEffect } from 'vue';
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
 const initialize = ref(true);
 
-setTimeout(() => {
-  initialize.value = false;
-}, 10000);
+watchEffect(() => {
+  if (!initialize.value) return;
+  const checkLoaded = setInterval(() => {
+    if (document.readyState === 'complete') {
+      initialize.value = false;
+      clearInterval(checkLoaded);
+    }
+  }, 200);
+});
 
 
 
@@ -184,5 +202,47 @@ const backgroundIf = (viewName) => {
 .cool-enter, .cool-leave-to {
   opacity: 0;
 }
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 105;
+  width: 100dvw;
+  height: 100dvh;
+  background-size: 140% 140%;
+  background-image: linear-gradient(120deg, #0078f3 0%, #0063cb 100%);
+  animation : loading 2s infinite;
+  overflow: hidden;
+}
+@keyframes loading {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.loading > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.flexx {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+.appear{
+  transition: all 3s ease-out;
+}
+
+
 
 </style>
