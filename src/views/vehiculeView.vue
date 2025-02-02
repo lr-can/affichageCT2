@@ -137,6 +137,7 @@ const giveForeground = (available) => {
     height: 65%;
     padding: 1rem;
     border-radius: 30px;
+    background-color: #ffffff2a;
     z-index: 3;
 }
 .enginContainer {
@@ -165,11 +166,9 @@ const giveForeground = (available) => {
 }
 .famille{
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff43;
     opacity: 0;
     backdrop-filter: blur(10px);
     border-radius: 1rem;
-    padding: 1rem;
     animation: slideIn 0.5s ease-out forwards;
 }
 @keyframes slideIn {
@@ -208,10 +207,10 @@ const giveForeground = (available) => {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+    margin-left: 0.7rem;
+    margin-right: 0.7rem;
     gap: 1rem;
 }
 .animation{
