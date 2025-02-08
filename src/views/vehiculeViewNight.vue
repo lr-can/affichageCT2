@@ -1,10 +1,10 @@
 <template>
     <div id="Background">
-        <img src="../assets/backgrounds/CTA.jpg" alt="Véhicule" style="width: 110vw; height: 110vh;">
+        <iframe width="1920" height="1080" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://slowe.github.io/VirtualSky/embed?longitude=4.846609&latitude=45.817419&projection=equirectangular&constellations=true&constellationlabels=true&meteorshowers=true&showstarlabels=true&showdate=false&showposition=false&live=true" allowTransparency="true"></iframe>
     </div>
     <div>
         <div id="Title">
-            <h1>Synoptique des engins</h1>
+            <h1>Bonne nuit</h1>
         </div>
         <div class="agents" :style="{ backgroundColor: giveBackground(agents.available), color: giveForeground(agents.available) }" v-if="agents">
             <span :style="{fontSize : '2rem', fontWeight : 'bold'}">🧑‍🚒{{ agents.available }}</span> / {{ agents.total }}
@@ -58,7 +58,6 @@ onMounted(async () => {
         timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
     }
 
-    
     setInterval(async () => {
         familles.value = await smartemis.getEngins();
     miseAJour.value = await smartemis.getLastUpdateEngins();
@@ -74,7 +73,7 @@ onMounted(async () => {
         timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
     }
     }
-    , 10000);
+    , 15000);
 
 });
 
@@ -101,11 +100,11 @@ const giveEnginImg = (engin) => {
 }
 const giveBackground = (available) => {
     if (available < 2){
-        return '#fff4f4B3';
+        return '#f6070020';
     } else if (available < 3){
-        return '#fff4f3B3';
+        return '#d64d0020';
     } else {
-        return '#f4f6ffB3';
+        return '#0078f320';
     }
 }
 const giveForeground = (available) => {
@@ -134,21 +133,22 @@ const colorConvert = (color) => {
     height: 100vh;
     overflow: hidden;
     z-index: 1;
-    filter: blur(5px) brightness(0.6);
-    scale: 1.1;
+    filter: brightness(0.6);
+    scale: 1;
+
 }
 #Title {
     position: absolute;
     top: 1.2rem;
     left: 2.5rem;
     z-index: 4;
-    color: white;
+    color: rgb(161, 161, 161);
     font-size: 1em;
     text-align: center;
     text-transform: uppercase;
 }
 .vehiculeContainer {
-    color: white;
+    color: rgb(65, 65, 65);
     position: absolute;
     top: 40%;
     left: 50%;
@@ -162,8 +162,7 @@ const colorConvert = (color) => {
     height: 65%;
     padding: 1rem;
     border-radius: 30px;
-    background-color: #ffffffe7;
-    backdrop-filter: blur(10px);
+    background-color: #ffffff0f;
     z-index: 3;
 }
 .enginContainer {
@@ -195,6 +194,7 @@ const colorConvert = (color) => {
     opacity: 0;
     border-radius: 1rem;
     animation: slideIn 0.5s ease-out forwards;
+    background-color: #ffffff17;
     min-width: 20%;
 }
 @keyframes slideIn {
@@ -287,7 +287,7 @@ const colorConvert = (color) => {
 }
 .familleTitle {
     text-align: left;
-    color: #666666;
+    color: #c1c1c1;
     border-bottom: 1px solid #666666;
     padding: 0.5rem;
 }

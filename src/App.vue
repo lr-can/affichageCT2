@@ -19,30 +19,35 @@
   <div v-if="interventionCheck" class="blurAndShadow"></div>
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
-  <div class="fullView">
-    <TransitionGroup name="cool">
-    <div v-show="index == 0 || initialize" key="today">
-      <todayView />
+  <div class="fullView" v-if="!interventionCheck">
+    <div v-if="new Date().getHours() > 18 || new Date().getHours() < 6">
+      <vehiculeViewNight />
     </div>
-    <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather"> 
-        <ytbBackGround  VidId="GZJiui6Lj78" />
+    <div v-else>
+      <TransitionGroup name="cool">
+      <div v-show="index == 0 || initialize" key="today">
+        <todayView />
+      </div>
+      <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather"> 
+          <ytbBackGround  VidId="GZJiui6Lj78" />
+      </div>
+      <div v-show="index == 1 || initialize" key="weather"> 
+        <weatherView />
+      </div>
+      <div v-show="index == 2 || initialize" key="vehicule" :v-if="backgroundIf('vehicule')">
+        <vehiculeView />
+      </div>
+      <div v-show="index == 3 || initialize" key="lastInter">
+        <lastInter />
+      </div>
+      <div class="backgroundWeather" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 
+          <ytbBackGround  VidId="z545k7Tcb5o" />
+      </div>
+      <div v-show="index == 4 || initialize" key="traffic">
+        <trafficView />
+      </div>
+      </TransitionGroup>
     </div>
-    <div v-show="index == 1 || initialize" key="weather"> 
-      <weatherView />
-    </div>
-    <div v-show="index == 2 || initialize" key="vehicule" :v-if="backgroundIf('vehicule')">
-      <vehiculeView />
-    </div>
-    <div v-show="index == 3 || initialize" key="lastInter">
-      <lastInter />
-    </div>
-    <div class="backgroundWeather" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 
-        <ytbBackGround  VidId="z545k7Tcb5o" />
-    </div>
-    <div v-show="index == 4 || initialize" key="traffic">
-      <trafficView />
-    </div>
-    </TransitionGroup>
   </div>
 </template>
 <script setup>
@@ -55,6 +60,7 @@ import interView from './views/interView.vue';
 import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
+import vehiculeViewNight from './views/vehiculeViewNight.vue';
 import { ref } from 'vue';
 import { watchEffect } from 'vue';
 

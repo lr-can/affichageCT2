@@ -49,7 +49,7 @@
                 </div>
                 <div class="eventGroup" v-for="aniv in nextAniv" :key="aniv.Date">
                     <div class="event" :style="{fontSize: '1.2em'}">
-                        {{ giveDurationBirthday(aniv.Date) }} - {{ aniv.anniversaire }}
+                        {{ giveDurationBirthday(aniv.Date, 'birthday') }} - {{ aniv.anniversaire }}
                     </div>
                 </div>
             </div>
@@ -112,11 +112,14 @@ const giveDuration = (type) => {
         return `Ce vendredi`;
     }
 }
-const giveDurationBirthday = (date) => {
+const giveDurationBirthday = (date, type='') => {
     const now = new Date();
     const diff = new Date(date) - now;
     const days = Math.floor(diff / 1000 / 60 / 60 / 24);
     if (days === 0 || days < 0) {
+        if (type === 'birthday') {
+            return "🎂 Aujourd'hui !";
+        }
         return "Aujourd'hui !";
     } else if (days === 1 || days < 1) {
         return "Demain";

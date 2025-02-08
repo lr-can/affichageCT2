@@ -40,13 +40,12 @@
             </h3>
             <div class="flexx">
                 <div v-if="imgURL">
-                    <img :src="imgURL" alt="Alerte météo" style="width: 200px; height: auto;">
+                    <img :src="imgURL" alt="Alerte météo" :style="alertData.icon ? {width: '200px', height: 'auto'} : {width: '250px', height: 'auto'}">
                 </div>
-                <div v-for="alert in alertData.icon.split(', ')" :key="alert">
+                <div v-if="alertData.icon" v-for="alert in alertData.icon.split(', ')" :key="alert">
                     <img :src="getImgUrl(alert)" alt="Alerte météo" :class="`${alertData.alerteSeverite}` + 'Img'" style="width: 50px; height: 50px; margin-top: 1rem;">
                     <div class="bold">	
-                    <p>{{ alertData.alerteType }}</p>
-                    <p>{{ alertData.alerteDescription }}</p>
+                    <p>{{ alertData.alerteType ? alertData.alerteType : ""}}</p>
                      </div>
                 </div>
             </div>
@@ -224,28 +223,35 @@ const getImgUrl = (alert) => {
     width: 100%;
 }
 .AdvisoryBackground {
-    background-color: #f1c40f30;
+    background-color: #f1c40f;
     border-radius: 30px;
 }
 .AdvisoryForeground {
-    color: #f1c40f;
+    color: white;
 }
 .WatchBackground {
     border-radius: 30px;
-    background-color: rgba(249, 207, 159, 0.171);
+    background-color: #e67e22;
 }
 .WatchForeground {
-    color: #e67e22;
+    color: white;
 }
 .WarningBackground {
     border-radius: 30px;
-    background-color: rgba(245, 183, 177, 0.167);
+    background-color: #e74c3c
 }
 .WarningForeground {
-    color: #e74c3c;
+    color: white;
 }
 .AdvisoryImg{
     filter: invert(100%) sepia(100%) saturate(1000%) hue-rotate(180deg) brightness(100%) contrast(100%);
+}
+.NoneForeground {
+    color: white;
+}
+.NoneBackground {
+    background-color: #1f8d49;
+    border-radius: 30px;
 }
 
 </style>

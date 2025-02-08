@@ -23,7 +23,7 @@
                         Sur la commune de <span class="bold capitalize">{{ firstInter.notificationVille }}</span>
                     </div>
                     <div>
-                        Avec <span class="bold">{{ firstInter.notificationEngins }} engin{{ firstInter.notificationEngins > 1 ? 's' : '' }} déployé{{ firstInter.notificationEngins > 1 ? 's' : '' }}</span>
+                        Avec <span class="bold">{{ firstInter.notificationEngins }} engin{{ firstInter.notificationEngins > 1 ? 's' : '' }} engagé{{ firstInter.notificationEngins > 1 ? 's' : '' }}</span>
                     </div>
                 </div>
                 <div class="interInfo" v-if="FirstInterDisplay && okay">

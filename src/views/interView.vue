@@ -217,7 +217,7 @@ div {
     overflow: hidden;
 }
 .header {
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: bold;
     color: #f60700;
     margin-bottom: 1rem;
@@ -458,6 +458,5 @@ div {
     transition: all 0.5s ease-in-out;
     clip-path: polygon(99% 0%, 100% 50%, 99% 100%, 0% 100%, 25% 50%, 0% 0%);
 }
-
 
 </style>
