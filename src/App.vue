@@ -20,7 +20,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() > 18 || new Date().getHours() < 6">
+    <div v-if="new Date().getHours() > 21 || new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
