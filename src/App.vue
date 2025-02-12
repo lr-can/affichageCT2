@@ -127,13 +127,13 @@ const waitForInter = setInterval(async () => {
 const index = ref(0);
 const views = ref([
   {viewName : 'today',
-  time : 20},
+  time : 30},
   {viewName : 'weather',
-  time : 20},
+  time : 40},
   {viewName : 'vehicule',
   time : 30},
   {viewName : 'lastInter',
-  time : 30},
+  time : 40},
   {viewName : 'traffic',
   time : 30},
 ]);

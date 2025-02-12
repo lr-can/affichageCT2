@@ -40,7 +40,7 @@
             </h3>
             <div class="flexx">
                 <div v-if="imgURL">
-                    <img :src="imgURL" alt="Alerte météo" :style="alertData.icon ? {width: '200px', height: 'auto'} : {width: '250px', height: 'auto'}">
+                    <img :src="imgURL" alt="Alerte météo" :style="giveStyle()">
                 </div>
                 <div v-if="alertData.icon" v-for="alert in alertData.icon.split(', ')" :key="alert">
                     <img :src="getImgUrl(alert)" alt="Alerte météo" :class="`${alertData.alerteSeverite}` + 'Img'" style="width: 50px; height: 50px; margin-top: 1rem;">
@@ -107,6 +107,16 @@ const getDayName = (day) => {
 const getImgUrl = (alert) => {
     return new URL(`../assets/weather/${alert}.svg`, import.meta.url).href;
 };
+const giveStyle = () => {
+    if (alertData){
+        if(alertData.alerteSeverite && alertData.alerteSeverite != 'None'){
+            return {width: '50px', height: 'auto' };
+        } else if(alertData.alerteMessage && alertData.alerteMessage.length > 150){
+            return {width: '250px', height: 'auto'};
+        } 
+        return {width: '400px', height: 'auto'};
+    }
+}
 </script>
 <style scoped>
 #Title {

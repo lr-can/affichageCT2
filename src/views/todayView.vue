@@ -11,20 +11,23 @@
         </div>
         <div class="fullRow">
             <div class="teamsContainer">
-                <div :style="{textTransform: 'uppercase', color: 'black'}">
+                <div :style="{textTransform: 'uppercase', color: 'black', padding: '1rem'}">
                     équipes
                 </div>
                 <div class="currentTeam" v-if="currentTeam">
                     <div class="title" :style="{color: teamColors[currentTeam]}">
-                        En cours
+                        <span v-show="display1">En cours</span><span v-show="!display1">{{ giveInfoGarde() }}</span>
                     </div>
                     <div class="teamTitle" :style="{backgroundColor: teamColors[currentTeam]}">
                         {{ currentTeam }}
                     </div>
                 </div>
+                <div class="Middle" style="position: absolute; padding-top: 8%;">
+                    ⪢
+                </div>
                 <div class="nextTeam" v-if="nextTeam">
                     <div class="title" :style="{color: teamColors[nextTeam]}">
-                        Prochaine
+                        <span v-show="display1">Prochaine</span><span v-show="!display1">{{ giveInfoNextGarde() }}</span>
                     </div>
                     <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam]}">
                         {{ nextTeam }}
@@ -36,7 +39,7 @@
                         Prochaine réunion
                 </div>
                 <div class="nextTeam">
-                    <div class="teamTitle" :style="{fontSize: '1.2em'}">
+                    <div class="teamTitle" :style="{fontSize: '1.2em', backgroundColor: getBackGroundColor('nextReu'), color: getColor('nextReu')}">
                         {{ giveDuration("nextReu")}} à 19h
                     </div>
                 </div>
@@ -49,7 +52,7 @@
                 </div>
                 <div class="eventGroup" v-for="aniv in nextAniv" :key="aniv.Date">
                     <div class="event" :style="{fontSize: '1.2em'}">
-                        {{ giveDurationBirthday(aniv.Date, 'birthday') }} - {{ aniv.anniversaire }}
+                        <span v-show=display1>{{ giveDurationBirthday(aniv.Date, 'birthday') }}</span><span v-show="!display1">{{ formatDate(aniv.Date) }}</span> - {{ aniv.anniversaire }}
                     </div>
                 </div>
             </div>
@@ -60,7 +63,7 @@
 
             <div class="eventGroup" v-for="event in nextEvent" :key="event.Date">
                 <div class="event" :style="{fontSize: '1.2em'}">
-                    {{ giveDurationBirthday(event.Date) }} - {{ event.evenementNom }}
+                    <span v-show="display1">{{ giveDurationBirthday(event.Date) }}</span><span v-show="!display1">{{ formatDate(event.Date) }}</span> - {{ event.evenementNom }}
                 </div>
             </div>
             </div>
@@ -73,17 +76,18 @@ import { useWeather } from '../store/weather';
 const planning = useWeather();
 const currentTeam = ref(null);
 const nextTeam = ref(null);
+const display1 = ref(true);
 const nextReu = ref(null);
 const nextAniv = ref(null);
 const nextEvent = ref(null);
 
 const teamColors = ref({
-    "A": "#A558A0",
-    "B": "#1f8d49",
+    "A": "#854085",
+    "B": "#407855",
     "C": "#C8AA39",
-    "D": "#CE614A",
-    "E": "#0078f3",
-    "F": "#f60700",
+    "D": "#CA5010",
+    "E": "#0078d4",
+    "F": "#A4262C",
 })
 
 onMounted(async () => {
@@ -96,6 +100,10 @@ onMounted(async () => {
     nextEvent.value = data.nextTwoEvents;
 
 });
+
+setInterval(() => {
+    display1.value = !display1.value;
+}, 10000);
 
 const giveDuration = (type) => {
     const now = new Date();
@@ -112,16 +120,32 @@ const giveDuration = (type) => {
         return `Ce vendredi`;
     }
 }
+const getBackGroundColor = (type) => {
+    let duration = giveDuration(type);
+    if (duration === "Vendredi prochain"){
+        return "#d3d3d3";
+    } else {
+        return "red";
+    }
+}
+const getColor = (type) => {
+    let duration = giveDuration(type);
+    if (duration === "Vendredi prochain"){
+        return "#666666";
+    } else {
+        return "white";
+    }
+}
 const giveDurationBirthday = (date, type='') => {
     const now = new Date();
     const diff = new Date(date) - now;
     const days = Math.floor(diff / 1000 / 60 / 60 / 24);
-    if (days === 0 || days < 0) {
+    if (days < 0) {
         if (type === 'birthday') {
             return "🎂 Aujourd'hui !";
         }
         return "Aujourd'hui !";
-    } else if (days === 1 || days < 1) {
+    } else if (days === 1 || days < 1 || days ===0) {
         return "Demain";
     } else if (days >= 7){
         if (days <= 14) {
@@ -132,6 +156,33 @@ const giveDurationBirthday = (date, type='') => {
     return `Dans ${days} jours`;
 }
 
+const giveInfoGarde = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const hour = now.getHours();
+    if (day === 6 || day === 0) {
+        return "Jusqu'à lundi";
+    } else if (hour < 6 || hour > 20) {
+        return "Jusqu'à 6h";
+    }
+    return "A partir de 20h";
+}
+
+const giveInfoNextGarde = () => {
+    const now = new Date();
+    const day = now.getDay();
+    if (day === 1 || day === 2){
+        return "Mercredi 20h";
+    } else if (day === 3 || day === 4) {
+        return "Vendredi 20h";
+    } else {
+        return "Lundi 20h";
+    }
+}
+const formatDate = (date) => {
+    let date_obj = new Date(date)
+    return date_obj.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' });
+}
 </script>
 <style scoped>
 #Background {
@@ -184,13 +235,23 @@ img {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 30%;
+    height: 100%;
+}
+.Middle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 50%;
     height: 100%;
+    margin: 0;
+    font-size: 2rem;
+    color: #9a9a9a;
 }
 .teamTitle {
     padding: 1rem;
     background-color: red;
-    font-size: 2.5em;
+    font-size: 2em;
     padding: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
@@ -220,7 +281,6 @@ img {
 .title{
     font-size: 1.5em;
     color: red;
-    padding: 1rem;
     width: 100%;
     text-align: center;
     font-weight: bold;
@@ -234,7 +294,6 @@ img {
     flex-basis: 60%;
     padding: 1rem;
 }
-
 .teamsContainer:last-child {
     flex-basis: 40%;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
@@ -252,7 +311,6 @@ img {
 .teamsContainer > div:first-child {
     font-size: 1.5em;
     color: red;
-    padding: 1rem;
     width: 100%;
     text-align: center;
     width: 100%;
@@ -284,6 +342,9 @@ img {
     color: rgb(44, 44, 44);
     padding-bottom: 1rem;
     border-bottom: 1px solid #a3a3a3;
+}
+span {
+    transition: all 0.3s ease;
 }
 
 </style>
