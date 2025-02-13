@@ -20,7 +20,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() > 21 || new Date().getHours() < 6">
+    <div v-if="false && new Date().getHours() > 21 || false && new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
@@ -140,8 +140,8 @@ const views = ref([
 const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
-    index.value = (index.value + 1) % views.value.length;
-    //index.value = 4;
+    //index.value = (index.value + 1) % views.value.length;
+    index.value = 4;
   }
 }
 main();
