@@ -143,7 +143,7 @@ const giveClass = (type, comment) => {
     transform: translate(-50%, -50%);
     z-index: 3;
     height: 70%;
-    width: 30%;
+    width: 35%;
     display: flex;
     justify-content: center;
     align-items: center;
