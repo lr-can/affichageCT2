@@ -114,7 +114,7 @@ const giveDuration = (type) => {
             return "Aujourd'hui";
         } else if (days === 1 || days < 1) {
             return "Demain";
-        } else if (days >= 7){
+        } else if (days >= 6){
             return `Vendredi prochain`;
         }
         return `Ce vendredi`;
