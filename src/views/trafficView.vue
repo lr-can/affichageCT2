@@ -112,7 +112,7 @@ const giveBusClass = (direction) => {
 }
 const giveBlinkClass = (prochainDepart) => {
     if (prochainDepart === '1 min' || prochainDepart === '2 min' || prochainDepart === 'proche'){
-        return blinkTime;
+        return 'blinkTime';
     }
     return '';
 }
