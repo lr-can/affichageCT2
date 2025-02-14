@@ -82,12 +82,12 @@ const nextAniv = ref(null);
 const nextEvent = ref(null);
 
 const teamColors = ref({
-    "A": "#854085",
-    "B": "#407855",
-    "C": "#C8AA39",
-    "D": "#CA5010",
-    "E": "#0078d4",
-    "F": "#A4262C",
+    "A": "#a02b93",
+    "B": "#4ea72e",
+    "C": "#ffc000",
+    "D": "#e97132",
+    "E": "#00b0f0",
+    "F": "#ff0000",
 })
 
 onMounted(async () => {
