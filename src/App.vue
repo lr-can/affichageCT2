@@ -141,7 +141,7 @@ const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
     index.value = (index.value + 1) % views.value.length;
-    //index.value = 4;
+    //index.value = 0;
   }
 }
 main();

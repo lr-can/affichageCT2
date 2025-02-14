@@ -15,26 +15,26 @@
                     équipes
                 </div>
                 <div class="rowFlexx" v-if="currentTeam && nextTeam && teamAfter">
-                    <div id="currentTeam">
+                    <div id="currentTeam" :style="{width: '70%'}">
                         <div class="teamTitre">
                             En cours
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: teamColors[currentTeam.equipe]}">
-                                <span :style="{color: 'white'}">{{ currentTeam.equipe }}</span>
-                                <span>{{ giveInfoGarde() }}</span>
+                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: 'transparent', color: teamColors[currentTeam.equipe], border: '2px solid ' + teamColors[currentTeam.equipe], width:'60%', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1)'}">
+                                <span :style="{color: teamColors[currentTeam.equipe]}">{{ currentTeam.equipe }}</span>
+                                <span :style="{color: teamColors[currentTeam.equipe]}"><em>{{ giveInfoGarde() }}</em></span>
                             </div>
                         </div>
                         <div class="teamFooter">
                             <span v-for="data of currentTeam.dateComment" :key="data">{{data}}</span>
                         </div>
                     </div>
-                    <div id="nextTeam">
+                    <div id="nextTeam" :style="{width: '35%'}">
                         <div class="teamTitre">
                             Prochaine
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam.equipe], color: 'white'}">
+                            <div class="teamTitle" :style="{backgroundColor: 'transparent', color: teamColors[nextTeam.equipe], border: '2px solid ' + teamColors[nextTeam.equipe], width:'20%'}">
                                 {{ nextTeam.equipe }}
                             </div>
                         </div>
@@ -42,12 +42,12 @@
                             <span v-for="data of nextTeam.dateComment" :key="data">{{data}}</span>
                         </div>
                     </div>
-                    <div id="teamAfter">
+                    <div id="teamAfter" :style="{width: '35%'}">
                         <div class="teamTitre">
                             Après
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: teamColors[teamAfter.equipe], color: 'white'}">
+                            <div class="teamTitle" :style="{backgroundColor: 'transparent', color: teamColors[teamAfter.equipe], border: '2px solid ' + teamColors[teamAfter.equipe], width:'20%'}">
                                 {{ teamAfter.equipe }}
                             </div>
                         </div>
@@ -374,8 +374,8 @@ span {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+    justify-content: center;
+    gap: 1rem;
     width: 100%;
     flex-grow: 1;
 
@@ -391,7 +391,7 @@ span {
     justify-content: center;
 }
 .teamTitre {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #666666;
     font-weight: bold;
     width: 100%;
