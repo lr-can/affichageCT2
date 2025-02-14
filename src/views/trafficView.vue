@@ -71,7 +71,6 @@ setInterval( async () => {
     await transportation.getData();
     tcl.value = transportation.tcl;
     sncf.value = transportation.sncf;
-    console.log(tcl.value, sncf.value);
 }, 15000);
 setInterval(() => {
     displayInfo1.value = !displayInfo1.value;
