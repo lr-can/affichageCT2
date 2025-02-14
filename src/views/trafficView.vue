@@ -111,7 +111,7 @@ const giveBusClass = (direction) => {
     return '';
 }
 const giveBlinkClass = (prochainDepart) => {
-    if (prochainDepart === '1 min' || prochainDepart === '2 min'){
+    if (prochainDepart === '1 min' || prochainDepart === '2 min' || prochainDepart === 'proche'){
         return blinkTime;
     }
     return '';
