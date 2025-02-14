@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div>
-                        <div v-for="bus in stop.buses" v-show="bus.direction != 'Fin de service'" :key="bus.direction" class="sameRow2">
+                        <div v-for="bus in stop.buses" :class="giveBusClass(bus.direction)" :key="bus.direction" class="sameRow2">
                             <div class="bus-direction"><i>{{ bus.direction }}</i></div>
                             <span class="next-departure">{{ bus.prochainDepart }}</span>
                             <span class="ensuite-departure">{{ bus.ensuiteDepart }}</span>
@@ -103,6 +103,12 @@ const giveClass = (type, comment) => {
     } else if (type === 'late') {
         return comment.includes('retard') ? 'crossedText' : '';
     }
+}
+const giveBusClass = (direction) => {
+    if (direction == 'Fin de service'){
+        return 'noData'
+    }
+    return '';
 }
 </script>
 <style scoped>
@@ -358,5 +364,8 @@ const giveClass = (type, comment) => {
     padding-left: 1rem;
     padding-right: 1rem;
     margin-top: 0;
+}
+.noData{
+    visibility: hidden;
 }
 </style>
