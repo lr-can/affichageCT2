@@ -41,8 +41,8 @@
                     <div class="networkLogo">
                         <img src="../assets/transport/TER.svg" alt="" width="30px" height="auto">
                     </div>
-                    <div class="trainNumber"><span v-show="displayInfo1">{{ train.numTrain }}</span><span v-show="!displayInfo1" :class="giveClass('comment', train.comment)">{{ train.comment }}</span></div>
-                    <div class="trainHour"><span v-show="displayInfo1" :class="giveClass('late', train.comment)">{{ train.baseDepart }}</span><span v-show="!displayInfo1" :class="giveClass('comment', train.comment)">{{ train.realDepart }}</span></div>
+                    <div class="trainNumber" :class="giveClass('comment', train.comment)"><span v-show="displayInfo1">{{ train.numTrain }}</span><span v-show="!displayInfo1">{{ train.comment }}</span></div>
+                    <div class="trainHour"  :class="giveClass('comment', train.comment)"><span v-show="displayInfo1" :class="giveClass('late', train.comment)">{{ train.baseDepart }}</span><span v-show="!displayInfo1">{{ train.realDepart }}</span></div>
                     <div class="trainDirection">{{ train.destination }}</div>
                 </div>
             </div>
