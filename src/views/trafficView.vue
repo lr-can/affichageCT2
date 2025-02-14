@@ -37,7 +37,7 @@
                 Gare de Collonges - Fontaines
             </div>
             <div class="sncf-info">
-                <div v-for="train in sncf" :key="train.numTrain" class="sameRow3" :class="giveClass('container', train.comment)">
+                <div v-for="train in sncf" :key="train.numTrain" class="sameRow3" :style="train.comment == 'parti' ? {opacity: 0.5} : {}" :class="giveClass('container', train.comment)">
                     <div class="networkLogo">
                         <img src="../assets/transport/TER.svg" alt="" width="30px" height="auto">
                     </div>
