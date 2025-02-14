@@ -103,7 +103,7 @@ const giveBackground = (available) => {
     const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
     const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
 
-    if (available == 0){
+    if (available < 2){
         return '#fff4f4B3';
     } else if (vsav01 && vsav02) {
         return '#fff4f3B3';
@@ -117,7 +117,7 @@ const giveForeground = (available) => {
     const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
     const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
 
-    if (available == 0){
+    if (available < 2){
         return '#f60700';
     } else if (vsav01 && vsav02) {
         return '#fc5d00';

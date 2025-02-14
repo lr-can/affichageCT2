@@ -14,23 +14,46 @@
                 <div :style="{textTransform: 'uppercase', color: 'black', padding: '1rem'}">
                     équipes
                 </div>
-                <div class="currentTeam" v-if="currentTeam">
-                    <div class="title" :style="{color: teamColors[currentTeam]}">
-                        <span v-show="display1">En cours</span><span :style="{fontWeight: 'normal'}" v-show="!display1">{{ giveInfoGarde() }}</span>
+                <div class="rowFlexx" v-if="currentTeam && nextTeam && teamAfter">
+                    <div id="currentTeam">
+                        <div class="teamTitre">
+                            En cours
+                        </div>
+                        <div class="teamContainer">
+                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: teamColors[currentTeam.equipe]}">
+                                <span :style="{color: 'white'}">{{ currentTeam.equipe }}</span>
+                                <span>{{ giveInfoGarde() }}</span>
+                            </div>
+                        </div>
+                        <div class="teamFooter">
+                            <span v-for="data of currentTeam.dateComment" :key="data">{{data}}</span>
+                        </div>
                     </div>
-                    <div class="teamTitle" :style="{backgroundColor: teamColors[currentTeam]}">
-                        {{ currentTeam }}
+                    <div id="nextTeam">
+                        <div class="teamTitre">
+                            Prochaine
+                        </div>
+                        <div class="teamContainer">
+                            <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam.equipe], color: 'white'}">
+                                {{ nextTeam.equipe }}
+                            </div>
+                        </div>
+                        <div class="teamFooter">
+                            <span v-for="data of nextTeam.dateComment" :key="data">{{data}}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="Middle" style="position: absolute; padding-top: 8%;">
-                    ⪢
-                </div>
-                <div class="nextTeam" v-if="nextTeam">
-                    <div class="title" :style="{color: teamColors[nextTeam]}">
-                        <span v-show="display1">Prochaine</span><span :style="{fontWeight: 'normal'}" v-show="!display1">{{ giveInfoNextGarde() }}</span>
-                    </div>
-                    <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam]}">
-                        {{ nextTeam }}
+                    <div id="teamAfter">
+                        <div class="teamTitre">
+                            Après
+                        </div>
+                        <div class="teamContainer">
+                            <div class="teamTitle" :style="{backgroundColor: teamColors[teamAfter.equipe], color: 'white'}">
+                                {{ teamAfter.equipe }}
+                            </div>
+                        </div>
+                        <div class="teamFooter">
+                            <span v-for="data of teamAfter.dateComment" :key="data">{{data}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,6 +99,7 @@ import { useWeather } from '../store/weather';
 const planning = useWeather();
 const currentTeam = ref(null);
 const nextTeam = ref(null);
+const teamAfter = ref(null);
 const display1 = ref(true);
 const nextReu = ref(null);
 const nextAniv = ref(null);
@@ -95,6 +119,7 @@ onMounted(async () => {
     const data = planningTeams.planningData;
     currentTeam.value = data.currentTeam;
     nextTeam.value = data.nextTeam;
+    teamAfter.value = data.teamAfter;
     nextReu.value = new Date(data.nextReunion);
     nextAniv.value = data.nextTwoBirthdays;
     nextEvent.value = data.nextTwoEvents;
@@ -162,24 +187,14 @@ const giveInfoGarde = () => {
     const now = new Date();
     const day = now.getDay();
     const hour = now.getHours();
-    if (day === 6 || day === 0) {
-        return "Jusqu'à lundi";
+    if (day === 5) {
+        return "20h > lundi 6h";
+    } else if (day === 6 || day === 0) {
+        return "> lundi 6h";
     } else if (hour < 6 || hour > 20) {
-        return "Jusqu'à 6h";
+        return "> 6h";
     }
-    return "A partir de 20h";
-}
-
-const giveInfoNextGarde = () => {
-    const now = new Date();
-    const day = now.getDay();
-    if (day === 1 || day === 2){
-        return "Mercredi 20h";
-    } else if (day === 3 || day === 4) {
-        return "Vendredi 20h";
-    } else {
-        return "Lundi 20h";
-    }
+    return "20h > 6h";
 }
 const formatDate = (date) => {
     let date_obj = new Date(date)
@@ -251,15 +266,22 @@ img {
     color: #9a9a9a;
 }
 .teamTitle {
-    padding: 1rem;
     background-color: red;
-    font-size: 2em;
+    font-size: 2rem;
     padding: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
     color: white;
-    border-radius: 1rem;
+    border-radius: 5px;
+    width: 70%;
     font-weight: bold;
+}
+.teamTitle > span {
+    font-size: 0.5em;
+    font-weight: normal;
+    display: block;
+    margin-top: 0.5rem;
+    color: #ffffff87;
 }
 .fullRow {
     width: 100%;
@@ -347,6 +369,80 @@ img {
 }
 span {
     transition: all 0.3s ease;
+}
+.rowFlexx {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    flex-grow: 1;
+
+}
+.rowFlexx > div {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    color: #666666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.teamTitre {
+    font-size: 1rem;
+    color: #666666;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+.teamContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.teamFooter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    font-size: 0.8em;
+    color: #666666;
+    margin-top: 1rem;
+}
+#firstTeam{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+}
+#firstTeam > span:first-child {
+    font-size: 2rem;
+    font-weight: bold;
+    width: 50%;
+    text-align: center;
+    color: white;
+    margin: 0;
+}
+#firstTeam > span:last-child {
+    font-size: 1rem;
+    font-weight: normal;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+    margin: 0;
+    color: #ffffff87;
 }
 
 </style>

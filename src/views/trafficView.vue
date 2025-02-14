@@ -24,8 +24,8 @@
                     <div>
                         <div v-for="bus in stop.buses" :class="giveBusClass(bus.direction)" :key="bus.direction" class="sameRow2">
                             <div class="bus-direction"><i>{{ bus.direction }}</i></div>
-                            <span class="next-departure" :class="giveBlinkClass(bus.prochainDepart)">{{ bus.prochainDepart }}</span>
-                            <span class="ensuite-departure">{{ bus.ensuiteDepart }}</span>
+                            <span class="next-departure" :class="giveBlinkClass(bus.prochainDepart)">{{ bus.prochainDepart == 'Fin de service' ? '' : bus.prochainDepart}}</span>
+                            <span class="ensuite-departure">{{ bus.ensuiteDepart == 'Fin de service' ? '': bus.ensuiteDepart }}</span>
                         </div>
                     </div>
             </div>
