@@ -99,21 +99,31 @@ const giveEnginImg = (engin) => {
     }
 }
 const giveBackground = (available) => {
+    const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
+    const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
+
     if (available < 2){
         return '#f6070020';
-    } else if (available < 3){
-        return '#d64d0020';
-    } else {
+    } else if (vsav01 && vsav02) {
+        return '#fc5d0020';
+    } else if (vsav01 || vsav02) {
         return '#0078f320';
+    } else {
+        return '#1f8d4920';
     }
 }
 const giveForeground = (available) => {
+    const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
+    const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
+
     if (available < 2){
         return '#f60700';
-    } else if (available < 3){
-        return '#d64d00';
-    } else {
+    } else if (vsav01 && vsav02) {
+        return '#fc5d00';
+    } else if (vsav01 || vsav02) {
         return '#0078f3';
+    } else {
+        return '#1f8d49';
     }
 }
 const colorConvert = (color) => {
