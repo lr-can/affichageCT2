@@ -16,13 +16,13 @@
             <div v-if="tcl && tcl.length > 1" class="tcl-info">
                 <div v-for="stop in tcl" :key="stop.arrêt" class="stop">
                     <div class="sameRow">
-                        <img :src="giveSource(stop.line)" alt="" width="50px" height="auto">
+                        <img :src="giveSource(stop.line)" alt="" height="20px" width="auto">
                         <div>
                             {{ stop.arrêt }}
                         </div>
                     </div>
                     <div>
-                        <div v-for="bus in stop.buses" :key="bus.direction" class="sameRow2">
+                        <div v-for="bus in stop.buses" v-show="bus.direction != 'Fin de service'" :key="bus.direction" class="sameRow2">
                             <div class="bus-direction"><i>{{ bus.direction }}</i></div>
                             <span class="next-departure">{{ bus.prochainDepart }}</span>
                             <span class="ensuite-departure">{{ bus.ensuiteDepart }}</span>
@@ -220,6 +220,10 @@ const giveClass = (type, comment) => {
     margin: 0;
     padding: 0;
 }
+.next-departure, .ensuite-departure {
+    width: 20%;
+    text-align: center;
+}
 .next-departure {
     color: red;
 }
@@ -236,7 +240,8 @@ const giveClass = (type, comment) => {
     font-weight: bold;
 }
 .bus-direction {
-    max-width: 14ch;
+    width: 40%;
+    text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -246,15 +251,64 @@ const giveClass = (type, comment) => {
 }
 .hardDelayBorder {
     border-left: 2px solid #f60700;
+    animation: hardDelay 3s infinite ease-in-out;
 }
+@keyframes hardDelay {
+    0% {
+        border-left: 2px solid #f60700;
+    }
+    50% {
+        border-left: 2px solid #f6080000;
+    }
+    100% {
+        border-left: 2px solid #ff0000;
+    }
+}
+
 .delayBorder {
     border-left: 2px solid #fc5d00;
+    animation: delay 3s infinite ease-in-out;
+}
+@keyframes delay {
+    0% {
+        border-left: 2px solid #fc5d00;
+    }
+    50% {
+        border-left: 2px solid #fc5d0000;
+    }
+    100% {
+        border-left: 2px solid #fc5d00;
+    }
 }
 .goneBorder {
     border-left: 2px solid #3a3a3a;
+    animation: gone 3s infinite ease-in-out;
+}
+@keyframes gone {
+    0% {
+        border-left: 2px solid #3a3a3a;
+    }
+    50% {
+        border-left: 2px solid #3a3a3a00;
+    }
+    100% {
+        border-left: 2px solid #3a3a3a;
+    }
 }
 .onTimeBorder {
     border-left: 2px solid #0078f3;
+    animation: onTime 3s infinite ease-in-out;
+}
+@keyframes onTime {
+    0% {
+        border-left: 2px solid #0078f3;
+    }
+    50% {
+        border-left: 2px solid #0078f300;
+    }
+    100% {
+        border-left: 2px solid #0078f3;
+    }
 }
 .hardDelay {
     color: #f60700;
@@ -279,6 +333,9 @@ const giveClass = (type, comment) => {
     width: 60%;
     text-align: left;
     padding-left: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .trainHour {
     width: 5%;

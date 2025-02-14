@@ -100,21 +100,31 @@ const giveEnginImg = (engin) => {
     }
 }
 const giveBackground = (available) => {
-    if (available < 2){
+    const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
+    const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
+
+    if (available == 0){
         return '#fff4f4B3';
-    } else if (available < 3){
+    } else if (vsav01 && vsav02) {
         return '#fff4f3B3';
-    } else {
+    } else if (vsav01 || vsav02) {
         return '#f4f6ffB3';
+    } else {
+        return '#dffee6B3';
     }
 }
 const giveForeground = (available) => {
-    if (available < 2){
+    const vsav01 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 01' && engin.statut === 'DM'));
+    const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
+
+    if (available == 0){
         return '#f60700';
-    } else if (available < 3){
-        return '#d64d00';
-    } else {
+    } else if (vsav01 && vsav02) {
+        return '#fc5d00';
+    } else if (vsav01 || vsav02) {
         return '#0078f3';
+    } else {
+        return '#1f8d49';
     }
 }
 const colorConvert = (color) => {

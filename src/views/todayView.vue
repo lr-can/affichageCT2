@@ -16,7 +16,7 @@
                 </div>
                 <div class="currentTeam" v-if="currentTeam">
                     <div class="title" :style="{color: teamColors[currentTeam]}">
-                        <span v-show="display1">En cours</span><span v-show="!display1">{{ giveInfoGarde() }}</span>
+                        <span v-show="display1">En cours</span><span :style="{fontWeight: 'normal'}" v-show="!display1">{{ giveInfoGarde() }}</span>
                     </div>
                     <div class="teamTitle" :style="{backgroundColor: teamColors[currentTeam]}">
                         {{ currentTeam }}
@@ -27,7 +27,7 @@
                 </div>
                 <div class="nextTeam" v-if="nextTeam">
                     <div class="title" :style="{color: teamColors[nextTeam]}">
-                        <span v-show="display1">Prochaine</span><span v-show="!display1">{{ giveInfoNextGarde() }}</span>
+                        <span v-show="display1">Prochaine</span><span :style="{fontWeight: 'normal'}" v-show="!display1">{{ giveInfoNextGarde() }}</span>
                     </div>
                     <div class="teamTitle" :style="{backgroundColor: teamColors[nextTeam]}">
                         {{ nextTeam }}
@@ -145,15 +145,17 @@ const giveDurationBirthday = (date, type='') => {
             return "🎂 Aujourd'hui !";
         }
         return "Aujourd'hui !";
-    } else if (days === 1 || days < 1 || days ===0) {
+    } else if (days < 1 || days === 0) {
         return "Demain";
+    } else if (days === 1 || days < 2) {
+        return "Après-demain";
     } else if (days >= 7){
         if (days <= 14) {
             return `La semaine prochaine`;
         }
         return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""} environ`;
     }
-    return `Dans ${days} jours`;
+    return `Dans ${days + 1} jours`;
 }
 
 const giveInfoGarde = () => {
