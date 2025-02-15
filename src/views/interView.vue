@@ -154,12 +154,18 @@ const props = defineProps({
     data: Object,
 });
 const getStatus = async () => {
-    vehicules.value = [];
-    if (document.getElementById('vehiculeList')){
-        document.getElementById('vehiculeList').innerHTML = '';
-    }
     const newVehicules = await smartemis.filterEnginsInter();
-    vehicules.value = newVehicules;
+    for (let vehicule of newVehicules){
+        let found_vehicule = vehicules.value.find(v => v.id === vehicule.id);
+        if (found_vehicule){
+            found_vehicule.statutLib = vehicule.statutLib;
+            found_vehicule.backgroundColor = vehicule.backgroundColor;
+            found_vehicule.libColor = vehicule.libColor;
+        } else {
+            vehicules.value.push(vehicule);
+        } 
+    }
+    vehicules.value = vehicules.value.filter(v => newVehicules.some(nv => nv.id === v.id));
     let delta = new Date() - smartemis.lastUpdateEngins;
     let deltaSec = Math.floor(delta / 10000) * 10;
     let deltaMin = Math.floor(deltaSec / 60);
@@ -168,12 +174,17 @@ const getStatus = async () => {
 };
 
 const getAgents = async () => {
-    agentList.value = [];
-    if (document.getElementById('agentList')){
-        document.getElementById('agentList').innerHTML = '';
-    }
     await smartemis.getAgentsInter();
-    agentList.value = smartemis.agentsInterList;
+    const newAgents = smartemis.agentsInterList;
+    for (let agent of newAgents){
+        let found_agent = agentList.value.find(a => a.matricule === agent.matricule);
+        if (found_agent){
+            found_agent.statut = agent.statut;
+        } else {
+            agentList.value.push(agent);
+        }
+    }
+    agentList.value = agentList.value.filter(a => newAgents.some(na => na.matricule === a.matricule));
 };
 
 const giveClass = ref('newInter');
@@ -197,10 +208,10 @@ setTimeout(() => {
     setInterval(async () => {
         await getStatus();
     }, 15000);
+    setInterval(async ()=> {
+        await getAgents();
+    }, 30000);
 }, 15000);
-setTimeout(() => {
-    getAgents();
-}, 120000)
 </script>
 <style scoped>
 div {

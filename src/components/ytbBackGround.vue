@@ -22,12 +22,12 @@ export default {
     <iframe
       id="ytplayer"
       type="text/html"
-      width="100%"
-      height="100%"
-      :src="`https://www.youtube.com/embed/${$props.VidId}?autoplay=1&mute=1&loop=1&playlist=${$props.VidId}&controls=0&showinfo=0&modestbranding=1&rel=0`"
+      width="640"
+      height="360"
+      :src="`https://www.youtube.com/embed/${$props.VidId}?autoplay=1&mute=1&loop=1&playlist=${$props.VidId}&controls=0&showinfo=0&modestbranding=1&rel=0&vq=480`"
       frameborder="0"
       allow="autoplay; encrypted-media"
-      allowfullscreen
+      allowfullscreen="0"
     ></iframe>
   </div>
 </template>
@@ -45,10 +45,11 @@ export default {
 
 iframe {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  width: 640px;
+  height: 360px;
+  transform: translate(-50%, -50%) scale(1);
   pointer-events: none; /* Désactive les interactions avec la vidéo */
 }
 </style>

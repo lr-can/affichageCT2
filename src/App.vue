@@ -28,7 +28,7 @@
       <div v-show="index == 0 || initialize" key="today">
         <todayView />
       </div>
-      <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather"> 
+      <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather" :style="{width: '720px', height: '480px'}"> 
           <ytbBackGround  VidId="GZJiui6Lj78" />
       </div>
       <div v-show="index == 1 || initialize" key="weather"> 
@@ -40,7 +40,7 @@
       <div v-show="index == 3 || initialize" key="lastInter">
         <lastInter />
       </div>
-      <div class="backgroundWeather" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 
+      <div class="backgroundTraffic" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 
           <ytbBackGround  VidId="z545k7Tcb5o" />
       </div>
       <div v-show="index == 4 || initialize" key="traffic">
@@ -141,7 +141,7 @@ const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
     index.value = (index.value + 1) % views.value.length;
-    //index.value = 0;
+    //index.value = 1;
   }
 }
 main();
@@ -164,14 +164,23 @@ const backgroundIf = (viewName) => {
   z-index: 100;
   background-color: transparent;
 }
-.backgroundWeather {
+.backgroundTraffic {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2.5);
+    width: 100vw;
+    height: 100vh;
     background-color: black;
     z-index: -1;
+}
+.backgroundWeather {
+  position: absolute;
+  width: 100dvw;
+  height: 100dvh;
+  background-color: black;
+  z-index: -1;
+  transform: translate(-82%, -58%) scale(2.5);
 }
 .blurAndShadow {
   position: absolute;
