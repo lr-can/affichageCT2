@@ -20,7 +20,7 @@
                             En cours
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: 'transparent', color: teamColors[currentTeam.equipe], border: '2px solid ' + teamColors[currentTeam.equipe], width:'60%', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1)'}">
+                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: '#ffffff59', color: teamColors[currentTeam.equipe], border: '2px solid ' + teamColors[currentTeam.equipe], width:'60%', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1)'}">
                                 <span :style="{color: teamColors[currentTeam.equipe]}">{{ currentTeam.equipe }}</span>
                                 <span :style="{color: teamColors[currentTeam.equipe]}"><em>{{ giveInfoGarde() }}</em></span>
                             </div>
@@ -34,7 +34,7 @@
                             Prochaine
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: 'transparent', color: teamColors[nextTeam.equipe], border: '2px solid ' + teamColors[nextTeam.equipe], width:'20%'}">
+                            <div class="teamTitle" :style="{backgroundColor: '#ffffff59', color: teamColors[nextTeam.equipe], border: '2px solid ' + teamColors[nextTeam.equipe], width:'20%'}">
                                 {{ nextTeam.equipe }}
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                             Après
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: 'transparent', color: teamColors[teamAfter.equipe], border: '2px solid ' + teamColors[teamAfter.equipe], width:'20%'}">
+                            <div class="teamTitle" :style="{backgroundColor: '#ffffff59', color: teamColors[teamAfter.equipe], border: '2px solid ' + teamColors[teamAfter.equipe], width:'20%'}">
                                 {{ teamAfter.equipe }}
                             </div>
                         </div>
