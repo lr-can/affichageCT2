@@ -2,7 +2,7 @@
     <div class="popup" :class="giveClass(showInfo)">
       <div class="popup-content">
         <div>
-          <img :src="computeUrl(img_url)" alt="popup" style="width: 70px; height: auto;">
+          <img :src="img_url" alt="popup" style="width: 70px; height: auto;">
         </div>
         <div>{{ msg_part1 }}</div>
         <div v-if="msg_part2">{{ msg_part2 }}</div>
@@ -40,15 +40,6 @@
   }, 5000);
 
   
-  const computeUrl = (url) => {
-      try {
-        return new URL(url, import.meta.url).href;
-      } catch (error) {
-        console.error("Error computing URL:", error);
-        return url; // Fallback to the original URL if there's an error
-      }
-    };
-
   const giveClass = (show) => {
     return show ? 'show' : 'hide';
   };
