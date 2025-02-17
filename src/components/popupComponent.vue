@@ -40,7 +40,14 @@
   }, 5000);
 
   
-  const computeUrl = (url) => new URL(url, import.meta.url).href;
+  const computeUrl = (url) => {
+      try {
+        return new URL(url, import.meta.url).href;
+      } catch (error) {
+        console.error("Error computing URL:", error);
+        return url; // Fallback to the original URL if there's an error
+      }
+    };
 
   const giveClass = (show) => {
     return show ? 'show' : 'hide';
