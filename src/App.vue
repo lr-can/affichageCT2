@@ -79,6 +79,7 @@ import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
 
 const weatherStore = useWeather();
+const githubPrefix = ref("https://raw.githubusercontent.com/lr-can/affichageCT2/refs/heads/master/src/")
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
@@ -205,31 +206,21 @@ const filterAndPushPopup = () => {
     let findAlerte = popupList.value.find(popup => popup.msg_part1 === alertData.value.alerteType);
     if (!findAlerte) {
       popupList.value.push({
-        img_url: './assets/meteo.png',
+        img_url: alertData.value.icon.includes(", ") ? githubPrefix.value + 'assets/' + alertData.value.icon.split(' ,')[0] + '.png' : githubPrefix.value + 'assets/' + alertData.value.icon + '.png',
         msg_part1: alertData.value.alerteType,
         msg_part2: '',
-        msg_part3: alertData.value.alerteCouleur,
+        msg_part3: alertData.value.icon,
         color_part3: 'white',
         backgroundColor_part3: colorMapWeather[alertData.value.alerteSeverite],
         type: 'weather'
       });
-    }
-     popupList.value.push({
-       img_url: './assets/meteo.png',
-       msg_part1: alertData.alerteCouleur,
-       msg_part2: '',
-       msg_part3: alertData.icon,
-       color_part3: 'white',
-       backgroundColor_part3: colorMapWeather[alertData.alerteSeverite],
-      type: 'weather'
-     });
-   };
+    };
   if (filteredVehicules.value && filteredVehicules.value.length > 0){
     for (const vehicule of filteredVehicules.value){
       let findVehicule = popupList.value.find(popup => popup.msg_part1 === vehicule.lib);
       if (findVehicule) continue;
       popupList.value.push({
-        img_url: `../assets/vehicules/statuts/${vehicule.statut}.png`,
+        img_url: githubPrefix.value + `assets/vehicules/statuts/${vehicule.statut}.png`,
         msg_part1: vehicule.lib,
         msg_part2: '',
         msg_part3: vehicule.statutLib,
@@ -285,22 +276,22 @@ const popupIsClosed = async () => {
 const giveEnginImg = (engin) => {
     if (engin.statut == 'Dl'){
         if (engin.lib.startsWith('L')){
-            return `../assets/vehicules/engins/LOTS.png`
+            return githubPrefix.value + `assets/vehicules/engins/LOTS.png`
         } else if (engin.lib.includes('MPRGP')){
-            return`../assets/vehicules/engins/MPRGP.png`
+            return githubPrefix.value + `assets/vehicules/engins/MPRGP.png`
         } else {
-            return `../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`
+            return githubPrefix.value + `assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`
         }
     } else if (engin.statut == "DM"){
         if (engin.lib.startsWith('L')){
-            return `../assets/vehicules/engins/LOTS.png`
+            return githubPrefix.value + `assets/vehicules/engins/LOTS.png`
         } else if (engin.lib.includes('MPRGP')){
-            return `../assets/vehicules/engins/MPRGP.png`
+            return githubPrefix.value + `assets/vehicules/engins/MPRGP.png`
         } else {
-            return `../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`
+            return githubPrefix.value + `assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`
         }
     } else {
-        return `../assets/vehicules/statuts/${engin.statut}.png`
+        return githubPrefix.value + `assets/vehicules/statuts/${engin.statut}.png`
     }
 }
 
