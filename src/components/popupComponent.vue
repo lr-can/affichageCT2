@@ -51,8 +51,8 @@
     position: fixed;
     top: 1rem;
     left: 45%;
-    background-color: black;
-    backdrop-filter: blur(10px) brightness(0.1);
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px) brightness(1);
     border-radius: 3rem;
     min-width: 1rem;
     box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.1);
@@ -109,13 +109,13 @@
         width: 3rem;
     }
     100% {
-        width: 30vw;
+        width: 32vw;
     }
  }
 @keyframes disappear {
     0% {
         transform: translateY(0);
-        width:  30vw;
+        width:  32vw;
     }
 
     70% {

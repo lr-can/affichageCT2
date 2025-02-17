@@ -270,7 +270,7 @@ setTimeout(() => {setInterval(async () => {
     console.log('New vehicules status detected', newStatusPopup);
   }
   currentVehicules.value = newStatus;
-}, 30000);}, 30000);
+}, 15000);}, 30000);
 
 const popupIsClosed = async () => {
   showPopup.value = false;
