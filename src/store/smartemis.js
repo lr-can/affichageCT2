@@ -210,6 +210,10 @@ export const useSmartemis = defineStore('smartemis', () => {
             await getEnginsWithStatuts();
             return personnelAvailable.value;
         }
+        const getStatus = async () => {
+            await getEnginsWithStatuts();
+            return statutsEngins.value;
+        }
 
     return {
         statutsEngins,
@@ -226,6 +230,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getLastUpdateEngins,
         getAgentsAvailable,
         getInterNoFilter,
+        getStatus,
     };
 });
 

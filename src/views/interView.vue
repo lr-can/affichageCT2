@@ -84,7 +84,6 @@ onMounted(() => {
     startEnd.value = deltaSec;
     setInterval(() => {
     if (dateTimeInter.value) {
-        console.log(dateTimeInter.value, new Date());
         let elapsed = new Date().getTime() - new Date(dateTimeInter.value).getTime();
         let initialDuration = 10 * 60 * 1000; // 10 minutes in milliseconds
         let deltaPerc = (elapsed / initialDuration) * 100;

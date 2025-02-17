@@ -2,6 +2,18 @@
   <div class="clock-container">
     <clockComponent />
   </div>
+  <div class="popup" v-if="showPopup && !interventionCheck">
+    <popupComponent
+      :img_url="popupInfo.img_url"
+      :msg_part1="popupInfo.msg_part1"
+      :msg_part2="popupInfo.msg_part2"
+      :msg_part3="popupInfo.msg_part3"
+      :color_part3="popupInfo.color_part3"
+      :backgroundColor_part3="popupInfo.backgroundColor_part3"
+      :persistency="popupPersistency"
+      @popupClosed="popupIsClosed()"
+    />
+  </div>
   <div v-if="initialize" class="appear">
     <div class="loading">
       <div>
@@ -54,6 +66,7 @@
 import clockComponent from './components/clockComponent.vue';
 import ytbBackGround from './components/ytbBackGround.vue';
 import regularBackground from './components/regularBackground.vue';
+import popupComponent from './components/popupComponent.vue';
 import todayView from './views/todayView.vue';
 import trafficView from './views/trafficView.vue';
 import interView from './views/interView.vue';
@@ -61,19 +74,40 @@ import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import vehiculeViewNight from './views/vehiculeViewNight.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
+import { useWeather } from './store/weather';
+
+const weatherStore = useWeather();
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
 const initialize = ref(true);
 
+const colorMapWeather = {
+  "Advisory": '#f1c40f',
+  "Watch": '#e67e22',
+  "Warning": '#e74c3c',
+}
+const showPopup = ref(false);
+const currentVehicules = ref([]);
+const filteredVehicules = computed(() => {
+  if (!currentVehicules.value) return [];
+  const interStatutsCodes = ["DM", "Dl", "IN"];
+  return currentVehicules.value.filter(vehicule => !interStatutsCodes.includes(vehicule.statut));
+});
+const alertData = ref(null);
+const popupInfo = ref({});
+const popupList = ref([]);
+
 watchEffect(() => {
   if (!initialize.value) return;
   const checkLoaded = setInterval(() => {
     if (document.readyState === 'complete') {
-      initialize.value = false;
       clearInterval(checkLoaded);
+      setTimeout(() => {
+      initialize.value = false;
+    }, 2000);
     }
   }, 200);
 });
@@ -90,7 +124,7 @@ const smartemis = useSmartemis();
 
 let regularTimeout = null;
 
-const initializeApp = () => {
+const initializeApp = async () => {
   const now = new Date();
   const minutes = now.getMinutes();
   const reloadTime = minutes > 40 ? 25 * 60 * 1000 : 20 * 60 * 1000;
@@ -98,6 +132,15 @@ const initializeApp = () => {
     window.location.reload();
   }, reloadTime);
   console.log('App initialized, next update in ' + reloadTime / 1000 + ' seconds');
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  currentVehicules.value = await smartemis.getStatus();
+  alertData.value = await weatherStore.alertWeather();
+  filterAndPushPopup();
+  if (popupList.value.length > 0){
+    popupInfo.value = popupList.value[0];
+    showPopup.value = true;
+  }
+  
 }
 initializeApp();
 
@@ -152,6 +195,115 @@ const backgroundIf = (viewName) => {
   const nextIndex = (index.value + 1) % views.value.length;
   return index.value === currentIndex || previousIndex === currentIndex || nextIndex === currentIndex;
 }
+
+const popupPersistency = computed(() => {
+  return popupList.value && popupList.value.length == 1 && popupList.value[0].type != 'newVehicule';
+});
+
+const filterAndPushPopup = () => {
+  if (alertData.value.alerteType){
+    let findAlerte = popupList.value.find(popup => popup.msg_part1 === alertData.value.alerteType);
+    if (!findAlerte) {
+      popupList.value.push({
+        img_url: './assets/meteo.png',
+        msg_part1: alertData.value.alerteType,
+        msg_part2: '',
+        msg_part3: alertData.value.alerteCouleur,
+        color_part3: 'white',
+        backgroundColor_part3: colorMapWeather[alertData.value.alerteSeverite],
+        type: 'weather'
+      });
+    }
+     popupList.value.push({
+       img_url: './assets/meteo.png',
+       msg_part1: alertData.alerteCouleur,
+       msg_part2: '',
+       msg_part3: alertData.icon,
+       color_part3: 'white',
+       backgroundColor_part3: colorMapWeather[alertData.alerteSeverite],
+      type: 'weather'
+     });
+   };
+  if (filteredVehicules.value && filteredVehicules.value.length > 0){
+    for (const vehicule of filteredVehicules.value){
+      let findVehicule = popupList.value.find(popup => popup.msg_part1 === vehicule.lib);
+      if (findVehicule) continue;
+      popupList.value.push({
+        img_url: `../assets/vehicules/statuts/${vehicule.statut}.png`,
+        msg_part1: vehicule.lib,
+        msg_part2: '',
+        msg_part3: vehicule.statutLib,
+        color_part3: vehicule.libColor,
+        backgroundColor_part3: vehicule.backgroundColor,
+        type: 'vehicule'
+      });
+    }
+  }  
+}
+
+setTimeout(() => {setInterval(async () => {
+  let newStatus = await smartemis.getStatus();
+  let newStatusPopup = [];
+  for (const vehicule of currentVehicules.value){
+    let previousStatus = vehicule.statut;
+    let newVehicule = await newStatus.find(engin => vehicule.lib === engin.lib);
+    let newVehiculeStatus = newVehicule.statut;
+    if (previousStatus !== newVehiculeStatus){
+      console.log('New status detected for', vehicule.lib);
+      newStatusPopup.push({
+        img_url: giveEnginImg(newVehicule),
+        msg_part1: newVehicule.lib,
+        msg_part2: 'devient',
+        msg_part3: newVehicule.statutLib,
+        color_part3: newVehicule.libColor,
+        backgroundColor_part3: newVehicule.backgroundColor,
+        type: 'newVehicule'
+      });
+    }
+  }
+  if (newStatusPopup.length > 0){
+    showPopup.value = false;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    popupList.value =  newStatusPopup;
+    showPopup.value = true;
+    popupInfo.value = popupList.value[0];
+    console.log('New vehicules status detected', newStatusPopup);
+  }
+  currentVehicules.value = newStatus;
+}, 30000);}, 30000);
+
+const popupIsClosed = async () => {
+  showPopup.value = false;
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  popupList.value.shift();
+  filterAndPushPopup();
+  if (popupList.value.length > 0){
+    showPopup.value = true;
+    popupInfo.value = popupList.value[0];
+  }
+}
+const giveEnginImg = (engin) => {
+    if (engin.statut == 'Dl'){
+        if (engin.lib.startsWith('L')){
+            return `../assets/vehicules/engins/LOTS.png`
+        } else if (engin.lib.includes('MPRGP')){
+            return`../assets/vehicules/engins/MPRGP.png`
+        } else {
+            return `../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`
+        }
+    } else if (engin.statut == "DM"){
+        if (engin.lib.startsWith('L')){
+            return `../assets/vehicules/engins/LOTS.png`
+        } else if (engin.lib.includes('MPRGP')){
+            return `../assets/vehicules/engins/MPRGP.png`
+        } else {
+            return `../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`
+        }
+    } else {
+        return `../assets/vehicules/statuts/${engin.statut}.png`
+    }
+}
+
 </script>
 
 <style scoped>

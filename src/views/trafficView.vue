@@ -1,6 +1,6 @@
 <template>
     <div id="Title">
-        <h1>Trafic & Transports en commun</h1>
+        <h1>Trafic & Transports</h1>
     </div>
     <div class="interContainer" v-show="asAwait">
         <div>
