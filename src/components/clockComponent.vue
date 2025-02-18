@@ -77,6 +77,7 @@ import hourly_pips from '../assets/sounds/hourly_pips.mp3';
 import hourly_pips_sat from '../assets/sounds/hourly_pips_sat.mp3';
 
 onMounted(async ()=>{
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const planningTeams = await planning.getCurrentTeamAndNextTeam();
     const data = planningTeams.planningData;
     currentTeam.value = data.currentTeam;
