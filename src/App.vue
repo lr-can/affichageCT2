@@ -78,6 +78,10 @@ import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
 
+import IT from './assets/sounds/IT.wav';
+import Dl from './assets/sounds/Dl.wav';
+import DM from './assets/sounds/DM.wav';
+
 const weatherStore = useWeather();
 
 const interventionCheck = ref(false);
@@ -261,6 +265,7 @@ setTimeout(() => {setInterval(async () => {
       });
     }
   }
+  let audioNotif = new Audio();
   if (newStatusPopup.length > 0){
     showPopup.value = false;
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -268,6 +273,15 @@ setTimeout(() => {setInterval(async () => {
     showPopup.value = true;
     popupInfo.value = popupList.value[0];
     console.log('New vehicules status detected', newStatusPopup);
+    if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé')){
+      audioNotif = new Audio(Dl);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible')){
+      audioNotif = new Audio(DM);
+    } else {
+      audioNotif = new Audio(IT);
+    }
+    audioNotif.volume = 0.5;
+    audioNotif.play();
   }
   currentVehicules.value = newStatus;
 }, 15000);}, 30000);

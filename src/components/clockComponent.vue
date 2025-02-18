@@ -52,15 +52,97 @@
 
 </style>
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useWeather } from '../store/weather';
+
+const planning = useWeather();
 const nowHour = ref(new Date().getHours());
 const nowMinute = ref(new Date().getMinutes());
 const nowSeconds = ref(new Date().getSeconds());
+const today = new Date().getDay();
+const currentTeam = ref(null);
+const reunion = ref(null);
+const reunionToday = ref(null);
 
+import dpsem from '../assets/sounds/DPSEM.mp3';
+import dpwe from '../assets/sounds/DPWE.mp3';
+import equipeA from '../assets/sounds/equipeA.mp3';
+import equipeB from '../assets/sounds/equipeB.mp3';
+import equipeC from '../assets/sounds/equipeC.mp3';
+import equipeD from '../assets/sounds/equipeD.mp3';
+import equipeE from '../assets/sounds/equipeE.mp3';
+import equipeF from '../assets/sounds/equipeF.mp3';
+
+import hourly_pips from '../assets/sounds/hourly_pips.mp3';
+import hourly_pips_sat from '../assets/sounds/hourly_pips_sat.mp3';
+
+onMounted(async ()=>{
+    const planningTeams = await planning.getCurrentTeamAndNextTeam();
+    const data = planningTeams.planningData;
+    currentTeam.value = data.currentTeam;
+    reunion.value = new Date(data.nextReunion);
+    const now = new Date();
+    const diff = reunion.value - now;
+    const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+    if (days === 0 || days < 0) {
+        reunionToday.value = true;
+        return;
+    }
+    reunionToday.value = false;
+});
+
+const teamsAudio = {
+    A: equipeA,
+    B: equipeB,
+    C: equipeC,
+    D: equipeD,
+    E: equipeE,
+    F: equipeF,
+}
+
+let audio1 = new Audio();
+let audio2 = new Audio();
+let audio3 = new Audio();
 setInterval(() => {
     nowHour.value = new Date().getHours().toString().padStart(2, '0');
     nowMinute.value = new Date().getMinutes().toString().padStart(2, '0');
     nowSeconds.value = new Date().getSeconds().toString().padStart(2, '0');
+    if (nowMinute.value === '59' && nowSeconds.value === '56'){
+        if (nowHour.value === '19'){
+        if (today === 5 || today === 6){
+            audio1.src = hourly_pips_sat;
+            audio2.src = teamsAudio[currentTeam.value];
+            audio3.src = dpwe;
+            audio1.play();
+            audio1.onended = () => {
+                audio2.play();
+                audio2.onended = () => {
+                    audio3.play();
+                }
+            }
+            return;
+        } else {
+            audio1.src = hourly_pips;
+            audio2.src = teamsAudio[currentTeam.value];
+            audio3.src = dpsem;
+            audio1.play();
+            audio1.onended = () => {
+                audio2.play();
+                audio2.onended = () => {
+                    audio3.play();
+                }
+            }
+            return;
+        }
+    } else if ((today === 6 && nowHour === '8') || (nowHour === '18' && reunionToday.value)){
+        audio1.src = hourly_pips_sat;
+        audio1.play();
+    } else {
+        audio1.src = hourly_pips;
+        audio1.volume = 0.5;
+        audio1.play();
+    }
+    }
 }, 1000);
 
 </script>
