@@ -635,6 +635,23 @@
 			]
 		},
 		{
+			"code": "XX",
+			"name": "Pb connect. smartemis <-> affichage",
+			"backgroundColor": "FFFFFF",
+			"backgroundColorName": "Blanc",
+			"foregroundColor": "0000FF",
+			"foregroundColorName": "Bleu1",
+			"grpEtatEng": [
+				"ITV",
+				"TOUS",
+				"SIT",
+				"TRF_BPV",
+				"HIST_ETAT",
+				"VICT",
+				"DISPO_OP"
+			]
+		},
+		{
 			"code": "TH",
 			"name": "Transport Hôpital",
 			"backgroundColor": "FFFFFF",
