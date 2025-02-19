@@ -263,7 +263,7 @@ const giveBlinkClass = (prochainDepart) => {
 }
 .hardDelayBorder {
     border-left: 2px solid #f60700;
-    animation: hardDelay 3s infinite ease-in-out;
+    animation: hardDelay 2s infinite ease-in-out;
 }
 @keyframes hardDelay {
     0% {
@@ -279,7 +279,7 @@ const giveBlinkClass = (prochainDepart) => {
 
 .delayBorder {
     border-left: 2px solid #fc5d00;
-    animation: delay 3s infinite ease-in-out;
+    animation: delay 2s infinite ease-in-out;
 }
 @keyframes delay {
     0% {
@@ -294,7 +294,6 @@ const giveBlinkClass = (prochainDepart) => {
 }
 .goneBorder {
     border-left: 2px solid #3a3a3a;
-    animation: gone 3s infinite ease-in-out;
 }
 @keyframes gone {
     0% {
@@ -309,7 +308,6 @@ const giveBlinkClass = (prochainDepart) => {
 }
 .onTimeBorder {
     border-left: 2px solid #0078f3;
-    animation: onTime 3s infinite ease-in-out;
 }
 @keyframes onTime {
     0% {
