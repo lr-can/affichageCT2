@@ -72,7 +72,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         return statutsEngins.value.filter(engin => interStatutsCodes.includes(engin.statut));
     }
 
-    async function getFireStationsInRhone() {
+    async function getFireStationsInRhone(lon, lat) {
         const url = "https://data.grandlyon.com/geoserver/service-departemental-metropolitain-d-incendie-et-de-secours-sdmis/ows?SERVICE=WFS&VERSION=2.0.0&request=GetFeature&typename=service-departemental-metropolitain-d-incendie-et-de-secours-sdmis:sdmis.caserne&outputFormat=application/json&SRSNAME=EPSG:4171&sortBy=gid";
     
         try {
@@ -95,13 +95,59 @@ export const useSmartemis = defineStore('smartemis', () => {
                     lon: coordinates[0]
                 };
             });
-
-            return fireStations.filter(fireStation => fireStation.name != "Collonges-au-Mont-d'Or");
+    
+            // Fonction pour calculer la distance entre deux points géographiques
+            function haversineDistance(coords1, coords2) {
+                const [lon1, lat1] = coords1;
+                const [lon2, lat2] = coords2;
+                const R = 6371; // Rayon de la Terre en kilomètres
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+    
+            // Filtrer les casernes sans "Collonges-au-Mont-d'Or"
+            let withoutCollonges = fireStations.filter(fireStation => fireStation.name !== "Collonges-au-Mont-d'Or");
+    
+            // Trouver la caserne "Collonges-au-Mont-d'Or"
+            const collongesStation = fireStations.find(fireStation => fireStation.name === "Collonges-au-Mont-d'Or");
+    
+            // Filtrer les 10 casernes les plus proches de "Collonges-au-Mont-d'Or"
+            const closestToCollonges = withoutCollonges
+                .map(station => ({
+                    ...station,
+                    distance: haversineDistance([collongesStation.lon, collongesStation.lat], [station.lon, station.lat])
+                }))
+                .sort((a, b) => a.distance - b.distance)
+                .slice(0, 10);
+    
+            // Filtrer les 10 casernes les plus proches des coordonnées fournies
+            const closestToCoordinates = withoutCollonges
+                .map(station => ({
+                    ...station,
+                    distance: haversineDistance([lon, lat], [station.lon, station.lat])
+                }))
+                .sort((a, b) => a.distance - b.distance)
+                .slice(0, 10);
+    
+            // Fusionner les deux listes et éliminer les doublons
+            const mergedList = [...new Set([...closestToCollonges, ...closestToCoordinates])]
+                .sort((a, b) => a.distance - b.distance)
+                .slice(0, 10);
+    
+            // Retourner la liste fusionnée
+            return mergedList;
+    
         } catch (error) {
             console.error("Erreur lors de la récupération des données:", error);
             return [];
         }
     }
+    
 
     const agentsInterList = ref([]);
     const gradeOrder = {

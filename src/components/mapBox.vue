@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { MapboxMap } from '@studiometa/vue-mapbox-gl';
 import { MapboxMarker } from '@studiometa/vue-mapbox-gl';
 import { useSmartemis } from '../store/smartemis';
@@ -11,7 +11,6 @@ async function getFireUnits(){
   fireUnits.value = await smartemis.getFireStationsInRhone();
   console.log(`found ${fireUnits.value.length} fire units`);
 }
-getFireUnits();
 
 const mapCenter = ref([4.8473705, 45.8172767]);
 const mapStyle = ref('mapbox://styles/mapbox/dark-v11');
@@ -25,6 +24,10 @@ const props = defineProps({
 });
 
 let mapInstance = ref(null);
+
+onMounted(() => {
+  getFireUnits();
+});
 
 
 // Fonction pour déclencher un flyTo
