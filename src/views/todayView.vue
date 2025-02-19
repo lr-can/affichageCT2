@@ -135,10 +135,12 @@ const giveDuration = (type) => {
     if (type === "nextReu") {
         const diff = nextReu.value - now;
         const days = Math.floor(diff / 1000 / 60 / 60 / 24);
-        if (days === 0 || days < 0) {
+        if ( days < 0) {
             return "Aujourd'hui";
-        } else if (days === 1 || days < 1) {
+        } else if (days === 0 || days < 1) {
             return "Demain";
+        } else if (days === 1 || days < 2) {
+            return "Après-demain";
         } else if (days >= 6){
             return `Vendredi prochain`;
         }
@@ -176,7 +178,7 @@ const giveDurationBirthday = (date, type='') => {
         return "Après-demain";
     } else if (days >= 7){
         if (days <= 14) {
-            return `La semaine prochaine`;
+            return `Dans les deux prochaines semaines`;
         }
         return `Dans ${Math.floor(days / 7)} semaine${Math.floor(days / 7) > 1 ? "s" : ""} environ`;
     }
