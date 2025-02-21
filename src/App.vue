@@ -209,7 +209,7 @@ const filterAndPushPopup = () => {
     let findAlerte = popupList.value.find(popup => popup.msg_part1 === alertData.value.alerteType);
     if (!findAlerte) {
       popupList.value.push({
-        img_url: './assets/meteo.png',
+        img_url: `../assets/weather/${alertData.value.icon.split(', ')[0]}.svg`,
         msg_part1: alertData.value.alerteType,
         msg_part2: '',
         msg_part3: alertData.value.alerteCouleur,
@@ -218,16 +218,7 @@ const filterAndPushPopup = () => {
         type: 'weather'
       });
     }
-     popupList.value.push({
-       img_url: './assets/meteo.png',
-       msg_part1: alertData.alerteCouleur,
-       msg_part2: '',
-       msg_part3: alertData.icon,
-       color_part3: 'white',
-       backgroundColor_part3: colorMapWeather[alertData.alerteSeverite],
-      type: 'weather'
-     });
-   };
+  }
   if (filteredVehicules.value && filteredVehicules.value.length > 0){
     for (const vehicule of filteredVehicules.value){
       let findVehicule = popupList.value.find(popup => popup.msg_part1 === vehicule.lib);

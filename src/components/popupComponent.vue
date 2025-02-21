@@ -2,7 +2,7 @@
     <div class="popup" :class="giveClass(showInfo)">
       <div class="popup-content">
         <div>
-          <img :src="img_url.replace('..', 'https://raw.githubusercontent.com/lr-can/affichageCT2/refs/heads/master/src/')" alt="popup" style="width: 70px; height: auto;">
+            <img :src="img_url.replace('..', 'https://raw.githubusercontent.com/lr-can/affichageCT2/refs/heads/master/src/')" alt="popup" style="width: 70px; height: auto;" :style="img_url.includes('weather') ? {filter: 'brightness(0) invert(1)', width: '50px'} : ''">
         </div>
         <div>{{ msg_part1 }}</div>
         <div v-if="msg_part2">{{ msg_part2 }}</div>
@@ -12,7 +12,7 @@
   </template>
   
   <script setup>
-  import { ref, defineEmits } from 'vue';
+  import { ref, defineEmits, onMounted } from 'vue';
   const props = defineProps({
     img_url: String,
     msg_part1: String,
@@ -22,10 +22,19 @@
     backgroundColor_part3: String,
     persistency: Boolean
   });
-  
+  const isNight = ref(false);
   const emit = defineEmits(['popupClosed']);
   const showInfo = ref(true);
 
+  const checkNight = () => {
+    const date = new Date();
+    const hour = date.getHours();
+    isNight.value = hour < 6 || hour > 21;
+  };
+
+  onMounted(() => {
+    checkNight();
+  });
   
   const checkInterval = setInterval(() => {
     if (!props.persistency) {
@@ -41,7 +50,11 @@
 
   
   const giveClass = (show) => {
-    return show ? 'show' : 'hide';
+    let suffix = '';
+    if (isNight.value){
+      suffix = ' night';      
+    }
+    return show ? 'show' + suffix : 'hide' + suffix;
   };
   
   </script>
@@ -63,7 +76,10 @@
     padding-right: 2rem;
     overflow: hidden;
   }
-  
+  .night {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
+  }
   .popup-content {
     display: flex;
     flex-direction: row;
