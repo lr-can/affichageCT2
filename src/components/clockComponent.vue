@@ -66,6 +66,7 @@ const reunionToday = ref(null);
 
 import dpsem from '../assets/sounds/DPSEM.mp3';
 import dpwe from '../assets/sounds/DPWE.mp3';
+import aec from '../assets/sounds/aec.mp3';
 import equipeA from '../assets/sounds/equipeA.mp3';
 import equipeB from '../assets/sounds/equipeB.mp3';
 import equipeC from '../assets/sounds/equipeC.mp3';
@@ -139,9 +140,16 @@ setInterval(() => {
             }
             return;
         }
-    } else if ((today === 6 && nowHour === '8') || (nowHour === '18' && reunionToday.value)){
+    } else if ((today === 6 && nowHour === '8') || (nowHour === '19' && reunionToday.value)){
         audio1.src = hourly_pips_sat;
         audio1.play();
+    } else if (today != 6 && today != 0 && nowHour === '5' && nowMinute === '59' && nowSeconds === '56'){
+        audio1.src = hourly_pips_sat;
+        audio2.src = aec;
+        audio1.play();
+        audio1.onended = () => {
+            audio2.play();
+        }
     } else {
         audio1.src = hourly_pips;
         audio1.volume = 0.5;
