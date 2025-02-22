@@ -261,6 +261,33 @@ export const useSmartemis = defineStore('smartemis', () => {
             return statutsEngins.value;
         }
 
+        const getTTS = async (message) => {
+            const options = {
+                method: 'POST',
+                headers: {
+                  accept: 'application/json',
+                  'content-type': 'application/json',
+                  authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDBmODkwZTAtZWUwMi00NjgxLTlmNmItMzM2NmZjOGFkNWJlIiwidHlwZSI6ImFwaV90b2tlbiJ9.UJhTZXEbGdRH3FMDzEIBXDKL5yEw3VC-t5lUynA5vCA'
+                },
+                body: JSON.stringify({
+                  response_as_dict: true,
+                  attributes_as_list: false,
+                  show_original_response: false,
+                  rate: 5,
+                  pitch: -10,
+                  volume: 20,
+                  sampling_rate: 0,
+                  providers: "amazon/fr-FR_Lea_Standard",
+                  language: 'fr',
+                  text: message,
+                  option: 'FEMALE'
+                })
+              };
+            const response = await fetch('https://api.edenai.run/v2/audio/text_to_speech', options);
+            const result = await response.json();
+            return new Audio(result['amazon/fr-FR_Lea_Standard'].audio_resource_url);
+        }
+
     return {
         statutsEngins,
         famillesEngins,
@@ -277,6 +304,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getAgentsAvailable,
         getInterNoFilter,
         getStatus,
+        getTTS,
     };
 });
 

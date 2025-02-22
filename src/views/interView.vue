@@ -60,6 +60,24 @@ import { ref, computed, onMounted } from 'vue';
 import { useSmartemis } from '../store/smartemis';
 import mapBox from '../components/mapBox.vue';
 const msgTitre = ref('Nouveau départ en intervention');
+import ronfleur from '../assets/sounds/ronfleur.mp3';
+const ronfleurAudio = new Audio(ronfleur);
+import INC from '../assets/sounds/INC.mp3';
+import PPBE from '../assets/sounds/PPBE.mp3';
+import SSUAP from '../assets/sounds/SSUAP.mp3';
+import DFE from '../assets/sounds/DFE.mp3';
+import DV from '../assets/sounds/DV.mp3';
+import ACC from '../assets/sounds/ACC.mp3';
+import DF20 from '../assets/sounds/DF20.mp3';
+const typeInterAudio = {
+    'INC': INC,
+    'PPBE': PPBE,
+    'SSUAP': SSUAP,
+    'DFE': DFE,
+    'DV': DV,
+    'ACC': ACC,
+    'DF20': DF20
+};
 const libelleInter = ref();
 const adresseInter = ref();
 const villeInter = ref();
@@ -78,6 +96,31 @@ onMounted(() => {
     numeroInter.value = props.data.numeroInter;
     enginsInter.value = props.data.enginsInter;
     dateTimeInter.value = props.data.dateTimeInter;
+    let now = new Date();
+    let nowHour = now.getHours();
+    ronfleurAudio.volume = 0.2;
+    if (nowHour >= 6 && nowHour < 20) {
+        ronfleurAudio.volume = 0.1;
+    }
+    ronfleurAudio.play();
+    ronfleurAudio.onended = () => {
+        let audio = new Audio();
+        if (libelleInter.value.includes("DF20")){
+            audio.src = typeInterAudio['DF20']
+        } else if (libelleInter.value.includes("DFE")){
+            audio.src = typeInterAudio['DFE'];
+        } else if (libelleInter.value.includes("DV")){
+            audio.src = typeInterAudio['DV'];
+        } else {
+            audio.src = typeInterAudio[typeInter.value];
+        }
+        if (nowHour >= 6 && nowHour < 20) {
+            audio.volume = 1;
+        } else {
+            audio.volume = 0.5;
+        }
+        audio.play();
+    };
     endingTime.value = new Date(dateTimeInter.value).getTime() + 10 * 60 * 1000;
     let delta = endingTime.value - new Date().getTime();
     let deltaSec = Math.floor(delta / 1000);
@@ -152,6 +195,35 @@ const typeInterClass = computed(() => {
 const props = defineProps({
     data: Object,
 });
+
+const vehiculePhonetiques = ref("");
+const interAudio = ref(null);
+import introNotif from '../assets/sounds/introNotif.mp3';
+
+const introNotifAudio = new Audio(introNotif);
+
+const audioNotifs = async () => {
+    const message = `${vehiculePhonetiques.value}. ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "")}, à ${villeInter.value}.`;
+    interAudio.value = await smartemis.getTTS(message);
+    setTimeout(() => {
+        introNotifAudio.play();
+        introNotifAudio.onended = () =>{
+        interAudio.value.play();
+        };
+    }, 15000);
+    setTimeout(()=>{
+        introNotifAudio.play();
+        introNotifAudio.onended = () =>{
+        interAudio.value.play();
+        };
+    }, 2 * 60000);
+    setTimeout(()=>{
+        introNotifAudio.play();
+        introNotifAudio.onended = () =>{
+        interAudio.value.play();
+        };
+    }, 4 * 60000);
+};
 const getStatus = async () => {
     const newVehicules = await smartemis.filterEnginsInter();
     for (let vehicule of newVehicules){
@@ -162,6 +234,7 @@ const getStatus = async () => {
             found_vehicule.libColor = vehicule.libColor;
         } else {
             vehicules.value.push(vehicule);
+            vehiculePhonetiques.value += " , " + vehicule.nomPhonetique;
         } 
     }
     vehicules.value = vehicules.value.filter(v => newVehicules.some(nv => nv.id === v.id));
@@ -211,6 +284,10 @@ setTimeout(() => {
         await getAgents();
     }, 30000);
 }, 15000);
+
+setTimeout(() => {
+    audioNotifs();
+}, 60000);
 </script>
 <style scoped>
 div {
