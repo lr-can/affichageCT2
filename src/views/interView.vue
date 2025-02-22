@@ -3,7 +3,7 @@
         <div class="header">{{ msgTitre.toUpperCase() }}</div>
         <div id="map"><mapBox :lon="props.data.lon" :lat="props.data.lat" /></div>
         <div v-if="giveClass == 'interConfig'" class="info">
-            <div class="infoHeader"><span :class="typeInterClass">{{ typeInter }}</span> <span id="interLibelle">{{ libelleInter.toUpperCase() }}</span></div>
+            <div class="infoHeader"><span :class="typeInterClass">{{ typeInter }}</span> <span id="interLibelle">{{ libelleInter.toUpperCase().replace(/\|/g, '-')  }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/number.svg" style="filter: invert(100%) brightness(1000%);height: 1.8rem; width: auto ;" /></span><span>N°{{ numeroInter }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/citySign.svg" style="filter: invert(100%) brightness(1000%);height: 2rem; width: auto ;" /></span><span>{{ villeInter.toUpperCase() }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/address.svg" style="filter: invert(100%) brightness(1000%);height: 2rem; width: auto ;" /></span><span>{{ adresseInter.toUpperCase() }}</span></div>

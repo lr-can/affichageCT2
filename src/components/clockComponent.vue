@@ -112,7 +112,11 @@ setInterval(() => {
         if (nowHour.value === '19'){
         if (today === 5 || today === 6){
             audio1.src = hourly_pips_sat;
-            audio2.src = teamsAudio[currentTeam.value];
+            if (teamsAudio[currentTeam.value.equipe]) {
+                audio2.src = teamsAudio[currentTeam.value.equipe];
+            } else {
+                console.error('Unsupported team audio source:', currentTeam.value.equipe);
+            }
             audio3.src = dpwe;
             audio1.play();
             audio1.onended = () => {
@@ -124,7 +128,7 @@ setInterval(() => {
             return;
         } else {
             audio1.src = hourly_pips;
-            audio2.src = teamsAudio[currentTeam.value];
+            audio2.src = teamsAudio[currentTeam.value.equipe];
             audio3.src = dpsem;
             audio1.play();
             audio1.onended = () => {

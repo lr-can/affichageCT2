@@ -14,7 +14,7 @@
                 <div class="interInfo">
                     <div class="numInter" :style="{color: '#f60700', marginTop: '1.5rem'}">Intervention n°{{ firstInter.numeroInter }}</div> 
                     <div class="interTitle" :style="{fontSize : '1.7em', fontWeight : 'bold', color: '#f60700'}">
-                        {{ firstInter.notificationTitre }}
+                        {{ firstInter.notificationTitre.replace(/\|/g, '-') }}
                     </div>
                     <div>
                         Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
@@ -33,19 +33,19 @@
                     <div :key="FirstInterDisplay.numeroInter" class="displayInfo" :class="isSlider(1)">
                         <div class="date">{{ calculateDelta(FirstInterDisplay.dateTime) }}</div>
                         <div>N°{{ FirstInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ FirstInterDisplay.notificationTitre }} à </div>
+                        <div>  {{ FirstInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
                         <div> {{ FirstInterDisplay.notificationVille }}</div>
                     </div>
                     <div :key="SecInterDisplay.numeroInter" class="displayInfo" :class="isSlider(2)">
                         <div class="date"> {{ calculateDelta(SecInterDisplay.dateTime) }}</div>
                         <div>N°{{ SecInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ SecInterDisplay.notificationTitre }} à </div>
+                        <div>  {{ SecInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
                         <div> {{ SecInterDisplay.notificationVille }}</div>
                     </div>
                     <div :key="ThirdInterDisplay.numeroInter" class="displayInfo" :class="isSlider(3)">
                         <div class="date"> {{ calculateDelta(ThirdInterDisplay.dateTime) }}</div>
                         <div>N°{{ ThirdInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ ThirdInterDisplay.notificationTitre }} à </div>
+                        <div>  {{ ThirdInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
                         <div> {{ ThirdInterDisplay.notificationVille }}</div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@ onMounted(async () => {
 });
 
 const giveLink = () => {
-    return `https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=350&height=800&center=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat}&zoom=14&marker=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat};type:circle;color:%23ff0000;size:large;icon:sos;icontype:material;iconsize:small;strokecolor:%23ff0000&scaleFactor=1&apiKey=75c6e5ac06e84d3a95473195e7af529d`;
+    return `https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=350&height=800&center=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat}&zoom=14&marker=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat};type:circle;color:%23ff0000;size:x-large;icon:sos;icontype:material;iconsize:small;strokecolor:%23ff0000&scaleFactor=1&apiKey=75c6e5ac06e84d3a95473195e7af529d`;
 };
 
 let currentIndex = ref(0);
