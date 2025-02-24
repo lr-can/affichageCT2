@@ -100,7 +100,7 @@ onMounted(() => {
     let nowHour = now.getHours();
     ronfleurAudio.volume = 0.2;
     if (nowHour >= 6 && nowHour < 20) {
-        ronfleurAudio.volume = 0.1;
+        ronfleurAudio.volume = 0.5;
     }
     ronfleurAudio.play();
     ronfleurAudio.onended = () => {
@@ -117,7 +117,7 @@ onMounted(() => {
         if (nowHour >= 6 && nowHour < 20) {
             audio.volume = 1;
         } else {
-            audio.volume = 0.5;
+            audio.volume = 0.6;
         }
         audio.play();
     };
