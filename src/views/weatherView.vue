@@ -108,10 +108,10 @@ const getImgUrl = (alert) => {
     return new URL(`../assets/weather/${alert}.svg`, import.meta.url).href;
 };
 const giveStyle = () => {
-    if (alertData){
-        if(alertData.alerteSeverite && alertData.alerteSeverite != 'None'){
+    if (alertData.value){
+        if(alertData.value.alerteSeverite && alertData.value.alerteSeverite != 'None'){
             return {width: '50px', height: 'auto' };
-        } else if(alertData.alerteMessage && alertData.alerteMessage.length > 150){
+        } else if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150){
             return {width: '250px', height: 'auto'};
         } 
         return {width: '400px', height: 'auto'};
