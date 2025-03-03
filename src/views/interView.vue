@@ -61,6 +61,7 @@ import { useSmartemis } from '../store/smartemis';
 import mapBox from '../components/mapBox.vue';
 const msgTitre = ref('Nouveau départ en intervention');
 import ronfleur from '../assets/sounds/ronfleur.mp3';
+import ronfleurNuit from '../assets/sounds/ronfleurNuit.mp3';
 const ronfleurAudio = new Audio(ronfleur);
 import INC from '../assets/sounds/INC.mp3';
 import PPBE from '../assets/sounds/PPBE.mp3';
@@ -69,6 +70,25 @@ import DFE from '../assets/sounds/DFE.mp3';
 import DV from '../assets/sounds/DV.mp3';
 import ACC from '../assets/sounds/ACC.mp3';
 import DF20 from '../assets/sounds/DF20.mp3';
+import VUrbG from '../assets/sounds/VUrbG.mp3';
+import VUrbx from '../assets/sounds/VUrbx.mp3';
+import INCnuit from '../assets/sounds/INCnuit.mp3';
+import PPBEnuit from '../assets/sounds/PPBEnuit.mp3';
+import SSUAPnuit from '../assets/sounds/SSUAPnuit.mp3';
+import ACCnuit from '../assets/sounds/ACCnuit.mp3';
+import VUrbGnuit from '../assets/sounds/VUrbGnuit.mp3';
+import VUrbxnuit from '../assets/sounds/VUrbxnuit.mp3';
+const typeInterAudioNuit = {
+    'INC': INCnuit,
+    'PPBE': PPBEnuit,
+    'SSUAP': SSUAPnuit,
+    "DFE": SSUAPnuit,
+    'DV': SSUAPnuit,
+    "DF20": SSUAPnuit,
+    'ACC': ACCnuit,
+    'VUrbG': VUrbGnuit,
+    'VUrbx': VUrbxnuit
+};
 const typeInterAudio = {
     'INC': INC,
     'PPBE': PPBE,
@@ -76,7 +96,9 @@ const typeInterAudio = {
     'DFE': DFE,
     'DV': DV,
     'ACC': ACC,
-    'DF20': DF20
+    'DF20': DF20,
+    'VUrbG': VUrbG,
+    'VUrbx': VUrbx
 };
 const libelleInter = ref();
 const adresseInter = ref();
@@ -101,22 +123,29 @@ onMounted(() => {
     ronfleurAudio.volume = 0.2;
     if (nowHour >= 6 && nowHour < 20) {
         ronfleurAudio.volume = 0.5;
+    } else {
+        ronfleurAudio.src = ronfleurNuit;
     }
     ronfleurAudio.play();
     ronfleurAudio.onended = () => {
         let audio = new Audio();
+        let audio_type = typeInterClass.value;
         if (libelleInter.value.includes("DF20")){
-            audio.src = typeInterAudio['DF20']
+            audio.src = typeInterAudio['DF20'];
+            audio_type = 'DF20';
         } else if (libelleInter.value.includes("DFE")){
             audio.src = typeInterAudio['DFE'];
+            audio_type = 'DFE';
         } else if (libelleInter.value.includes("DV")){
             audio.src = typeInterAudio['DV'];
+            audio_type = 'DV';
         } else {
             audio.src = typeInterAudio[typeInterClass.value];
         }
-        if (nowHour >= 6 && nowHour < 20) {
+        if (nowHour >= 6 && nowHour < 21) {
             audio.volume = 1;
         } else {
+            audio.src = typeInterAudioNuit[audio_type];
             audio.volume = 0.6;
         }
         audio.play();
