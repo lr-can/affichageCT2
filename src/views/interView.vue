@@ -112,7 +112,7 @@ onMounted(() => {
         } else if (libelleInter.value.includes("DV")){
             audio.src = typeInterAudio['DV'];
         } else {
-            audio.src = typeInterAudio[typeInter.value];
+            audio.src = typeInterAudio[typeInterClass.value];
         }
         if (nowHour >= 6 && nowHour < 20) {
             audio.volume = 1;

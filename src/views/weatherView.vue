@@ -109,9 +109,9 @@ const getImgUrl = (alert) => {
 };
 const giveStyle = () => {
     if (alertData.value){
-        if(alertData.value.alerteSeverite && alertData.value.alerteSeverite != 'None'){
-            return {width: '50px', height: 'auto' };
-        } else if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150){
+        if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150){
+            return {width: '80px', height: 'auto' };
+        } else if(alertData.value.alerteSeverite && alertData.value.alerteSeverite != 'None'){
             return {width: '250px', height: 'auto'};
         } 
         return {width: '400px', height: 'auto'};
@@ -253,7 +253,7 @@ const giveStyle = () => {
 .WarningForeground {
     color: white;
 }
-.AdvisoryImg{
+.AdvisoryImg, .WatchImg, .WarningImg {
     filter: invert(100%) sepia(100%) saturate(1000%) hue-rotate(180deg) brightness(100%) contrast(100%);
 }
 .NoneForeground {
