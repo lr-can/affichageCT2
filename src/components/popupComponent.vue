@@ -2,7 +2,7 @@
     <div class="popup" :class="giveClass(showInfo)">
       <div class="popup-content">
         <div>
-            <img :src="img_url.replace('..', 'https://raw.githubusercontent.com/lr-can/affichageCT2/refs/heads/master/src/')" alt="popup" style="width: 70px; height: auto;" :style="img_url.includes('weather') ? {filter: 'brightness(0) invert(1)', width: '50px'} : ''">
+            <img :src="img_url.replace('../', 'https://raw.githubusercontent.com/lr-can/affichageCT2/refs/heads/master/src/')" alt="popup" style="width: 70px; height: auto;" :style="img_url.includes('weather') ? {filter: 'brightness(0) invert(1)', width: '50px'} : ''">
         </div>
         <div>{{ msg_part1 }}</div>
         <div v-if="msg_part2">{{ msg_part2 }}</div>
