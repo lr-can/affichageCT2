@@ -109,8 +109,10 @@ const getImgUrl = (alert) => {
 };
 const giveStyle = () => {
     if (alertData.value){
-        if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150){
+        if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 350){
             return {width: '80px', height: 'auto' };
+        }    else if (alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150) {
+            return {width: '200px', height: 'auto' };
         } else if(alertData.value.alerteSeverite && alertData.value.alerteSeverite != 'None'){
             return {width: '250px', height: 'auto'};
         } 
