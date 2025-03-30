@@ -20,9 +20,9 @@
                             En cours
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" id="firstTeam" :style="{backgroundColor: '#ffffff59', color: teamColors[currentTeam.equipe], width:'60%',  boxShadow: teamColors[currentTeam.equipe] + '4D  0px 10px 30px'}">
-                                <span :style="{color: teamColors[currentTeam.equipe]}">{{ currentTeam.equipe }}</span>
-                                <span :style="{color: teamColors[currentTeam.equipe]}"><em>{{ giveInfoGarde() }}</em></span>
+                            <div class="teamTitle" id="firstTeam" :style="{color: 'white', backgroundColor: teamColors[currentTeam.equipe], width:'60%',  boxShadow: teamColors[currentTeam.equipe] + '4D  0px 10px 30px'}">
+                                <span :style="{color: 'white'}">{{ currentTeam.equipe }}</span>
+                                <span :style="{color: 'rgb(255, 255, 255, 0.8)'}"><em>{{ giveInfoGarde() }}</em></span>
                             </div>
                         </div>
                         <div class="teamFooter">
@@ -34,7 +34,7 @@
                             Prochaine
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: '#ffffff59', color: teamColors[nextTeam.equipe], boxShadow: teamColors[nextTeam.equipe] + '33  0px 8px 24px', width:'20%'}">
+                            <div class="teamTitle" :style="{color: 'white', backgroundColor: teamColors[nextTeam.equipe], boxShadow: teamColors[nextTeam.equipe] + '33  0px 8px 24px', width:'20%'}">
                                 {{ nextTeam.equipe }}
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                             Ensuite
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{backgroundColor: '#ffffff59', color: teamColors[teamAfter.equipe], boxShadow: teamColors[teamAfter.equipe] + '33  0px 8px 24px', width:'20%'}">
+                            <div class="teamTitle" :style="{color: 'white', backgroundcolor: teamColors[teamAfter.equipe], boxShadow: teamColors[teamAfter.equipe] + '33  0px 8px 24px', width:'20%'}">
                                 {{ teamAfter.equipe }}
                             </div>
                         </div>
@@ -62,8 +62,13 @@
                         Prochaine réunion
                 </div>
                 <div class="nextTeam">
-                    <div class="teamTitle" :style="{fontSize: '1.2em', backgroundColor: getBackGroundColor('nextReu'), color: getColor('nextReu')}">
-                        {{ giveDuration("nextReu")}} à 19h
+                    <div class="teamTitle nextReu" :style="{fontSize: '1.2em', backgroundColor: getBackGroundColor(), color: getColor()}">
+                        <div>
+                            {{ giveDuration("nextReu")}} à 19h
+                        </div>
+                        <div class="nextReuOrganisation">
+                            <span :style="{fontSize: '0.8rem', fontWeight: 'normal'}">Organisée par l'équipe</span> <span :style="{backgroundColor: teamColors[nextReunionTeam], color: 'white'}" class="nextReuTeam">{{ nextReunionTeam }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -104,6 +109,7 @@ const display1 = ref(true);
 const nextReu = ref(null);
 const nextAniv = ref(null);
 const nextEvent = ref(null);
+const nextReunionTeam = ref(null);
 
 const teamColors = ref({
     "A": "#a02b93",
@@ -123,7 +129,7 @@ onMounted(async () => {
     nextReu.value = new Date(data.nextReunion);
     nextAniv.value = data.nextTwoBirthdays;
     nextEvent.value = data.nextTwoEvents;
-
+    nextReunionTeam.value = data.nextReunionTeam;
 });
 
 setInterval(() => {
@@ -147,21 +153,11 @@ const giveDuration = (type) => {
         return `Ce vendredi`;
     }
 }
-const getBackGroundColor = (type) => {
-    let duration = giveDuration(type);
-    if (duration === "Vendredi prochain"){
-        return "#d3d3d3";
-    } else {
-        return "red";
-    }
+const getBackGroundColor = () => {
+    return "#d3d3d3";
 }
-const getColor = (type) => {
-    let duration = giveDuration(type);
-    if (duration === "Vendredi prochain"){
-        return "#666666";
-    } else {
-        return "white";
-    }
+const getColor = () => {
+    return "#666666";
 }
 const giveDurationBirthday = (date, type='') => {
     const now = new Date();
@@ -266,6 +262,27 @@ img {
     margin: 0;
     font-size: 2rem;
     color: #9a9a9a;
+}
+.nextReu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    font-size: 2rem;
+    color: #666666;
+}
+.nextReuOrganisation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    font-size: 0.8em;
+    color: #666666;
 }
 .teamTitle {
     background-color: red;
@@ -391,6 +408,17 @@ span {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+.nextReuTeam {
+    background-color: #d3d3d3;
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.3rem;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+    border-radius: 10px;
+    width: 1rem;
+    font-weight: bold;
 }
 .teamTitre {
     font-size: 1.2rem;

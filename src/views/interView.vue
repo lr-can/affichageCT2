@@ -78,6 +78,18 @@ import SSUAPnuit from '../assets/sounds/SSUAPnuit.mp3';
 import ACCnuit from '../assets/sounds/ACCnuit.mp3';
 import VUrbGnuit from '../assets/sounds/VUrbGnuit.mp3';
 import VUrbxnuit from '../assets/sounds/VUrbxnuit.mp3';
+import departAssure from '../assets/sounds/departAssure.mp3';
+import endTime from '../assets/sounds/endTime.mp3';
+import tempsEcoule from '../assets/sounds/tempsEcoule.mp3';
+const departAssureAudio = new Audio(departAssure);
+const endTimeAudio = new Audio(endTime);
+const tempsEcouleAudio = new Audio(tempsEcoule);
+
+const condition1 = ref(false);
+const condition2 = ref(true);
+const condition3 = ref(false);
+const condition4 = ref(true);
+
 const typeInterAudioNuit = {
     'INC': INCnuit,
     'PPBE': PPBEnuit,
@@ -120,7 +132,7 @@ onMounted(() => {
     dateTimeInter.value = props.data.dateTimeInter;
     let now = new Date();
     let nowHour = now.getHours();
-    ronfleurAudio.volume = 0.2;
+    ronfleurAudio.volume = 0.3;
     if (nowHour >= 6 && nowHour < 20) {
         ronfleurAudio.volume = 0.5;
     } else {
@@ -146,7 +158,7 @@ onMounted(() => {
             audio.volume = 1;
         } else {
             audio.src = typeInterAudioNuit[audio_type];
-            audio.volume = 0.6;
+            audio.volume = 0.4;
         }
         audio.play();
     };
@@ -159,7 +171,9 @@ onMounted(() => {
         let elapsed = new Date().getTime() - new Date(dateTimeInter.value).getTime();
         let initialDuration = 10 * 60 * 1000; // 10 minutes in milliseconds
         let deltaPerc = (elapsed / initialDuration) * 100;
-        loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "100%";
+        condition1.value = deltaPerc > 60;
+        condition3.value = deltaPerc > 90;
+        loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "110%";
         }
 }, 500);
 });
@@ -232,7 +246,7 @@ import introNotif from '../assets/sounds/introNotif.mp3';
 const introNotifAudio = new Audio(introNotif);
 
 const audioNotifs = async () => {
-    const message = `${vehiculePhonetiques.value}. ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "")}, à ${villeInter.value}.`;
+    const message = `${vehiculePhonetiques.value}. ${villeInter.value}. ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "")}.`;
     interAudio.value = await smartemis.getTTS(message);
     setTimeout(() => {
         introNotifAudio.play();
@@ -272,6 +286,58 @@ const getStatus = async () => {
     let deltaMin = Math.floor(deltaSec / 60);
     let displayTemps = deltaMin < 1 ? deltaSec + ' sec env.' : deltaMin + ' min';
     deltaUpdate.value = {tempsTotal: deltaSec, tempsMin: deltaMin, displayTemps: displayTemps};
+    await verifFinalAudio();
+};
+
+const vehicules_ecoules = ref([]);
+const vehicules_partis = ref([]);
+
+const verifFinalAudio = async () => {
+    if (vehicules.value.length === 0){
+        return;
+    }
+    if (condition3.value && !condition2.value && condition1.value && condition4.value){
+        condition4.value = false;
+        endTimeAudio.play();
+        return;
+    }
+    let notEcoule = !vehicules.value.some(vehicule => vehicule.statut === 'DE' || vehicule.statut === 'ND' || vehicule.statut === 'PP');
+    let allParti = vehicules.value.every(vehicule => vehicule.statut !== 'PA' && vehicule.statut !== 'SL');
+    let list_vehicule_ecoule = vehicules.value.filter(vehicule => vehicule.statut === 'DE' || vehicule.statut === 'ND' || vehicule.statut === 'PP');
+    let list_vehicule_parti = vehicules.value.filter(vehicule => vehicule.statut === 'PA' || vehicule.statut === 'SL');
+    let new_vehicules_ecoules = list_vehicule_ecoule.filter(vehicule => !vehicules_ecoules.value.some(v => v.id === vehicule.id));
+    let new_vehicules_partis = list_vehicule_parti.filter(vehicule => !vehicules_partis.value.some(v => v.id === vehicule.id));
+    let audio = null;
+    if (new_vehicules_ecoules.length > 0){
+        let message = `${new_vehicules_ecoules.map(v => v.nomPhonetique).join(" , ")} . Départ écoulé ou problème au départ.`;
+        audio = await smartemis.getTTS(message);
+        vehicules_ecoules.value.push(...new_vehicules_ecoules);
+    } else if (new_vehicules_partis.length > 0){
+        let message = `${new_vehicules_partis.map(v => v.nomPhonetique).join(" , ")} . Au départ.`;
+        audio = await smartemis.getTTS(message);
+        vehicules_partis.value.push(...new_vehicules_partis);
+    }
+    if (condition1.value && condition2.value){
+        if (!notEcoule){
+            condition2.value = false;
+            tempsEcouleAudio.play();
+            tempsEcouleAudio.onended = () => {
+                audio.play();
+            };
+            return;
+        } 
+        if (allParti){
+            condition2.value = false;
+            departAssureAudio.play();
+            departAssureAudio.onended = () => {
+                if (new_vehicules_partis.length > 0){
+                    audio.play();
+                } 
+            };
+        } else if (new_vehicules_partis.length > 0){
+            audio.play();
+    }
+}
 };
 
 const getAgents = async () => {

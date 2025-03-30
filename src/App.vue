@@ -15,7 +15,7 @@
     />
   </div>
   <div v-if="initialize" class="appear">
-    <div class="loading">
+    <div class="loading" :style="giveBackgroundColor()">
       <div>
         <img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto" :style="{opacity: 0.2, filter: 'blur(3px)'}">
       </div>
@@ -32,7 +32,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() >= 21 || new Date().getHours() <= 6">
+    <div v-if="new Date().getHours() >= 21 || new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
@@ -122,9 +122,33 @@ const handleIntervention = (data) => {
   interventionData.value = data;
   interventionCheck.value = true;
 };
-import { useSmartemis } from './store/smartemis';
 
-const smartemis = useSmartemis();
+const getTTS = async (message) => {
+            const options = {
+                method: 'POST',
+                headers: {
+                  accept: 'application/json',
+                  'content-type': 'application/json',
+                  authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDBmODkwZTAtZWUwMi00NjgxLTlmNmItMzM2NmZjOGFkNWJlIiwidHlwZSI6ImFwaV90b2tlbiJ9.UJhTZXEbGdRH3FMDzEIBXDKL5yEw3VC-t5lUynA5vCA'
+                },
+                body: JSON.stringify({
+                  response_as_dict: true,
+                  attributes_as_list: false,
+                  show_original_response: false,
+                  rate: 5,
+                  pitch: -10,
+                  volume: 20,
+                  sampling_rate: 0,
+                  providers: "amazon/fr-FR_Lea_Standard",
+                  language: 'fr',
+                  text: message,
+                  option: 'FEMALE'
+                })
+              };
+            const response = await fetch('https://api.edenai.run/v2/audio/text_to_speech', options);
+            const result = await response.json();
+            return new Audio(result['amazon/fr-FR_Lea_Standard'].audio_resource_url);
+        }
 
 let regularTimeout = null;
 
@@ -235,6 +259,8 @@ const filterAndPushPopup = () => {
     }
   }  
 }
+import { useSmartemis } from './store/smartemis';
+const smartemis = useSmartemis();
 
 setTimeout(() => {setInterval(async () => {
   let newStatus = await smartemis.getStatus();
@@ -252,7 +278,8 @@ setTimeout(() => {setInterval(async () => {
         msg_part3: newVehicule.statutLib,
         color_part3: newVehicule.libColor,
         backgroundColor_part3: newVehicule.backgroundColor,
-        type: 'newVehicule'
+        type: 'newVehicule',
+        nomPhonetique: newVehicule.nomPhonetique,
       });
     }
   }
@@ -264,7 +291,16 @@ setTimeout(() => {setInterval(async () => {
     showPopup.value = true;
     popupInfo.value = popupList.value[0];
     console.log('New vehicules status detected', newStatusPopup);
-    if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé')){
+    if (interventionCheck.value){
+      console.log('Intervention ongoing, no audio notification');
+    } else {
+      if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Retenu')){
+      let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Retenu').map(v => v.nomPhonetique).join(' , ')} . Retenu`;
+      audioNotif = await getTTS(message);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Alerte')){
+      let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Alerte').map(v => v.nomPhonetique).join(' , ')} . Alerte`;
+      audioNotif = await getTTS(message);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé')){
       audioNotif = new Audio(Dl);
     } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible')){
       audioNotif = new Audio(DM);
@@ -274,8 +310,9 @@ setTimeout(() => {setInterval(async () => {
     audioNotif.volume = 0.5;
     audioNotif.play();
   }
+  }
   currentVehicules.value = newStatus;
-}, 15000);}, 30000);
+}, 17000);}, 30000);
 
 const popupIsClosed = async () => {
   showPopup.value = false;
@@ -307,6 +344,21 @@ const giveEnginImg = (engin) => {
     } else {
         return `../assets/vehicules/statuts/${engin.statut}.png`
     }
+}
+const giveBackgroundColor = () => {
+  const gradients = [
+    "linear-gradient(120deg, #0078f3 0%, #0063cb 100%)",
+    "linear-gradient(120deg, #1f8d49 0%, #18753c 100%)",
+    "linear-gradient(120deg, #d64d00 0%, #b34000 100%)",
+    "linear-gradient(120deg, #f60700 0%, #ce0500 100%)",
+    "linear-gradient(120deg, #009081 0%, #37635f 100%)",
+    "linear-gradient(120deg, #A558A0 0%, #6E445A 100%)",
+    "linear-gradient(120deg, #C08C65 0%, #845d48 100%)",
+  ];
+
+  return {
+    backgroundImage: gradients[Math.floor(Math.random() * gradients.length)]
+  };
 }
 
 </script>
@@ -383,7 +435,6 @@ const giveEnginImg = (engin) => {
   width: 100dvw;
   height: 100dvh;
   background-size: 140% 140%;
-  background-image: linear-gradient(120deg, #0078f3 0%, #004288 100%);
   animation : loading 2s infinite;
   overflow: hidden;
 }
