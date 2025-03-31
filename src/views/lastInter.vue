@@ -145,6 +145,7 @@
 }
 .interTitle {
     font-size: 1.5em;
+    margin-top: 0.5rem;
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
@@ -199,7 +200,7 @@
     padding: 0.5rem;
     padding-left: 0.8rem;
     padding-right: 0.8rem;
-    background-color: white;
+    background-color: transparent;
     color: #f60700;
     border: 1px solid #f60700;
     border-radius: 3px;
