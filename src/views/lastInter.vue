@@ -14,7 +14,10 @@
                 <div class="interInfo">
                     <div class="numInter" :style="{color: '#f60700', marginTop: '1.5rem'}">Intervention n°{{ firstInter.numeroInter }}</div> 
                     <div class="interTitle" :style="{fontSize : '1.7em', fontWeight : 'bold', color: '#f60700'}">
-                        {{ firstInter.notificationTitre.replace(/\|/g, '-') }}
+                       <span v-if="firstInter.notificationTitre.includes('DF20')" class="DV">DF20</span>
+                       <span v-if="firstInter.notificationTitre.includes('DFE')" class="DV">DFE</span>
+                        <span v-if="firstInter.notificationTitre.includes('DV')" class="DV">DV</span>
+                        {{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "") }}
                     </div>
                     <div>
                         Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
@@ -187,6 +190,15 @@
     font-size: 0.8rem;
     color: #7b7b7b;
     flex-basis: 100%;
+}
+.DV{
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    background-color: #f60700;
+    color: white;
+    border-radius: 5px;
 }
 </style>
 <script setup>

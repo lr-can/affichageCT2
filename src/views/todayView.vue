@@ -47,7 +47,7 @@
                             Ensuite
                         </div>
                         <div class="teamContainer">
-                            <div class="teamTitle" :style="{color: 'white', backgroundcolor: teamColors[teamAfter.equipe], boxShadow: teamColors[teamAfter.equipe] + '33  0px 8px 24px', width:'20%'}">
+                            <div class="teamTitle" :style="{color: 'white', backgroundColor: teamColors[teamAfter.equipe], boxShadow: teamColors[teamAfter.equipe] + '33  0px 8px 24px', width:'20%'}">
                                 {{ teamAfter.equipe }}
                             </div>
                         </div>
