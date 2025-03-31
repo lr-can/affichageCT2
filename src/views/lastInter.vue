@@ -17,7 +17,7 @@
                        <span v-if="firstInter.notificationTitre.includes('DF20')" class="DV">DF20</span>
                        <span v-if="firstInter.notificationTitre.includes('DFE')" class="DV">DFE</span>
                         <span v-if="firstInter.notificationTitre.includes('DV')" class="DV">DV</span>
-                        {{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "") }}
+                        <span>{{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "") }}</span>
                     </div>
                     <div>
                         Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
@@ -147,6 +147,9 @@
     font-size: 1.5em;
     font-weight: bold;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    text-align: left;
 }
 .bold{
     font-size: 1.3rem;
