@@ -199,9 +199,10 @@
     padding: 0.5rem;
     padding-left: 0.8rem;
     padding-right: 0.8rem;
-    background-color: #f60700;
-    color: white;
-    border-radius: 5px;
+    background-color: white;
+    color: #f60700;
+    border: 1px solid #f60700;
+    border-radius: 3px;
 }
 </style>
 <script setup>
