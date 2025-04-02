@@ -42,6 +42,21 @@ export const useSmartemis = defineStore('smartemis', () => {
                 nomPhonetique = vehicule.engLib.replace('+', '').split(' ')[0].split('').join(' ') + " de remplacement";
             } else if (vehicule.engLib.includes('VSAV')){
                 nomPhonetique = "V S A V " + vehicule.engLib.replace(' 0', ' ').split(' ')[1];
+            } else if (vehicule.engLib.startsWith('L')){
+                let nomPhonetiqueBase = vehicule.engLib.replace('L', '').split(' ')[0];
+                let nomPhonetiqueDict = {
+                    "LBACHE" : "Lot bache",
+                    "LBALIS": "Lot balisage",
+                    "LCTHER": "Lot Caméra thermique",
+                    "LDNOY": "Lot dénoyage",
+                    "LECLE": "Lot éclairage",
+                    "LTRON": "Lot tronçonneuse",
+                }
+                if (nomPhonetiqueDict[nomPhonetiqueBase]){
+                    nomPhonetique = nomPhonetiqueDict[nomPhonetiqueBase] + " ";
+                } else {
+                    nomPhonetique = "Lot " + nomPhonetiqueBase + " ";
+                }
             } else {
                 nomPhonetique = vehicule.engLib.split(' ')[0].split('').join(' ') + ' ';
             }
@@ -274,18 +289,18 @@ export const useSmartemis = defineStore('smartemis', () => {
                   attributes_as_list: false,
                   show_original_response: false,
                   rate: 5,
-                  pitch: -10,
+                  pitch: 0,
                   volume: 20,
                   sampling_rate: 0,
-                  providers: "amazon/fr-FR_Lea_Standard",
+                  providers: "google/fr-FR-Standard-B",
                   language: 'fr',
                   text: message,
-                  option: 'FEMALE'
+                  option: 'MALE'
                 })
               };
             const response = await fetch('https://api.edenai.run/v2/audio/text_to_speech', options);
             const result = await response.json();
-            return new Audio(result['amazon/fr-FR_Lea_Standard'].audio_resource_url);
+            return new Audio(result['google/fr-FR-Standard-B'].audio_resource_url);
         }
 
     return {

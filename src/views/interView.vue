@@ -246,7 +246,7 @@ import introNotif from '../assets/sounds/introNotif.mp3';
 const introNotifAudio = new Audio(introNotif);
 
 const audioNotifs = async () => {
-    const message = `${vehiculePhonetiques.value}. ${villeInter.value}. ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "")}.`;
+    const message = `${vehiculePhonetiques.value} . ${villeInter.value.replace("ST-", "SAINT")} . ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").toLowerCase().replace("aggrave", "aggravé")}.`;
     interAudio.value = await smartemis.getTTS(message);
     setTimeout(() => {
         introNotifAudio.play();
@@ -296,13 +296,8 @@ const verifFinalAudio = async () => {
     if (vehicules.value.length === 0){
         return;
     }
-    if (condition3.value && !condition2.value && condition1.value && condition4.value){
-        condition4.value = false;
-        endTimeAudio.play();
-        return;
-    }
     let notEcoule = !vehicules.value.some(vehicule => vehicule.statut === 'DE' || vehicule.statut === 'ND' || vehicule.statut === 'PP');
-    let allParti = vehicules.value.every(vehicule => vehicule.statut !== 'PA' && vehicule.statut !== 'SL');
+    let allParti = vehicules.value.every(vehicule => vehicule.statut == 'PA' || vehicule.statut == 'SL');
     let list_vehicule_ecoule = vehicules.value.filter(vehicule => vehicule.statut === 'DE' || vehicule.statut === 'ND' || vehicule.statut === 'PP');
     let list_vehicule_parti = vehicules.value.filter(vehicule => vehicule.statut === 'PA' || vehicule.statut === 'SL');
     let new_vehicules_ecoules = list_vehicule_ecoule.filter(vehicule => !vehicules_ecoules.value.some(v => v.id === vehicule.id));
@@ -338,6 +333,11 @@ const verifFinalAudio = async () => {
             audio.play();
     }
 }
+    if (condition3.value && condition2.value && condition1.value && condition4.value){
+        condition4.value = false;
+        endTimeAudio.play();
+        return;
+    }
 };
 
 const getAgents = async () => {
