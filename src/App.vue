@@ -326,23 +326,33 @@ const popupIsClosed = async () => {
 }
 const giveEnginImg = (engin) => {
     if (engin.statut == 'Dl'){
-        if (engin.lib.startsWith('L')){
-            return `../assets/vehicules/engins/LOTS.png`
-        } else if (engin.lib.includes('MPRGP')){
-            return`../assets/vehicules/engins/MPRGP.png`
+        if (engin.lib.startsWith('L') || engin.lib.includes('MPRGP')){
+            const vtutStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VTUT") && engin.statut === 'Dl'));
+            const vlcdgStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VLCDG") && engin.statut === 'Dl'));
+            if (vlcdgStatut && engin.lib.includes("LCTHER")){
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            } else if (vtutStatut && !engin.lib.includes("LCTHER")){
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            }
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
         } else {
-            return `../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`
+            return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
         }
     } else if (engin.statut == "DM"){
-        if (engin.lib.startsWith('L')){
-            return `../assets/vehicules/engins/LOTS.png`
-        } else if (engin.lib.includes('MPRGP')){
-            return `../assets/vehicules/engins/MPRGP.png`
+        if (engin.lib.startsWith('L') || engin.lib.includes('MPRGP')){
+            const vtutStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VTUT") && engin.statut === 'Dl'));
+            const vlcdgStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VLCDG") && engin.statut === 'Dl'));
+            if (vlcdgStatut && engin.lib.includes("LCTHER")){
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            } else if (vtutStatut && !engin.lib.includes("LCTHER")){
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            }
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
         } else {
-            return `../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
         }
     } else {
-        return `../assets/vehicules/statuts/${engin.statut}.png`
+        return new URL(`../assets/vehicules/statuts/${engin.statut}.png`, import.meta.url).href
     }
 }
 const giveBackgroundColor = () => {
