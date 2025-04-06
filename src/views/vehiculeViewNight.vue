@@ -9,7 +9,7 @@
         <div class="agents" :style="{ backgroundColor: giveBackground(agents.available), color: giveForeground(agents.available) }" v-if="agents">
             <span :style="{fontSize : '2rem', fontWeight : 'bold'}">🧑‍🚒{{ agents.available }}</span> / {{ agents.total }}
         </div>
-        <div class="vehiculeContainer" v-if="familles.length > 0">
+        <div class="vehiculeContainer"  v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5">
             <div class="famille" v-for="famille in familles" :key="famille.famEngCod">
                 <div class="familleTitle">
                     {{ famille.famEngLib }}
@@ -28,6 +28,10 @@
                 </div>
             </div>
         </div>
+        <div class="vehiculeContainer" v-else style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+            <div style="margin-top: 1rem"><img src="../assets/vehiculeLoader.gif" alt="" width="150px" height="auto"></div>
+            <div style="margin-top: 1rem; color: black; font-size: 1.5rem;">Chargement des engins...</div>
+        </div>
         <div class="info">
             <p> Mise à jour : Il y a {{ timeElapsed }} environ.</p>
         </div>
@@ -42,9 +46,25 @@ const familles = ref([]);
 const miseAJour = ref();
 const timeElapsed = ref();
 const agents = ref();
+const numberOfEngins = ref(0);
+
+const giveNumberOfEngin = () => {
+    let number = 0;
+    for (let i = 0; i < familles.value.length; i++){
+        for (let j = 0; j < familles.value[i].engins.length; j++){
+            number += 1;
+        }
+    }
+    return number;
+}
 
 onMounted(async () => {
     familles.value = await smartemis.getEngins();
+    for (let i = 0; i < familles.value.length; i++){
+        for (let j = 0; j < familles.value[i].engins.length; j++){
+            numberOfEngins.value += 1;
+        }
+    }
     miseAJour.value = await smartemis.getLastUpdateEngins();
     agents.value = await smartemis.getAgentsAvailable();
     const now = new Date();
