@@ -245,8 +245,12 @@ import introNotif from '../assets/sounds/introNotif.mp3';
 
 const introNotifAudio = new Audio(introNotif);
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 const audioNotifs = async () => {
-    const message = `${vehiculePhonetiques.value} . ${villeInter.value.replace("ST-", "SAINT")} . ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").toLowerCase().replace("aggrave", "aggravé")}.`;
+    const message = `${vehiculePhonetiques.value} . ${villeInter.value.replace("ST-", "SAINT").toLowerCase().split('-').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join('-')} . ${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").toLowerCase().replace("aggrave", "aggravé")}.`;
     interAudio.value = await smartemis.getTTS(message);
     setTimeout(() => {
         introNotifAudio.play();
