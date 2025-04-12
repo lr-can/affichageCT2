@@ -1,7 +1,10 @@
 <template>
     <div :class="giveClass">
-        <div class="header">{{ msgTitre.toUpperCase() }}</div>
+        <div class="header" :class="giveDelayImgStyle">{{ msgTitre.toUpperCase() }}</div>
         <div id="map"><mapBox :lon="props.data.lon" :lat="props.data.lat" /></div>
+        <div id="delayImg" v-if="displayDelay && !isAllParti" :class="giveDelayImgStyle">
+            <img src="../assets/vehicules/statuts/DE.png" alt="" width="300px" height="auto">
+        </div>
         <div v-if="giveClass == 'interConfig'" class="info">
             <div class="infoHeader"><span :class="typeInterClass">{{ typeInter }}</span> <span id="interLibelle">{{ libelleInter.toUpperCase().replace(/\|/g, '-')  }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/number.svg" style="filter: invert(100%) brightness(1000%);height: 1.8rem; width: auto ;" /></span><span>N°{{ numeroInter }}</span></div>
@@ -41,7 +44,7 @@
                             <img :src="giveAgentGrade(agent.grade)" alt="" width="30px" height="auto">
                         </div>
                         <div class="agentNom">{{ agent.nom }} {{ agent.prenom }}</div>
-                        <div class="matricule">{{ agent.matricule }}</div>
+                        <div class="matricule" :style="{borderBottom : '1px solid' + giveStatusColor(agent.status)}"><span v-if="alternateDisplay">{{ agent.matricule }}</span><span v-else>{{ agent.status }}</span></div>
                     </div>
                 </div>
                 <div style="color: #d3d3d3;font-size: 0.8rem;">
@@ -65,6 +68,7 @@ import ronfleurNuit from '../assets/sounds/ronfleurNuit.mp3';
 const ronfleurAudio = new Audio(ronfleur);
 import INC from '../assets/sounds/INC.mp3';
 import PPBE from '../assets/sounds/PPBE.mp3';
+const alternateDisplay = ref(true);
 import SSUAP from '../assets/sounds/SSUAP.mp3';
 import DFE from '../assets/sounds/DFE.mp3';
 import DV from '../assets/sounds/DV.mp3';
@@ -81,9 +85,14 @@ import VUrbxnuit from '../assets/sounds/VUrbxnuit.mp3';
 import departAssure from '../assets/sounds/departAssure.mp3';
 import endTime from '../assets/sounds/endTime.mp3';
 import tempsEcoule from '../assets/sounds/tempsEcoule.mp3';
+const displayDelay = ref(false);
 const departAssureAudio = new Audio(departAssure);
 const endTimeAudio = new Audio(endTime);
 const tempsEcouleAudio = new Audio(tempsEcoule);
+const isEcoule = ref(false);
+const giveDelayImgStyle = computed(() => {
+    return isEcoule.value || !displayDelay.value ? 'noBlink' : 'blinkSecondary';
+});
 
 const condition1 = ref(false);
 const condition2 = ref(true);
@@ -173,6 +182,7 @@ onMounted(() => {
         let deltaPerc = (elapsed / initialDuration) * 100;
         condition1.value = deltaPerc > 60;
         condition3.value = deltaPerc > 90;
+        displayDelay.value = deltaPerc > 90;
         loaderWidth.value = deltaPerc < 100 ? deltaPerc + "%" : "110%";
         }
 }, 500);
@@ -180,7 +190,7 @@ onMounted(() => {
 
 
 const smartemis = useSmartemis();
-const vehicules = ref([]);
+const vehicules = ref([]); // Ensure this is initialized as a reactive array
 const deltaUpdate = ref({});
 const agentList = ref([]);
 import Sap2CL from '../assets/grades/Sap 2CL.png';
@@ -271,8 +281,11 @@ const audioNotifs = async () => {
         };
     }, 4 * 60000);
 };
+
+const isAllParti = ref(false);
+
 const getStatus = async () => {
-    const newVehicules = await smartemis.filterEnginsInter();
+    alternateDisplay.value = !alternateDisplay.value;
     for (let vehicule of newVehicules){
         let found_vehicule = vehicules.value.find(v => v.id === vehicule.id);
         if (found_vehicule){
@@ -281,6 +294,7 @@ const getStatus = async () => {
             found_vehicule.libColor = vehicule.libColor;
         } else {
             vehicules.value.push(vehicule);
+            console.log("New vehicle added:", vehicule);
             vehiculePhonetiques.value += " , " + vehicule.nomPhonetique;
         } 
     }
@@ -297,7 +311,9 @@ const vehicules_ecoules = ref([]);
 const vehicules_partis = ref([]);
 
 const verifFinalAudio = async () => {
-    if (vehicules.value.length === 0){
+    console.log("verifFinalAudio called");
+    if (vehicules.value.length === 0) {
+        console.log("No vehicles available");
         return;
     }
     let notEcoule = !vehicules.value.some(vehicule => vehicule.statut === 'DE' || vehicule.statut === 'ND' || vehicule.statut === 'PP');
@@ -306,40 +322,59 @@ const verifFinalAudio = async () => {
     let list_vehicule_parti = vehicules.value.filter(vehicule => vehicule.statut === 'PA' || vehicule.statut === 'SL');
     let new_vehicules_ecoules = list_vehicule_ecoule.filter(vehicule => !vehicules_ecoules.value.some(v => v.id === vehicule.id));
     let new_vehicules_partis = list_vehicule_parti.filter(vehicule => !vehicules_partis.value.some(v => v.id === vehicule.id));
+    console.log("New vehicles ecoules:", new_vehicules_ecoules);
+    console.log("New vehicles partis:", new_vehicules_partis);
     let audio = null;
-    if (new_vehicules_ecoules.length > 0){
+    if (new_vehicules_ecoules.length > 0) {
+        isEcoule.value = true;
         let message = `${new_vehicules_ecoules.map(v => v.nomPhonetique).join(" , ")} . Départ écoulé ou problème au départ.`;
+        console.log("TTS message for ecoules:", message);
         audio = await smartemis.getTTS(message);
         vehicules_ecoules.value.push(...new_vehicules_ecoules);
-    } else if (new_vehicules_partis.length > 0){
+    } else if (new_vehicules_partis.length > 0) {
         let message = `${new_vehicules_partis.map(v => v.nomPhonetique).join(" , ")} . Au départ.`;
+        console.log("TTS message for partis:", message);
         audio = await smartemis.getTTS(message);
         vehicules_partis.value.push(...new_vehicules_partis);
     }
-    if (condition1.value && condition2.value){
-        if (!notEcoule){
+    if (condition1.value && condition2.value) {
+        console.log("Condition1 and Condition2 met");
+        if (!notEcoule) {
+            console.log("NotEcoule condition met");
+            msgTitre.value = "Départ écoulé / problème départ";
             condition2.value = false;
             tempsEcouleAudio.play();
             tempsEcouleAudio.onended = () => {
+                console.log("Playing audio for tempsEcoule");
                 audio.play();
             };
             return;
-        } 
-        if (allParti){
+        }
+        if (allParti) {
+            console.log("All vehicles have departed");
+            displayDelay.value = false;
             condition2.value = false;
+            msgTitre.value = "Départ assuré";
+            isAllParti.value = true;
+            isEcoule.value = true;
             departAssureAudio.play();
             departAssureAudio.onended = () => {
-                if (new_vehicules_partis.length > 0){
+                if (new_vehicules_partis.length > 0) {
+                    console.log("Playing audio for new vehicles partis");
                     audio.play();
-                } 
+                }
             };
-        } else if (new_vehicules_partis.length > 0){
+        } else if (new_vehicules_partis.length > 0) {
+            console.log("Playing audio for new vehicles partis");
             audio.play();
+        }
     }
-}
-    if (condition3.value && condition2.value && condition1.value && condition4.value){
+    if (condition3.value && condition2.value && condition1.value && condition4.value) {
+        console.log("Condition3, Condition2, Condition1, and Condition4 met");
+        msgTitre.value = "Délai 10 min imminent";
         condition4.value = false;
         endTimeAudio.play();
+        console.log("Playing endTimeAudio");
         return;
     }
 };
@@ -361,13 +396,13 @@ const getAgents = async () => {
 const giveClass = ref('newInter');
 const giveStatusColor = (status) => {
     if (status === 'DIP'){
-        return 'rgb(38, 63, 38)';
+        return '#27a658';
     }else if(status === 'IN' || status === 'IND'){
-        return '#d3d3d3';
+        return '#929292';
     }else if(status === 'AEC'){
-        return 'rgb(57, 46, 1)';
+        return '#FFCA00';
     }else if(status === 'AOR'){
-        return '#3f3a20';
+        return '#fc5d00';
     }else {
         return 'white';
     }
@@ -606,6 +641,9 @@ div {
     margin-right: 1rem;
     border-radius: 0.3rem;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .agentNom {
     margin-right: 1rem;
@@ -645,4 +683,27 @@ div {
     clip-path: polygon(99% 0%, 100% 50%, 99% 100%, 0% 100%, 25% 50%, 0% 0%);
 }
 
+#delayImg {
+    position: fixed;
+    top: 20%;
+    right: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+}
+.blinkSecondary {
+    animation: blink 2s infinite;
+}
+.noBlink {
+    animation: none;
+}
+@keyframes blink {
+    0% { opacity: 0.7; }
+    49% { opacity: 0.7; }
+    50% { opacity: 0.2; }
+    51% { opacity: 0.2; }
+    99% { opacity: 0.2; }
+    100% { opacity: 0.7; }
+}
 </style>

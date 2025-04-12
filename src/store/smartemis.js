@@ -84,6 +84,7 @@ export const useSmartemis = defineStore('smartemis', () => {
     const filterEnginsInter = async () => {
         const interStatutsCodes = ["PA", "SL", "DE", "AT", "AR", "ND", "PP", "RE", "AL"];
         await getEnginsWithStatuts();
+        console.log("Statuts engins", statutsEngins.value);
         return statutsEngins.value.filter(engin => interStatutsCodes.includes(engin.statut));
     }
 
@@ -247,6 +248,9 @@ export const useSmartemis = defineStore('smartemis', () => {
             }
         }
         sortedResult[0].dateTime = initialDateTime;
+        //if (now.getTime() > verif) {
+        //    sortedResult[0].dateTime = new Date(now.getTime() - 8 * 60 * 1000); // Simulate 4 minutes ago
+        //}
         const typeInter = await getInterventionType(sortedResult[0].notificationTitre);
         const sortedMappedResult = await sortedResult.map(intervention => {
             return {
