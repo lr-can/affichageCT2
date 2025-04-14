@@ -286,6 +286,7 @@ const isAllParti = ref(false);
 
 const getStatus = async () => {
     alternateDisplay.value = !alternateDisplay.value;
+    let newVehicules = await smartemis.filterEnginsInter();
     for (let vehicule of newVehicules){
         let found_vehicule = vehicules.value.find(v => v.id === vehicule.id);
         if (found_vehicule){
