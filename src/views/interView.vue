@@ -290,6 +290,7 @@ const getStatus = async () => {
     for (let vehicule of newVehicules){
         let found_vehicule = vehicules.value.find(v => v.id === vehicule.id);
         if (found_vehicule){
+            found_vehicule.statut = vehicule.statut;
             found_vehicule.statutLib = vehicule.statutLib;
             found_vehicule.backgroundColor = vehicule.backgroundColor;
             found_vehicule.libColor = vehicule.libColor;

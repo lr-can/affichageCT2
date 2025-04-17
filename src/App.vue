@@ -263,6 +263,7 @@ import { useSmartemis } from './store/smartemis';
 const smartemis = useSmartemis();
 
 setTimeout(() => {setInterval(async () => {
+  if (interventionCheck.value) return;
   let newStatus = await smartemis.getStatus();
   let newStatusPopup = [];
   for (const vehicule of currentVehicules.value){
