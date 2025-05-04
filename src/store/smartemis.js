@@ -43,7 +43,7 @@ export const useSmartemis = defineStore('smartemis', () => {
             } else if (vehicule.engLib.includes('VSAV')){
                 nomPhonetique = "V S A V " + vehicule.engLib.replace(' 0', ' ').split(' ')[1];
             } else if (vehicule.engLib.startsWith('L')){
-                let nomPhonetiqueBase = vehicule.engLib.replace('L', '').split(' ')[0];
+                let nomPhonetiqueBase = vehicule.engLib.split(' ')[0];
                 let nomPhonetiqueDict = {
                     "LBACHE" : "Lot bache",
                     "LBALIS": "Lot balisage",
