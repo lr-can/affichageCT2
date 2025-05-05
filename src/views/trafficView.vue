@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div>
-                        <div v-for="bus in stop.buses" :class="giveBusClass(bus.direction)" :key="bus.direction" class="sameRow2">
+                        <div v-for="bus in stop.buses" :class="giveBusClass(bus.prochainDepart)" :key="bus.direction" class="sameRow2">
                             <div class="bus-direction"><i>{{ bus.direction }}</i></div>
                             <span class="next-departure" :class="giveBlinkClass(bus.prochainDepart)">{{ bus.prochainDepart == 'Fin de service' ? '' : bus.prochainDepart}}</span>
                             <span class="ensuite-departure">{{ bus.ensuiteDepart == 'Fin de service' ? '': bus.ensuiteDepart }}</span>
@@ -105,7 +105,7 @@ const giveClass = (type, comment) => {
     }
 }
 const giveBusClass = (direction) => {
-    if (direction == 'Fin de service'){
+    if (direction == 'Fin de service' || direction == '-' || direction == 'HS'){
         return 'noData'
     }
     return '';
@@ -370,7 +370,7 @@ const giveBlinkClass = (prochainDepart) => {
     margin-top: 0;
 }
 .noData{
-    visibility: hidden;
+    display: none;
 }
 .blinkTime {
     animation: blink2 2s infinite ease-in-out;

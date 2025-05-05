@@ -32,7 +32,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() >= 21 || new Date().getHours() < 6">
+    <div v-if="new Date().getHours() >= 23 || new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
@@ -58,6 +58,9 @@
       <div v-show="index == 4 || initialize" key="traffic">
         <trafficView />
       </div>
+      <div v-show="index == 5 || initialize" key="interEnCours">
+        <interEnCours />
+      </div>
       </TransitionGroup>
     </div>
   </div>
@@ -74,6 +77,7 @@ import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import vehiculeViewNight from './views/vehiculeViewNight.vue';
+import interEnCours from './views/interEnCours.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
@@ -168,6 +172,13 @@ const initializeApp = async () => {
     popupInfo.value = popupList.value[0];
     showPopup.value = true;
   }
+  const details = await smartemis.getInterDetail();
+  console.log('Intervention details:', details);
+  if (details){
+    if (details.status){
+      views.value.push({viewname: 'interEnCours', time: 45});
+    }
+  }
   
 }
 initializeApp();
@@ -212,7 +223,7 @@ const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
     index.value = (index.value + 1) % views.value.length;
-    //index.value = 1;
+    //index.value = 5;
   }
 }
 main();
@@ -260,6 +271,7 @@ const filterAndPushPopup = () => {
   }  
 }
 import { useSmartemis } from './store/smartemis';
+import InterEnCours from './views/interEnCours.vue';
 const smartemis = useSmartemis();
 
 setTimeout(() => {setInterval(async () => {

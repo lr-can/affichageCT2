@@ -306,6 +306,68 @@ export const useSmartemis = defineStore('smartemis', () => {
             const result = await response.json();
             return new Audio(result['google/fr-FR-Standard-B'].audio_resource_url);
         }
+    
+    const getInterDetail = async () => {
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        const response1 = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%209', options);
+        const response2 = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%2010', options);
+        const casernes = await fetch('/artemisData.json');
+        const casernesData = await casernes.json();
+        const casernesDict = casernesData.fireunits.reduce((acc, caserne) => {
+            acc[caserne.shortname] = caserne.name;
+            return acc;
+        }
+        , {});
+        await getAgentsInter();
+        const agents = agentsInterList.value;
+        const result = await response1.json();
+        const result2 = await response2.json();
+        const parsedDetail = JSON.parse(result[0].ITV_detail);
+        const parsedExt = JSON.parse(result[0].ITV_Ext);
+        const updateTime = result[0].ITV_DT;
+        const [day, month, year, hour, minute, second] = updateTime.match(/\d+/g);
+        const updateDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        const now = new Date();
+        const diffInMinutes = (now - updateDateTime) / (1000 * 60);
+        const status = diffInMinutes < 10;
+        const parsedMessages = result2.map(item => ({
+            time: new Date(item.Heure),
+            message: item.Message,
+        }));
+
+        const formattedResult = {
+            details: parsedDetail.map(detail => ({
+                interventionId: detail.itvId,
+                stationId: detail.depItvCsId,
+                stationName: detail.depItvCsLib,
+                stationFullName: casernesDict[detail.depItvCsLib] || detail.depItvCsLib,
+                vehicles: detail.depItvEngList.map(vehicle => ({
+                    id: vehicle.engId,
+                    name: vehicle.engLib,
+                    status: vehicle.engStatusCod,
+                    backgroundColor: `#${vehicle.engStatusBgRgb}`,
+                    textColor: `#${vehicle.engStatusFgRgb}`,
+                })),
+            })),
+            externalServices: parsedExt.map(service => ({
+                id: service.srvCod,
+                name: service.srvLib,
+                iconUrl: service.srvUrl,
+                status: service.srvStatusCod,
+                backgroundColor: `#${service.srvStatusBgRgb}`,
+                textColor: `#${service.srvStatusFgRgb}`,
+            })),
+            messages: parsedMessages,
+            agents: agents,
+            status: status,
+        };
+        return formattedResult;
+    }
 
     return {
         statutsEngins,
@@ -324,6 +386,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getInterNoFilter,
         getStatus,
         getTTS,
+        getInterDetail,
     };
 });
 
