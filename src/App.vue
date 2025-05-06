@@ -176,7 +176,7 @@ const initializeApp = async () => {
   console.log('Intervention details:', details);
   if (details){
     if (details.status){
-      views.value.push({viewname: 'interEnCours', time: 45});
+      views.value.push({viewname: 'interEnCours', time: 60});
     }
   }
   
