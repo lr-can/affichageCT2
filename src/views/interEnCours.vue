@@ -165,7 +165,7 @@
     await updateData();
     updateDuration();
     setInterval(() => { updateDuration(); updateData(); }, 60000);
-    setInterval(() => { cycleMsg(); updateDuration()}, 10000);
+    setInterval(() => { cycleMsg(); updateDuree()}, 10000);
     clear.value = true;
   });
   
@@ -278,7 +278,7 @@
   const updateDuree = () => {
     const duree = new Date(dataInter.value.update);
     const diff = Date.now() - duree;
-    const s = Math.floor((diff / 1000) % 60);
+    const s = Math.floor((diff / 1000) % 60 / 10) * 10;
     const m = Math.floor(diff / 60000);
     const h = Math.floor(m / 60);
     const min = String(m % 60).padStart(2, '0');
