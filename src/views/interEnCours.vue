@@ -529,13 +529,14 @@
         opacity: 0.5;
     }
     .updateTime {
-        position: absolute;
+        position: fixed;
         bottom: 1rem;
         left: 3rem;
         padding: 1rem;
         font-size: 0.8rem;
         color: white;
         margin: 1rem;
+        z-index: 2;
     }
     
   </style>
