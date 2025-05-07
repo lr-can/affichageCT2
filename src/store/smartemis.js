@@ -365,6 +365,7 @@ export const useSmartemis = defineStore('smartemis', () => {
             messages: parsedMessages,
             agents: agents,
             status: status,
+            update: updateDateTime,
         };
         return formattedResult;
     }

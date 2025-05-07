@@ -179,7 +179,7 @@ const initializeApp = async () => {
       views.value.push({viewname: 'interEnCours', time: 75});
       views.value = views.value.map(view => {
         if (view.viewName === 'lastInter') {
-          return { ...view, time: 0 };
+          return { ...view, time: 10 };
         }
         return view;
       });
@@ -198,11 +198,6 @@ const waitForInter = setInterval(async () => {
     console.log("Intervention is not first ordre départ.")
     let currentAlerteVehicule = currentVehicules.value.filter(vehicule => vehicule.statut == 'AL' || vehicule.statut == 'RE' || vehicule.statut == 'PP' || vehicule.statut == 'DE');
     if (!currentAlerteVehicule || currentAlerteVehicule.length == 0){
-      console.log("No vehicule in alert, not triggering interView.")
-      let message = `Renforts engagés sur l'intervention n°${data.numeroInter}.`
-      let audioNotif_ = await getTTS(message);
-      audioNotif_.volume = 0.6;
-      audioNotif_.play();
       return;
     }
   }

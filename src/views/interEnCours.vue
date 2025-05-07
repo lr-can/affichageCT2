@@ -139,6 +139,7 @@
         </section>
 
       </main>
+      <div class="updateTime">Mise à jour il y a {{ dureeMaJ }}</div>
     </div>
   </template>
   
@@ -164,7 +165,7 @@
     await updateData();
     updateDuration();
     setInterval(() => { updateDuration(); updateData(); }, 60000);
-    setInterval(() => { cycleMsg(); }, 10000);
+    setInterval(() => { cycleMsg(); updateDuration()}, 10000);
     clear.value = true;
   });
   
@@ -174,7 +175,15 @@
   }
   
   function updateDuration() {
-    const start = new Date(firstInter.value.dateTime);
+    const interDetails = dataInter.value.details.filter(inter => inter.numeroInter === firstInter.value.numeroInter);
+    let start = new Date(firstInter.value.dateTime);
+    if (interDetails.length > 0) {
+      const earliestInter = interDetails.reduce((earliest, current) => {
+        const currentDate = new Date(current.dateTime);
+        return currentDate < new Date(earliest.dateTime) ? current : earliest;
+      });
+      start = new Date(earliestInter.dateTime);
+    }
     const diff = Date.now() - start;
     const m = Math.floor(diff / 60000);
     const h = Math.floor(m / 60);
@@ -263,6 +272,27 @@
     const min = String(m%60).padStart(2,'0');
     return h<1?`${min} min`:`${h} h ${min} min`;
   }
+
+  const dureeMaJ = ref('');
+
+  const updateDuree = () => {
+    const duree = new Date(dataInter.value.update);
+    const diff = Date.now() - duree;
+    const s = Math.floor((diff / 1000) % 60);
+    const m = Math.floor(diff / 60000);
+    const h = Math.floor(m / 60);
+    const min = String(m % 60).padStart(2, '0');
+    const sec = String(s).padStart(2, '0');
+    if (h < 1 && m < 1) {
+      dureeMaJ.value = `${sec} s environ`;
+    } else if (h < 1) {
+      dureeMaJ.value = `${min} min ${sec} s environ`;
+    } else {
+      dureeMaJ.value = `${h} h ${min} min ${sec} s environ`;
+    }
+
+  }
+
   </script>
   
   <style scoped>
@@ -497,6 +527,15 @@
     }
     .fifty {
         opacity: 0.5;
+    }
+    .updateTime {
+        position: absolute;
+        bottom: 1rem;
+        left: 3rem;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: white;
+        margin: 1rem;
     }
     
   </style>
