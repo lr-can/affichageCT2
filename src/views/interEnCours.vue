@@ -7,7 +7,8 @@
       <header class="dashboard__header" v-if="clear">
         <div class="dashboard__header-content">
           <h1 class="dashboard__title">Intervention n°{{ numInter }}</h1>
-          <p class="dashboard__subtitle">Depuis {{ dureeInter }}</p>
+          <p class="dashboard__subtitle" v-if="isFinished">✅ Terminée</p>
+          <p class="dashboard__subtitle" v-if="!isFinished">🚨 Depuis {{ dureeInter }}</p>
         </div>
       </header>
   
@@ -154,6 +155,7 @@
   const dureeInter = ref('');
   const dataInter = ref({ externalServices: [], details: [], agents: [], messages: [] });
   const currentMsg = ref(0);
+  const isFinished = ref(false);
   
   onMounted(async () => {
     const raw = await smartemis.getInterNoFilter();
@@ -166,6 +168,7 @@
     updateDuration();
     setInterval(() => { updateDuration(); updateData(); }, 30000);
     setInterval(() => { cycleMsg(); updateDuree()}, 10000);
+    setInterval(() => check_if_finished(), 60000)
     clear.value = true;
   });
   
@@ -263,6 +266,13 @@
     return new URL(`../assets/vehicules/statuts/${statut}.png`, import.meta.url).href
   } 
 
+  const check_if_finished = async () => {
+    const engins = await smartemis.getStatus();
+    const intervention_status = Object.keys(statusOrder);
+    const enginsInIntervention = engins.filter(engin => intervention_status.includes(engin.statut));
+    isFinished.value = enginsInIntervention.length === 0 ? true : false;
+  }
+
   const giveAgentGrade = (grade) => gradeIcons[grade]||'';
   
   function calculateDuree(date) {
@@ -283,6 +293,9 @@
     const h = Math.floor(m / 60);
     const min = String(m % 60).padStart(2, '0');
     const sec = String(s).padStart(2, '0');
+    if (m >= 15){
+      dataInter.value = { externalServices: [], details: [], agents: [], messages: [] };
+    }
     if (h < 1 && m < 1) {
       dureeMaJ.value = `${sec} s environ`;
     } else if (h < 1) {
