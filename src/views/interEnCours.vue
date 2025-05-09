@@ -164,7 +164,7 @@
   
     await updateData();
     updateDuration();
-    setInterval(() => { updateDuration(); updateData(); }, 60000);
+    setInterval(() => { updateDuration(); updateData(); }, 30000);
     setInterval(() => { cycleMsg(); updateDuree()}, 10000);
     clear.value = true;
   });
