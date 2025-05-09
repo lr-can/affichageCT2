@@ -263,14 +263,32 @@
             statut = current_statut;
         }
     }
+    if (statut === 'Dl' || statut === 'DM') {
+        return new URL(`../assets/vehicules/statuts/finish.png`, import.meta.url).href
+    }
     return new URL(`../assets/vehicules/statuts/${statut}.png`, import.meta.url).href
   } 
 
+  const engins_Collonges_all = ref([]);
+  const status_color = {
+    "Dl": {backgroundColor: "#9CFF9C", textColor: "#00000"},
+    "DM": {backgroundColor: "#C3C3C3", textColor: "#00000"},
+  }
+
   const check_if_finished = async () => {
-    const engins = await smartemis.getStatus();
+    engins_Collonges_all.value = await smartemis.getStatus();
     const intervention_status = Object.keys(statusOrder);
     const enginsInIntervention = engins.filter(engin => intervention_status.includes(engin.statut));
     isFinished.value = enginsInIntervention.length === 0 ? true : false;
+    const vehicule_collonges = dataInter.value.details.filter(station => station.stationName === 'COLLONGE')[0]?.vehicles || [];
+    vehicule_collonges.forEach(vehicule => {
+      const matchingEngin = engins_Collonges_all.value.find(engin => engin.engLib === vehicule.engLib);
+      if (matchingEngin) {
+        vehicule.status = matchingEngin.statut;
+        vehicule.backgroundColor = status_color[vehicule.status]?.backgroundColor || 'white';
+        vehicule.textColor = status_color[vehicule.status]?.textColor || 'black';
+      }
+    });
   }
 
   const giveAgentGrade = (grade) => gradeIcons[grade]||'';
@@ -293,9 +311,6 @@
     const h = Math.floor(m / 60);
     const min = String(m % 60).padStart(2, '0');
     const sec = String(s).padStart(2, '0');
-    if (m >= 15){
-      dataInter.value = { externalServices: [], details: [], agents: [], messages: [] };
-    }
     if (h < 1 && m < 1) {
       dureeMaJ.value = `${sec} s environ`;
     } else if (h < 1) {
