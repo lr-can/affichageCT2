@@ -1,393 +1,553 @@
-import { ref } from 'vue';
-import { defineStore } from 'pinia';
+<template>
+    <div class="dashboard">
+      <!-- Background Blur -->
+      <div class="dashboard__background"></div>
+  
+      <!-- Header -->
+      <header class="dashboard__header" v-if="clear">
+        <div class="dashboard__header-content">
+          <h1 class="dashboard__title">Intervention n°{{ numInter }}</h1>
+          <p class="dashboard__subtitle" v-if="isFinished">✅ Terminée</p>
+          <p class="dashboard__subtitle" v-if="!isFinished">🚨 Depuis {{ dureeInter }}</p>
+        </div>
+      </header>
+  
+      <!-- Main Content -->
+      <main class="dashboard__content" v-if="clear">
+        <!-- Notification Info -->
+        <section class="card card--info">
+          <h3 class="card__title" :style="{ textTransform: 'uppercase', whiteSpace: 'pre-wrap', fontSize: '1.3rem' }">{{ firstInter.notificationTitre }}</h3>
+          <div class="left-align" :style="{textAlign: 'left'}">
+          <p class="card__meta">
+            <img class="icon-address" src="../assets/icons/address.svg"  style="height: 2rem; width: auto ; text-transform: uppercase; margin-right: 1rem;" />
+            <span> {{ firstInter.notificationVille }}</span>
+          </p>
+        </div>
+        </section>
 
-export const useSmartemis = defineStore('smartemis', () => {
-    const statutsEngins = ref([]);
-    const famillesEngins = ref([]);
-    const lastUpdateEngins = ref();
-    const personnelAvailable = ref({});
-    const statutsExtract = ref([]);
+        <!-- Stations & Vehicles -->
+        <section class="card card--stations custom2" v-if="dataInter.details?.length">
+            <div class="custom1">
+          <h2 class="card__title">Véhicules</h2>
+          <div class="stations">
+            <article
+              v-for="st in dataInter.details"
+              :key="st.stationId"
+              class="station"
+            >
+              <h3 class="station__name" :style="{display: 'flex', flexDirection: 'column', textAlign: 'left', gap: '0.2rem'}">
+                <span style="display: block; font-size: 0.7rem; color: #a7a7a7; line-height: 1;">{{ st.stationName }}</span>
+                <span style="font-size: 1rem; line-height: 1; margin-bottom: 0.3rem;">
+                  {{ st.stationFullName.length > 30 ? st.stationFullName.substring(0, 20) + '...' : st.stationFullName }}
+                </span>
+              </h3>
+              <div class="vehicles">
+                <span
+                  v-for="v in st.vehicles"
+                  :key="v.id"
+                  class="chip"
+                  :style="{ backgroundColor: v.backgroundColor, color: v.textColor }"
+                >
+                  {{ v.name }}
+                </span>
+              </div>
+            </article>
+          </div>
+        </div>
+        </section>
 
-    const getStatutsExtract = async () => {
-        const data = await fetch('/vehiculesStatuts.json');
-        const vehiculesStatutsExtract = await data.json();
-        statutsExtract.value = vehiculesStatutsExtract.vehicleStates;
+        <section class="card card--stations custom2 fifty" v-if="!dataInter.details?.length">
+            <div class="custom1">
+            <h2 class="card__title">Véhicules</h2>
+            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun véhicule engagé</p>
+            </div>
+        </section>
+  
+        <!-- External Services -->
+        <section class="card card--services" v-if="dataInter.externalServices?.length">
+          <h2 class="card__title">Services externes</h2>
+          <div class="services">
+            <span
+              v-for="svc in dataInter.externalServices"
+              :key="svc.id"
+              class="chip"
+              :style="{ backgroundColor: svc.backgroundColor, color: svc.textColor }"
+            >
+              {{ svc.name || svc.id }}
+            </span>
+          </div>
+        </section>
+
+        <section class="card card--services fifty" v-if="!dataInter.externalServices?.length">
+            <h2 class="card__title">Services externes</h2>
+            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun service externe engagé</p>
+        </section>
+
+        <section class="card card--messages custom3" v-if="dataInter.details?.length">
+            <img :src="img_url()" style="height: 170px; width: 170px; border-radius: 8px;" />
+        </section>
+
+        
+        <!-- Agents -->
+        <section class="card card--agents" v-if="dataInter.agents?.length">
+          <h2 class="card__title">Agents engagés</h2>
+          <div class="agents">
+            <div
+              v-for="agent in dataInter.agents"
+              :key="agent.matricule"
+              class="agent"
+              :style="{ borderBottom: '2px solid '+ agent.colorBgFul, backgroundColor: 'white' }"
+            >
+              <img :src="giveAgentGrade(agent.grade)" :alt="agent.grade" class="agent__icon" />
+              <p class="agent__name">{{ agent.nom }} {{ agent.prenom }}</p>
+            </div>
+          </div>
+        </section>
+        <section class="card card--agents fifty" v-if="!dataInter.agents?.length">
+            <h2 class="card__title">Agents engagés</h2>
+            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun agent engagé</p>
+        </section>
+
+        <section class="card custom2"></section>
+  
+        <!-- Messages Carousel -->
+        <section class="card card--messages" v-if="dataInter.messages?.length">
+          <h2 class="card__title">Messages</h2>
+          <div class="message-slider">
+            <div class="message" v-if="currentMsg !== null" :style="{backgroundColor : 'white', borderBottom: '1px solid dimgrey', borderRadius: '1rem'}">
+              <time class="message__time">Il y a {{ calculateDuree(new Date(dataInter.messages[currentMsg].time)) }}</time>
+              <p class="message__content">{{ dataInter.messages[currentMsg].message }}</p>
+            </div>
+            <div class="dots" v-if="dataInter.messages.length > 1">
+              <span
+                v-for="(_, idx) in dataInter.messages"
+                :key="idx"
+                class="dot"
+                :class="{ 'dot--active': idx === currentMsg }"
+                :style="{backgroundColor : 'white', borderBottom: '1px solid dimgrey'}"
+              ></span>
+            </div>
+          </div>
+        </section>
+        <section class="card card--messages fifty" v-if="!dataInter.messages?.length">
+            <h2 class="card__title">Messages</h2>
+            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun message</p>
+        </section>
+
+                        <!-- Map Image -->
+        <section class="card card--map custom2">
+          <img :src="giveLink()" alt="Carte de l'intervention" />
+        </section>
+
+      </main>
+      <div class="updateTime">Mise à jour il y a {{ dureeMaJ }}</div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue';
+  import { useSmartemis } from '../store/smartemis';
+  
+  const smartemis = useSmartemis();
+  const clear = ref(false);
+  const firstInter = ref({});
+  const numInter = ref(0);
+  const dureeInter = ref('');
+  const dataInter = ref({ externalServices: [], details: [], agents: [], messages: [] });
+  const currentMsg = ref(0);
+  const isFinished = ref(false);
+  
+  onMounted(async () => {
+    const raw = await smartemis.getInterNoFilter();
+    const sorted = raw.sort((a, b) => b.numeroInter - a.numeroInter);
+    const unique = sorted.filter((v,i,a) => a.findIndex(t => t.numeroInter===v.numeroInter)==i);
+    firstInter.value = unique[0]||{};
+    numInter.value = firstInter.value.numeroInter||0;
+  
+    await updateData();
+    updateDuration();
+    setInterval(() => { updateDuration(); updateData(); }, 30000);
+    setInterval(() => { cycleMsg(); updateDuree()}, 10000);
+    setInterval(() => check_if_finished(), 60000)
+    clear.value = true;
+  });
+  
+  async function updateData() {
+    const details = await smartemis.getInterDetail();
+    if(details) dataInter.value = details;
+  }
+  
+  function updateDuration() {
+    const interDetails = dataInter.value.details.filter(inter => inter.numeroInter === firstInter.value.numeroInter);
+    let start = new Date(firstInter.value.dateTime);
+    if (interDetails.length > 0) {
+      const earliestInter = interDetails.reduce((earliest, current) => {
+        const currentDate = new Date(current.dateTime);
+        return currentDate < new Date(earliest.dateTime) ? current : earliest;
+      });
+      start = new Date(earliestInter.dateTime);
     }
-    const getLibforStatutCode = (statutCode) => {
-        const statut = statutsExtract.value.find(statut => statut.code === statutCode);
-        return statut ? statut.name : '';
+    const diff = Date.now() - start;
+    const m = Math.floor(diff / 60000);
+    const h = Math.floor(m / 60);
+    const min = String(m % 60).padStart(2,'0');
+    dureeInter.value = h<1?`${min} min`:`${h} h ${min} min`;
+  }
+  
+  function cycleMsg() {
+    if(dataInter.value.messages.length>1) {
+      currentMsg.value = (currentMsg.value+1) % dataInter.value.messages.length;
     }
-    const getEnginsWithStatuts = async () => {
-        statutsEngins.value = [];
-        famillesEngins.value = [];
+  }
+  
+  const giveLink = () => {
+    return `https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=800&height=800&center=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat}&zoom=16&marker=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat};type:circle;color:%23ff0000;icon:sos;icontype:material;iconsize:small;strokecolor:%23ff0000&scaleFactor=1&apiKey=75c6e5ac06e84d3a95473195e7af529d`;
+};
 
-        await getStatutsExtract();
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-        const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%204', options);
-        const result = await response.json();
-        const [day, month, year, hour, minute, second] = result[0].latestUpdate.match(/\d+/g);
-        lastUpdateEngins.value = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
-        personnelAvailable.value = {
-            available: result[0].availablePersonCounter,
-            total: result[0].totalPersonCounter,
-        };
-        for (const vehicule of result) {
-            let nomPhonetique = "";
-            if (vehicule.engLib.includes('+')){
-                nomPhonetique = vehicule.engLib.replace('+', '').split(' ')[0].split('').join(' ') + " de remplacement";
-            } else if (vehicule.engLib.includes('VSAV')){
-                nomPhonetique = "V S A V " + vehicule.engLib.replace(' 0', ' ').split(' ')[1];
-            } else if (vehicule.engLib.startsWith('L')){
-                let nomPhonetiqueBase = vehicule.engLib.split(' ')[0];
-                let nomPhonetiqueDict = {
-                    "LBACHE" : "Lot bache",
-                    "LBALIS": "Lot balisage",
-                    "LCTHER": "Lot Caméra thermique",
-                    "LDNOY": "Lot dénoyage",
-                    "LECLE": "Lot éclairage",
-                    "LTRON": "Lot tronçonneuse",
-                }
-                if (nomPhonetiqueDict[nomPhonetiqueBase]){
-                    nomPhonetique = nomPhonetiqueDict[nomPhonetiqueBase] + " ";
-                } else {
-                    nomPhonetique = "Lot " + nomPhonetiqueBase + " ";
-                }
-            } else {
-                nomPhonetique = vehicule.engLib.split(' ')[0].split('').join(' ') + ' ';
-            }
-            const engin = {
-                id: vehicule.engId,
-                lib: vehicule.engLib,
-                nomPhonetique: nomPhonetique,
-                statut: vehicule.engStatusCod,
-                statutLib: getLibforStatutCode(vehicule.engStatusCod),
-                backgroundColor: `${vehicule.engStatusBgRgb == '0' ? 'black' : '#' + vehicule.engStatusBgRgb}`,
-                libColor: `${vehicule.engStatusFgRgb == '0' ? 'black' : '#' + vehicule.engStatusFgRgb}`,
-            };
-            const existingFamille = famillesEngins.value.find(famille => famille.famEngCod === vehicule.famEngCod);
-            if (!existingFamille) {
-                famillesEngins.value.push({
-                    famEngCod: vehicule.famEngCod,
-                    famEngLib: vehicule.famEngLib,
-                    engins: [],
-                });
-            } 
-            famillesEngins.value.find(famille => famille.famEngCod === vehicule.famEngCod).engins.push(engin);
-            statutsEngins.value.push(engin);
-        };
-    };
-    const filterEnginsInter = async () => {
-        const interStatutsCodes = ["PA", "SL", "DE", "AT", "AR", "ND", "PP", "RE", "AL"];
-        await getEnginsWithStatuts();
-        console.log("Statuts engins", statutsEngins.value);
-        return statutsEngins.value.filter(engin => interStatutsCodes.includes(engin.statut));
-    }
+  // Grades icons import
+  import Sap2CL from '../assets/grades/Sap 2CL.png';
+  import Sap1CL from '../assets/grades/Sap 1CL.png';
+  import Caporal from '../assets/grades/Caporal.png';
+  import CaporalChef from '../assets/grades/Caporal-Chef.png';
+  import Sergent from '../assets/grades/Sergent.png';
+  import SergentChef from '../assets/grades/Sergent-Chef.png';
+  import Adjudant from '../assets/grades/Adjudant.png';
+  import AdjudantChef from '../assets/grades/Adjudant-Chef.png';
+  import Lieutenant from '../assets/grades/Lieutenant.png';
+  import Capitaine from '../assets/grades/Capitaine.png';
+  import Commandant from '../assets/grades/Commandant.png';
+  import Professeur from '../assets/grades/Professeur.png';
+  import Infirmiere from '../assets/grades/Infirmière.png';
+  
+  const gradeIcons = {
+    'Sap 2CL': Sap2CL,
+    'Sap 1CL': Sap1CL,
+    "Caporal": Caporal,
+    'Caporal-Chef': CaporalChef,
+    "Sergent": Sergent,
+    'Sergent-Chef': SergentChef,
+    "Adjudante": Adjudant,
+    'Adjudant-Chef': AdjudantChef,
+    "Lieutenant": Lieutenant,
+    "Capitaine": Capitaine,
+    "Commandant": Commandant,
+    "Professeur": Professeur,
+    "Infirmière": Infirmiere,
+  };
 
-    async function getFireStationsInRhone(lon, lat) {
-        const url = "https://data.grandlyon.com/geoserver/service-departemental-metropolitain-d-incendie-et-de-secours-sdmis/ows?SERVICE=WFS&VERSION=2.0.0&request=GetFeature&typename=service-departemental-metropolitain-d-incendie-et-de-secours-sdmis:sdmis.caserne&outputFormat=application/json&SRSNAME=EPSG:4171&sortBy=gid";
-    
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-    
-            const data = await response.json();
-    
-            // Extraction des informations des casernes
-            const fireStations = data.features.map(feature => {
-                const { coordinates } = feature.geometry;
-                const { nom_officiel_site, type_site, adresse_physique, code_postal, commune, photo } = feature.properties;
-    
-                return {
-                    name: nom_officiel_site,
-                    type: type_site,
-                    lat: coordinates[1],
-                    lon: coordinates[0]
-                };
-            });
-    
-            // Fonction pour calculer la distance entre deux points géographiques
-            function haversineDistance(coords1, coords2) {
-                const [lon1, lat1] = coords1;
-                const [lon2, lat2] = coords2;
-                const R = 6371; // Rayon de la Terre en kilomètres
-                const dLat = (lat2 - lat1) * Math.PI / 180;
-                const dLon = (lon2 - lon1) * Math.PI / 180;
-                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c;
-            }
-    
-            // Filtrer les casernes sans "Collonges-au-Mont-d'Or"
-            let withoutCollonges = fireStations.filter(fireStation => fireStation.name !== "Collonges-au-Mont-d'Or");
-    
-            // Trouver la caserne "Collonges-au-Mont-d'Or"
-            const collongesStation = fireStations.find(fireStation => fireStation.name === "Collonges-au-Mont-d'Or");
-    
-            // Filtrer les 10 casernes les plus proches de "Collonges-au-Mont-d'Or"
-            const closestToCollonges = withoutCollonges
-                .map(station => ({
-                    ...station,
-                    distance: haversineDistance([collongesStation.lon, collongesStation.lat], [station.lon, station.lat])
-                }))
-                .sort((a, b) => a.distance - b.distance)
-                .slice(0, 10);
-    
-            // Filtrer les 10 casernes les plus proches des coordonnées fournies
-            const closestToCoordinates = withoutCollonges
-                .map(station => ({
-                    ...station,
-                    distance: haversineDistance([lon, lat], [station.lon, station.lat])
-                }))
-                .sort((a, b) => a.distance - b.distance)
-                .slice(0, 10);
-    
-            // Fusionner les deux listes et éliminer les doublons
-            const mergedList = [...new Set([...closestToCollonges, ...closestToCoordinates])]
-                .sort((a, b) => a.distance - b.distance)
-                .slice(0, 10);
-    
-            // Retourner la liste fusionnée
-            return mergedList;
-    
-        } catch (error) {
-            console.error("Erreur lors de la récupération des données:", error);
-            return [];
+  const statusOrder = {
+    'A': 0,
+    'RE': 1,
+    'RV': 1,
+    'AL': 2,
+    'DE': 3,
+    "PP": 3,
+    "PA": 4,
+    "SL": 5,
+    "TH": 6,
+    "AH": 7,
+    "PC": 8,
+    "QH": 9,
+    "RD": 10,
+    "RI": 11,
+    "MD": 12,
+    "MI": 13,
+}
+
+  const img_url = () => {
+    const engins_COLLONGES = dataInter.value.details.filter(station => station.stationName === 'COLLONGE')[0]?.vehicles || [];
+    let statut = 'A';
+    for (const engin of engins_COLLONGES) {
+        let current_statut = engin.status;
+        if (statusOrder[current_statut] > statusOrder[statut]) {
+            statut = current_statut;
         }
     }
+    return new URL(`../assets/vehicules/statuts/${statut}.png`, import.meta.url).href
+  } 
+
+  const check_if_finished = async () => {
+    const engins = await smartemis.getStatus();
+    const intervention_status = Object.keys(statusOrder);
+    const enginsInIntervention = engins.filter(engin => intervention_status.includes(engin.statut));
+    isFinished.value = enginsInIntervention.length === 0 ? true : false;
+  }
+
+  const giveAgentGrade = (grade) => gradeIcons[grade]||'';
+  
+  function calculateDuree(date) {
+    const diff = Date.now() - date;
+    const m = Math.floor(diff/60000);
+    const h = Math.floor(m/60);
+    const min = String(m%60).padStart(2,'0');
+    return h<1?`${min} min`:`${h} h ${min} min`;
+  }
+
+  const dureeMaJ = ref('');
+
+  const updateDuree = () => {
+    const duree = new Date(dataInter.value.update);
+    const diff = Date.now() - duree;
+    const s = Math.floor((diff / 1000) % 60 / 10) * 10;
+    const m = Math.floor(diff / 60000);
+    const h = Math.floor(m / 60);
+    const min = String(m % 60).padStart(2, '0');
+    const sec = String(s).padStart(2, '0');
+    if (h < 1 && m < 1) {
+      dureeMaJ.value = `${sec} s environ`;
+    } else if (h < 1) {
+      dureeMaJ.value = `${min} min ${sec} s environ`;
+    } else {
+      dureeMaJ.value = `${h} h ${min} min ${sec} s environ`;
+    }
+
+  }
+
+  </script>
+  
+  <style scoped>
+  .dashboard {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    color: #525252;
+  }
+  .dashboard__background {
+    position: absolute;
+    inset: 0;
+    background: url('../assets/backgrounds/interEnCours.jpg') center/cover no-repeat;
+    filter: blur(8px) brightness(0.9);
+    transform: scale(1.1);
+    z-index: 1;
+  }
+  .dashboard__header {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+  }
+  .dashboard__header-content {
+    max-width: 315px;
+    min-width: 315px;
+    margin: 0;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+  .dashboard__title {
+    font-size: 1.5rem;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .dashboard__subtitle {
+    font-size: 1.25rem;
+    margin: 0.25rem 0 0;
+  }
+  .dashboard__content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    transform: translateY(-2rem);
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .card__title {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+  }
+  .card--map {
+    overflow: hidden;
+
+  }
+  .card--map img {
+    width: 100%;
+    border-radius: 8px;
+    scale: 2.3;
+  }
+  .services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+  .vehicles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+  .card--stations {
+    max-height: 220px;
+    scrollbar-width: none;
+  }
+  .card--stations::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+  }
+  .chip {
+    padding: 0.25rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    min-width: 3rem;
+  }
+  .chip:first-child {
+    margin-left: 1rem;
+  }
+  .station {
+    flex: 1 1 200px;
+    margin-bottom: 1rem;
+    padding: 0.3rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  }
+  .station__name {
+    margin: 0 0 0.2rem;
+    font-size: 1.1rem;
+    text-align: left;
+    padding-left: 0.2rem;
+    font-weight: normal;
     
+  }
+  .agents {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem;
+    scrollbar-width: none; 
+  }
+  .agents::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+  }
+  .agent {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+  .agent:hover {
+    transform: translateY(-4px);
+  }
+  .agent__icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 0.25rem;
+    margin-right: 1rem;
+    border-radius: 3px;
 
-    const agentsInterList = ref([]);
-    const gradeOrder = {
-        "infirmiere": 1,
-        "capitaine": 2,
-        "lieutenant": 3,
-        "adjudant-chef": 4,
-        "adjudant": 5,
-        "sergent-chef": 6,
-        "sergent": 7,
-        "caporal-chef": 8,
-        "caporal": 9,
-        "Sap 1CL": 10,
-        "Sap 2CL": 11,
+  }
+  .agent__name {
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+  }
+  .message-slider {
+    position: relative;
+    overflow: hidden;
+  }
+  .message {
+    padding: 0.75rem;
+  }
+  .message__time {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  .message__content {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.4;
+  }
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+  .dot--active {
+    background: #333;
+  }
+  @media (max-width: 600px) {
+    .dashboard__content {
+      grid-template-columns: 1fr;
+      padding: 1rem;
     }
-    const getAgentsInter = async () => {
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-        const response = await fetch('https://api.cms-collonges.fr/getVehiculesandPeople', options);
-        const result = await response.json();
-        let agents = result.agentsData;
-        agents = agents.map(agent => {
-            return {
-                ...agent,
-                colorBgFul: "#" + agent.statusColor,
-            }
-        });
-        agents = agents.sort((a, b) => {
-            return gradeOrder[a.grade.toLowerCase()] - gradeOrder[b.grade.toLowerCase()];
-        });
-        agentsInterList.value = agents;
+    .dashboard__title {
+      font-size: 2rem;
     }
-
-    const getInterventionType = async (notificationTitre) => {
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-        const response = await fetch(`https://api.cms-collonges.fr/interventionType/${encodeURI(notificationTitre)}`, options);
-        const result = await response.json();
-        return result.type;
+  }
+  .custom2 {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .custom1 {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 575px;
+    max-height: 575px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+    .custom1::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Edge */
     }
-
-    const getInterNoFilter = async () => {
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-        const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%201', options);
-        const result = await response.json();
-        const mappedResult = result.map(intervention => {
-            const [day, month, year] = intervention.notificationDate.split('/');
-            const [hour, minute] = intervention.notificationHeure.split(':');
-            const dateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}`);
-
-            return {
-                ...intervention,
-                dateTime,
-            };
-        });
-        const sortedResult = await mappedResult.sort((a, b) => b.dateTime - a.dateTime);
-        return sortedResult;
-    };
-
-    const getInterventionsList = async () => {
-        const sortedResult = await getInterNoFilter();
-        const initialDateTime = sortedResult[0].dateTime;
-        let dateTimePlus15Min = new Date(sortedResult[0].dateTime);
-        let verif = dateTimePlus15Min.setMinutes(dateTimePlus15Min.getMinutes() + 15);
-        let now = new Date();
-        if (now.getTime() > verif) {
-            return {
-                identifiant: "Aucune intervention en cours",
-            }
-        }
-        sortedResult[0].dateTime = initialDateTime;
-        //if (now.getTime() > verif) {
-        //    sortedResult[0].dateTime = new Date(now.getTime() - 8 * 60 * 1000); // Simulate 4 minutes ago
-        //}
-        const typeInter = await getInterventionType(sortedResult[0].notificationTitre);
-        const sortedMappedResult = await sortedResult.map(intervention => {
-            return {
-                ...intervention,
-                typeInter,
-            };
-        });
-        return sortedMappedResult[0];
+    .card--agents{
+        min-height: 330px;
     }
-
-
-
-        const getEngins = async () => {
-            await getEnginsWithStatuts();
-            return famillesEngins.value;
-        }
-        const getLastUpdateEngins = async () => {
-            await getEnginsWithStatuts();
-            return lastUpdateEngins.value;
-        }
-        const getAgentsAvailable = async () => {
-            await getEnginsWithStatuts();
-            return personnelAvailable.value;
-        }
-        const getStatus = async () => {
-            await getEnginsWithStatuts();
-            return statutsEngins.value;
-        }
-
-        const getTTS = async (message) => {
-            const options = {
-                method: 'POST',
-                headers: {
-                  accept: 'application/json',
-                  'content-type': 'application/json',
-                  authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDBmODkwZTAtZWUwMi00NjgxLTlmNmItMzM2NmZjOGFkNWJlIiwidHlwZSI6ImFwaV90b2tlbiJ9.UJhTZXEbGdRH3FMDzEIBXDKL5yEw3VC-t5lUynA5vCA'
-                },
-                body: JSON.stringify({
-                  response_as_dict: true,
-                  attributes_as_list: false,
-                  show_original_response: false,
-                  rate: 5,
-                  pitch: 0,
-                  volume: 20,
-                  sampling_rate: 0,
-                  providers: "google/fr-FR-Standard-B",
-                  language: 'fr',
-                  text: message,
-                  option: 'MALE'
-                })
-              };
-            const response = await fetch('https://api.edenai.run/v2/audio/text_to_speech', options);
-            const result = await response.json();
-            return new Audio(result['google/fr-FR-Standard-B'].audio_resource_url);
-        }
+    .card--info{
+        min-width: 300px;
+    }
+    .card__meta{
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    .custom3 {
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .fifty {
+        opacity: 0.5;
+    }
+    .updateTime {
+        position: fixed;
+        bottom: 1rem;
+        left: 3rem;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: white;
+        margin: 1rem;
+        z-index: 2;
+    }
     
-    const getInterDetail = async () => {
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
-        const response1 = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%209', options);
-        const response2 = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%2010', options);
-        const casernes = await fetch('/artemisData.json');
-        const casernesData = await casernes.json();
-        const casernesDict = casernesData.fireunits.reduce((acc, caserne) => {
-            acc[caserne.shortname] = caserne.name;
-            return acc;
-        }
-        , {});
-        await getAgentsInter();
-        const agents = agentsInterList.value;
-        const result = await response1.json();
-        const result2 = await response2.json();
-        const parsedDetail = JSON.parse(result[0].ITV_detail);
-        const parsedExt = JSON.parse(result[0].ITV_Ext);
-        const updateTime = result[0].ITV_DT;
-        const [day, month, year, hour, minute, second] = updateTime.match(/\d+/g);
-        const updateDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
-        const now = new Date();
-        const diffInMinutes = (now - updateDateTime) / (1000 * 60);
-        const status = diffInMinutes < 20;
-        const parsedMessages = result2.map(item => ({
-            time: new Date(item.Heure),
-            message: item.Message,
-        }));
-
-        const formattedResult = {
-            details: parsedDetail.map(detail => ({
-                interventionId: detail.itvId,
-                stationId: detail.depItvCsId,
-                stationName: detail.depItvCsLib,
-                stationFullName: casernesDict[detail.depItvCsLib] || detail.depItvCsLib,
-                vehicles: detail.depItvEngList.map(vehicle => ({
-                    id: vehicle.engId,
-                    name: vehicle.engLib,
-                    status: vehicle.engStatusCod,
-                    backgroundColor: `#${vehicle.engStatusBgRgb}`,
-                    textColor: `#${vehicle.engStatusFgRgb}`,
-                })),
-            })),
-            externalServices: parsedExt.map(service => ({
-                id: service.srvCod,
-                name: service.srvLib,
-                iconUrl: service.srvUrl,
-                status: service.srvStatusCod,
-                backgroundColor: `#${service.srvStatusBgRgb}`,
-                textColor: `#${service.srvStatusFgRgb}`,
-            })),
-            messages: parsedMessages,
-            agents: agents,
-            status: status,
-            update: updateDateTime,
-        };
-        return formattedResult;
-    }
-
-    return {
-        statutsEngins,
-        famillesEngins,
-        lastUpdateEngins,
-        personnelAvailable,
-        getEnginsWithStatuts,
-        filterEnginsInter,
-        getFireStationsInRhone,
-        agentsInterList,
-        getAgentsInter,
-        getInterventionsList,
-        getEngins,
-        getLastUpdateEngins,
-        getAgentsAvailable,
-        getInterNoFilter,
-        getStatus,
-        getTTS,
-        getInterDetail,
-    };
-});
-
+  </style>
+  
