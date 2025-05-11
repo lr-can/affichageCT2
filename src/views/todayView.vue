@@ -186,13 +186,13 @@ const giveInfoGarde = () => {
     const day = now.getDay();
     const hour = now.getHours();
     if (day === 5) {
-        return "20h > lundi 6h";
+        return "19h > lundi 6h";
     } else if (day === 6 || day === 0) {
         return "> lundi 6h";
-    } else if (hour < 6 || hour > 20) {
+    } else if (hour < 6 || hour >= 19) {
         return "> 6h";
     }
-    return "20h > 6h";
+    return "19h > 6h";
 }
 const formatDate = (date) => {
     let date_obj = new Date(date)

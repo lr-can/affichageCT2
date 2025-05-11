@@ -110,7 +110,7 @@ setInterval(() => {
     nowMinute.value = new Date().getMinutes().toString().padStart(2, '0');
     nowSeconds.value = new Date().getSeconds().toString().padStart(2, '0');
     if (nowMinute.value === '59' && nowSeconds.value === '56'){
-        if (nowHour.value === '19'){
+        if (nowHour.value === '18'){
         if (today === 5 || today === 6){
             audio1.src = hourly_pips_sat;
             if (teamsAudio[currentTeam.value.equipe]) {
@@ -140,7 +140,7 @@ setInterval(() => {
             }
             return;
         }
-    } else if ((today === 6 && nowHour === '8') || (nowHour === '19' && reunionToday.value)){
+    } else if ((today === 6 && nowHour === '8') || (nowHour === '18' && reunionToday.value)){
         audio1.src = hourly_pips_sat;
         audio1.play();
     } else if (today != 6 && today != 0 && nowHour === '5' && nowMinute === '59' && nowSeconds === '56'){
