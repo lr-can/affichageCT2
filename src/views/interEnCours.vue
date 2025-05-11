@@ -276,9 +276,9 @@
         }
     }
     if (statut === 'A') {
-        return new URL(`../assets/vehicules/statuts/finish.png`, import.meta.url).href
+        return new URL(`../assets/vehicules/statuts/finish.gif`, import.meta.url).href
     }
-    return new URL(`../assets/vehicules/statuts/${statut}.png`, import.meta.url).href
+    return new URL(`../assets/vehicules/statuts/${statut}.gif`, import.meta.url).href
   } 
 
   const engins_Collonges_all = ref([]);
