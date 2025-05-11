@@ -334,7 +334,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         const updateDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
         const now = new Date();
         const diffInMinutes = (now - updateDateTime) / (1000 * 60);
-        const status = diffInMinutes < 20;
+        const status = diffInMinutes < 2000000000;
         const parsedMessages = result2.map(item => ({
             time: new Date(item.Heure),
             message: item.Message,

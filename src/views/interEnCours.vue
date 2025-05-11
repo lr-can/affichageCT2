@@ -168,13 +168,25 @@
     updateDuration();
     setInterval(() => { updateDuration(); updateData(); }, 30000);
     setInterval(() => { cycleMsg(); updateDuree()}, 10000);
-    setInterval(() => check_if_finished(), 60000)
     clear.value = true;
   });
   
   async function updateData() {
     const details = await smartemis.getInterDetail();
     if(details) dataInter.value = details;
+    engins_Collonges_all.value = await smartemis.getStatus();
+    const intervention_status = Object.keys(statusOrder);
+    const enginsInIntervention = engins_Collonges_all.value.filter(engin => intervention_status.includes(engin.statut));
+    isFinished.value = enginsInIntervention.length === 0 ? true : false;
+    const vehicule_collonges = dataInter.value.details.filter(station => station.stationName === 'COLLONGE')[0]?.vehicles || [];
+    vehicule_collonges.forEach(vehicule => {
+      const matchingEngin = engins_Collonges_all.value.find(engin => engin.engLib === vehicule.engLib);
+      if (matchingEngin && matchingEngin.statut == 'Dl' || matchingEngin.statut == 'DM') {
+        vehicule.status = matchingEngin.statut;
+        vehicule.backgroundColor = status_color[vehicule.status]?.backgroundColor || 'white';
+        vehicule.textColor = status_color[vehicule.status]?.textColor || 'black';
+      }
+    });
   }
   
   function updateDuration() {
@@ -263,7 +275,7 @@
             statut = current_statut;
         }
     }
-    if (statut === 'Dl' || statut === 'DM') {
+    if (statut === 'A') {
         return new URL(`../assets/vehicules/statuts/finish.png`, import.meta.url).href
     }
     return new URL(`../assets/vehicules/statuts/${statut}.png`, import.meta.url).href
@@ -273,22 +285,6 @@
   const status_color = {
     "Dl": {backgroundColor: "#9CFF9C", textColor: "#00000"},
     "DM": {backgroundColor: "#C3C3C3", textColor: "#00000"},
-  }
-
-  const check_if_finished = async () => {
-    engins_Collonges_all.value = await smartemis.getStatus();
-    const intervention_status = Object.keys(statusOrder);
-    const enginsInIntervention = engins.filter(engin => intervention_status.includes(engin.statut));
-    isFinished.value = enginsInIntervention.length === 0 ? true : false;
-    const vehicule_collonges = dataInter.value.details.filter(station => station.stationName === 'COLLONGE')[0]?.vehicles || [];
-    vehicule_collonges.forEach(vehicule => {
-      const matchingEngin = engins_Collonges_all.value.find(engin => engin.engLib === vehicule.engLib);
-      if (matchingEngin) {
-        vehicule.status = matchingEngin.statut;
-        vehicule.backgroundColor = status_color[vehicule.status]?.backgroundColor || 'white';
-        vehicule.textColor = status_color[vehicule.status]?.textColor || 'black';
-      }
-    });
   }
 
   const giveAgentGrade = (grade) => gradeIcons[grade]||'';
