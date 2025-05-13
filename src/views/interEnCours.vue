@@ -181,7 +181,7 @@
     const vehicule_collonges = dataInter.value.details.filter(station => station.stationName === 'COLLONGE')[0]?.vehicles || [];
     vehicule_collonges.forEach(vehicule => {
       const matchingEngin = engins_Collonges_all.value.find(engin => engin.lib === vehicule.name);
-      if (matchingEngin && matchingEngin.statut == 'Dl' || matchingEngin.statut == 'DM') {
+      if (matchingEngin && matchingEngin.statut != vehicule.status) {
         vehicule.status = matchingEngin.statut;
         vehicule.backgroundColor = status_color[vehicule.status]?.backgroundColor || 'white';
         vehicule.textColor = status_color[vehicule.status]?.textColor || 'black';
