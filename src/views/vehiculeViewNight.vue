@@ -30,7 +30,7 @@
         </div>
         <div class="vehiculeContainer" v-else style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
             <div style="margin-top: 1rem"><img src="../assets/vehiculeLoader.gif" alt="" width="150px" height="auto"></div>
-            <div style="margin-top: 1rem; color: black; font-size: 1.5rem;">Chargement des engins...</div>
+            <div style="margin-top: 1rem; color: white; font-size: 1.5rem;">Chargement des engins...</div>
         </div>
         <div class="info">
             <p> Mise à jour : Il y a {{ timeElapsed }} environ.</p>
@@ -103,26 +103,26 @@ const giveEnginImg = (engin) => {
             const vtutStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VTUT") && engin.statut === 'Dl'));
             const vlcdgStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VLCDG") && engin.statut === 'Dl'));
             if (vlcdgStatut && engin.lib.includes("LCTHER")){
-                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
             } else if (vtutStatut && !engin.lib.includes("LCTHER")){
-                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
             }
-            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
         } else {
-            return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
         }
     } else if (engin.statut == "DM"){
         if (engin.lib.startsWith('L') || engin.lib.includes('MPRGP')){
             const vtutStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VTUT") && engin.statut === 'Dl'));
             const vlcdgStatut = familles.value.find(famille => famille.engins.some(engin => engin.lib.includes("VLCDG") && engin.statut === 'Dl'));
             if (vlcdgStatut && engin.lib.includes("LCTHER")){
-                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
             } else if (vtutStatut && !engin.lib.includes("LCTHER")){
-                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+                return new URL(`../assets/vehicules/engins/Dl-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
             }
-            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
         } else {
-            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0]}.png`, import.meta.url).href
+            return new URL(`../assets/vehicules/engins/DM-${engin.lib.split(' ')[0].replace("+","")}.png`, import.meta.url).href
         }
     } else {
         return new URL(`../assets/vehicules/statuts/${engin.statut}.png`, import.meta.url).href
