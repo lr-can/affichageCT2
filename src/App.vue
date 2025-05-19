@@ -101,12 +101,12 @@ const showPopup = ref(false);
 const currentVehicules = ref([]);
 const filteredVehicules = computed(() => {
   if (!currentVehicules.value) return [];
-  const interStatutsCodes = ["DM", "Dl", "IN", "??"];
+  const interStatutsCodes = ["DM", "Dl", "IN", "XX"];
   return currentVehicules.value.filter(vehicule => !interStatutsCodes.includes(vehicule.statut));
 });
 const connectionProblem = computed(() => {
-    if (!currentVehicules.value) return false;
-  const interStatutsCodes = ["??"];
+    if (!currentVehicules.value) return [];
+  const interStatutsCodes = ["XX"];
   return currentVehicules.value.filter(vehicule => interStatutsCodes.includes(vehicule.statut)).length > 0;
 });
 const alertData = ref(null);
