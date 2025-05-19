@@ -289,9 +289,9 @@ const filterAndPushPopup = () => {
   }  
   if (connectionProblem.value){
     popupList.value.push({
-      img_url: `../assets/vehicules/statuts/IN.png`,
+      img_url: `../assets/vehicules/statuts/XX.png`,
       msg_part1: "Données",
-      msg_part2: "Erreur de récupération des données, certaines fonctionnalités peuvent ne pas fonctionner.",
+      msg_part2: "L'application fonctionne avec des données limitées",
       msg_part3: "",
       color_part3: "transparent",
       backgroundColor_part3: "transparent",
