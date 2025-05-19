@@ -83,8 +83,8 @@ onMounted(async () => {
     weatherCode.value +=  now.value.getHours() > 18 || now.value.getHours() < 6 ? '1' : '0';
     limitedForecast.value = [weatherForecast.value[2], weatherForecast.value[4], weatherForecast.value[6]];
     limitedForecast2.value = [weatherForecast.value[25], weatherForecast.value[49], weatherForecast.value[73]];
-    if (alertData.value && alertData.value.alerteMessage && alertData.value.alerteMessage.length > 350) {
-      alertData.value.alerteMessage = alertData.value.alerteMessage.slice(0, 350) + '…';
+    if (alertData.value && alertData.value.alerteMessage && alertData.value.alerteMessage.length >= 450) {
+      alertData.value.alerteMessage = alertData.value.alerteMessage.slice(0, 450) + '…';
     }
 });
 
