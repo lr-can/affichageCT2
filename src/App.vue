@@ -105,7 +105,7 @@ const filteredVehicules = computed(() => {
   return currentVehicules.value.filter(vehicule => !interStatutsCodes.includes(vehicule.statut));
 });
 const connectionProblem = computed(() => {
-    if (!currentVehicules.value) return [];
+    if (!currentVehicules.value) return false;
   const interStatutsCodes = ["??"];
   return currentVehicules.value.filter(vehicule => interStatutsCodes.includes(vehicule.statut)).length > 0;
 });
