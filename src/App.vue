@@ -291,6 +291,7 @@ setTimeout(() => {setInterval(async () => {
   if (interventionCheck.value) return;
   let newStatus = await smartemis.getStatus();
   let newStatusPopup = [];
+  let newStatusNotif = "";
   for (const vehicule of currentVehicules.value){
     let previousStatus = vehicule.statut;
     let newVehicule = await newStatus.find(engin => vehicule.lib === engin.lib);
@@ -307,7 +308,14 @@ setTimeout(() => {setInterval(async () => {
         type: 'newVehicule',
         nomPhonetique: newVehicule.nomPhonetique,
       });
+      newStatusNotif += `${newVehicule.lib} devient ${newVehicule.statutLib}, \n`;
     }
+  }
+  if (newStatusNotif !== ""){
+    smartemis.sendNotification({
+      newEngins: newStatusNotif,
+      newMessage: "null"
+    })
   }
   let audioNotif = new Audio();
   if (newStatusPopup.length > 0){
