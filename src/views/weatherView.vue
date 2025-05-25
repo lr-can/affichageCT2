@@ -5,7 +5,6 @@
     <div class="weathers">
         <div class="forecast" v-if="weatherForecast">
             <p>Actuellement</p>
-            <p>Collonges-Au-Mont-d'Or</p>
             <p>{{weatherLabel}}</p>
             <div class="display" v-if="weatherCode != '00000'">
                 <weatherIcon :size="2" :iconSrc="weatherCode" />
@@ -84,6 +83,9 @@ onMounted(async () => {
     weatherCode.value +=  now.value.getHours() > 18 || now.value.getHours() < 6 ? '1' : '0';
     limitedForecast.value = [weatherForecast.value[2], weatherForecast.value[4], weatherForecast.value[6]];
     limitedForecast2.value = [weatherForecast.value[25], weatherForecast.value[49], weatherForecast.value[73]];
+    if (alertData.value && alertData.value.alerteMessage && alertData.value.alerteMessage.length >= 550) {
+      alertData.value.alerteMessage = alertData.value.alerteMessage.slice(0, 550) + '…';
+    }
 });
 
 const getDayName = (day) => {
@@ -118,6 +120,7 @@ const giveStyle = () => {
         } 
         return {width: '400px', height: 'auto'};
     }
+
 }
 </script>
 <style scoped>

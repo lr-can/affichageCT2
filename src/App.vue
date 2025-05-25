@@ -101,8 +101,13 @@ const showPopup = ref(false);
 const currentVehicules = ref([]);
 const filteredVehicules = computed(() => {
   if (!currentVehicules.value) return [];
-  const interStatutsCodes = ["DM", "Dl", "IN"];
+  const interStatutsCodes = ["DM", "Dl", "IN", "XX"];
   return currentVehicules.value.filter(vehicule => !interStatutsCodes.includes(vehicule.statut));
+});
+const connectionProblem = computed(() => {
+    if (!currentVehicules.value) return [];
+  const interStatutsCodes = ["XX"];
+  return currentVehicules.value.filter(vehicule => interStatutsCodes.includes(vehicule.statut)).length > 0;
 });
 const alertData = ref(null);
 const popupInfo = ref({});
@@ -282,6 +287,30 @@ const filterAndPushPopup = () => {
       });
     }
   }  
+  if (connectionProblem.value){
+    popupList.value.push({
+      img_url: `../assets/vehicules/statuts/XX.png`,
+      msg_part1: "Données",
+      msg_part2: "L'application fonctionne avec des données limitées",
+      msg_part3: "",
+      color_part3: "transparent",
+      backgroundColor_part3: "transparent",
+      type: 'vehicule'
+    });
+    views.value = views.value.map(view => {
+      if (view.viewName === 'vehicule') {
+        return { ...view, time: 0 };
+      }
+      return view;
+    });
+  } else {
+    views.value = views.value.map(view => {
+      if (view.viewName === 'vehicule' && view.time === 0) {
+        return { ...view, time: 30 };
+      }
+      return view;
+    });
+  }
 }
 import { useSmartemis } from './store/smartemis';
 import InterEnCours from './views/interEnCours.vue';
