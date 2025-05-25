@@ -371,6 +371,7 @@ export const useSmartemis = defineStore('smartemis', () => {
     }
 
     const sendNotification = async (message) => {
+        console.log("Sending notification with message:", message);
 
         const options = {
             method: 'POST',

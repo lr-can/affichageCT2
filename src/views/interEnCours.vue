@@ -190,14 +190,14 @@
     });
     if (dataInter.value.messages.length !== lengthMessages.value) {
       let newMsg = dataInter.value.messages[dataInter.value.messages.length - 1];
-      let audio = new Audio("https://github.com/lr-can/affichageCT/raw/refs/heads/main/engChange.mp3");
-      audio.play();
       // If the new message is less than 5 minutes old, send notification
       if (newMsg && (Date.now() - new Date(newMsg.time)) < 3 * 60 * 1000) {
         await smartemis.sendNotification({
           newEngins: "null",
           newMessage: newMsg.message,
         })
+        let audio = new Audio("https://github.com/lr-can/affichageCT/raw/refs/heads/main/engChange.mp3");
+        audio.play();
       }
     } 
     lengthMessages.value = dataInter.value.messages.length;
