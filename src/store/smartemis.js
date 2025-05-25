@@ -375,16 +375,19 @@ export const useSmartemis = defineStore('smartemis', () => {
 
         const options = {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(message),
         };
         const response = await fetch('https://trigger.macrodroid.com/c09e260b-8ce5-48c3-b2b4-4a30d4f47c8b/enginsSmartemis', options);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return await response.json();
+        // The response may not be JSON, so use .text() first and try to parse as JSON
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            return text;
+        }
     }
 
     return {

@@ -199,8 +199,8 @@
         let audio = new Audio("https://github.com/lr-can/affichageCT/raw/refs/heads/main/engChange.mp3");
         audio.play();
       }
+      lengthMessages.value = dataInter.value.messages.length;
     } 
-    lengthMessages.value = dataInter.value.messages.length;
   }
   
   function updateDuration() {
