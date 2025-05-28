@@ -195,6 +195,7 @@
         await smartemis.sendNotification({
           newEngins: "null",
           newMessage: newMsg.message,
+          pharmacie: "null",
         })
         let audio = new Audio("https://github.com/lr-can/affichageCT/raw/refs/heads/main/engChange.mp3");
         audio.play();

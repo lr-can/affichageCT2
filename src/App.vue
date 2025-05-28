@@ -343,7 +343,8 @@ setTimeout(() => {setInterval(async () => {
   if (newStatusNotif !== ""){
     smartemis.sendNotification({
       newEngins: newStatusNotif,
-      newMessage: "null"
+      newMessage: "null",
+      pharmacie: "null"
     })
   }
   let audioNotif = new Audio();
