@@ -41,7 +41,7 @@
         <todayView />
       </div>
       <div class="backgroundWeather" v-if="backgroundIf('weather')" v-show="index == 1" key="BckGrndWeather" :style="{width: '720px', height: '480px'}"> 
-          <ytbBackGround  VidId="GZJiui6Lj78" />
+          <ytbBackGround  VidId="twUVtuuaVFw" />
       </div>
       <div v-show="index == 1 || initialize" key="weather"> 
         <weatherView />
