@@ -61,6 +61,9 @@
       <div v-show="index == 5 || initialize" key="interEnCours">
         <interEnCours />
       </div>
+      <div v-show="index == 6 || initialize" key="weatherWarning">
+        <weatherWarning />
+      </div>
       </TransitionGroup>
     </div>
   </div>
@@ -78,6 +81,7 @@ import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import vehiculeViewNight from './views/vehiculeViewNight.vue';
 import interEnCours from './views/interEnCours.vue';
+import weatherWarning from './views/weatherWarning.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
@@ -181,7 +185,12 @@ const initializeApp = async () => {
   console.log('Intervention details:', details);
   if (details){
     if (details.status){
-      views.value.push({viewname: 'interEnCours', time: 75});
+      views.value = views.value.map(view => {
+        if (view.viewName === 'interEnCours') {
+          return { ...view, time: 75 };
+        }
+        return view;
+      });
       views.value = views.value.map(view => {
         if (view.viewName === 'lastInter') {
           return { ...view, time: 10 };
@@ -236,12 +245,23 @@ const views = ref([
   time : 40},
   {viewName : 'traffic',
   time : 45},
+  {viewName : 'interEnCours',
+    time: 0},
+  {viewName : 'weatherWarning',
+    time: 0}
 ]);
 const main = async () => {
   while (true){
     await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
-    index.value = (index.value + 1) % views.value.length;
-    //index.value = 5;
+    let next_index = (index.value + 1) % views.value.length;
+    if (views.value[next_index].time === 0) { // if suivant time is 0, skip to next
+      next_index = (next_index + 1) % views.value.length;
+      if (views.value[next_index.time === 0]){ // if next next time is also 0, skip again
+        next_index = (next_index + 1) % views.value.length;
+      }
+    }
+    index.value = next_index;
+    //index.value = 6;
   }
 }
 main();
@@ -270,6 +290,14 @@ const filterAndPushPopup = () => {
         backgroundColor_part3: colorMapWeather[alertData.value.alerteSeverite],
         type: 'weather'
       });
+      if (alertData.value.alerteSeverite && ["Watch", "Warning"].includes(alertData.value.alerteSeverite)){
+        views.value = views.value.map(view => {
+          if (view.viewName === 'weatherWarning') {
+            return { ...view, time: 60 };
+          }
+          return view;
+        });
+      }
     }
   }
   if (filteredVehicules.value && filteredVehicules.value.length > 0){

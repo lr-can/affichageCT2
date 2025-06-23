@@ -44,7 +44,7 @@
                 <div v-if="alertData.icon" v-for="alert in alertData.icon.split(', ')" :key="alert">
                     <img :src="getImgUrl(alert)" alt="Alerte météo" :class="`${alertData.alerteSeverite}` + 'Img'" style="width: 50px; height: 50px; margin-top: 1rem;">
                     <div class="bold">	
-                    <p>{{ alertData.alerteType ? alertData.alerteType : ""}}</p>
+                    <p>{{ alert ? alert : ""}}</p>
                      </div>
                 </div>
             </div>
@@ -84,7 +84,8 @@ onMounted(async () => {
     limitedForecast.value = [weatherForecast.value[2], weatherForecast.value[4], weatherForecast.value[6]];
     limitedForecast2.value = [weatherForecast.value[25], weatherForecast.value[49], weatherForecast.value[73]];
     if (alertData.value && alertData.value.alerteMessage && alertData.value.alerteMessage.length >= 550) {
-      alertData.value.alerteMessage = alertData.value.alerteMessage.slice(0, 550) + '…';
+      alertData.value.alerteMessage = alertData.value.alerteMessage.length < 750 ? alertData.value.alerteMessage : alertData.value.alerteMessage.slice(0, 750) + '…';
+    imgURL.value = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.meteoalarm.org/en/live/region/FR?s=Rh%C3%B4ne#list";
     }
 });
 
@@ -111,7 +112,7 @@ const getImgUrl = (alert) => {
 };
 const giveStyle = () => {
     if (alertData.value){
-        if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 350){
+        if(alertData.value.alerteMessage && alertData.value.alerteMessage.length > 400){
             return {width: '80px', height: 'auto' };
         }    else if (alertData.value.alerteMessage && alertData.value.alerteMessage.length > 150) {
             return {width: '200px', height: 'auto' };
