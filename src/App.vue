@@ -32,7 +32,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() >= 23 || new Date().getHours() < 6">
+    <div v-if="new Date().getHours() > 23 || new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
@@ -261,7 +261,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    //index.value = 6;
+    //index.value = 4;
   }
 }
 main();

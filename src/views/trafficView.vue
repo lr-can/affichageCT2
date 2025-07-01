@@ -37,13 +37,51 @@
                 Gare de Collonges - Fontaines
             </div>
             <div class="sncf-info">
-                <div v-for="train in sncf" :key="train.numTrain" class="sameRow3" :style="train.comment == 'parti' ? {opacity: 0.5} : {}" :class="giveClass('container', train.comment)">
+                <div v-for="train in sncf" :key="train.numTrain" class="sameRow3" :style="train.comment == 'parti' ? {opacity: 0.5} : {}" :class="giveClass('container', train.comment)" style="margin-left: 1rem;">
                     <div class="networkLogo">
                         <img src="../assets/transport/TER.svg" alt="" width="30px" height="auto">
                     </div>
-                    <div class="trainNumber" :class="giveClass('comment', train.comment)"><span v-show="displayInfo1">{{ train.numTrain }}</span><span v-show="!displayInfo1">{{ train.comment }}</span></div>
-                    <div class="trainHour"  :class="giveClass('comment', train.comment)"><span v-show="displayInfo1" :class="giveClass('late', train.comment)">{{ train.baseDepart }}</span><span v-show="!displayInfo1">{{ train.realDepart }}</span></div>
-                    <div class="trainDirection">{{ train.destination }}</div>
+                    <div class="trainNumber" :class="giveClass('comment', train.comment)">
+                        <div v-if="displayInfo1" :class="giveClass('cancelled', train.comment)">{{ train.numTrain }}</div>
+                        <div v-else>{{ train.comment }}</div>
+                    </div>
+                    <div class="trainHour" :class="giveClass('comment', train.comment)">
+                        <div v-if="displayInfo1" :class="giveClass('late', train.comment)">{{ train.baseDepart }}</div>
+                        <div v-else :class="giveClass('cancelled', train.comment)">{{ train.realDepart }}</div>
+                    </div>
+                    <div class="trainDirection" :class="giveClass('comment', train.comment)">
+                        <template v-if="train === sncf[0]">
+                            <div style="display: flex; flex-direction: column;">
+                                <div>
+                                    <div v-if="train.disruption && !displayInfo2" class="gares_container">
+                                        <div class="auto-scroll" style="font-size: 1.1rem;">
+                                            {{ train.disruption }}
+                                        </div>
+                                    </div>
+                                    <div v-else :class="giveClass('cancelled', train.comment)" style="font-size: 1.1rem;">
+                                        {{ train.destination }}
+                                    </div>
+                                </div>
+                                <div class="gares_container">
+                                    <div class="gares">
+                                        {{ train.prochainsArrets }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div style="display: flex; flex-direction: column;">
+                                <div :class="giveClass('cancelled', train.comment)">
+                                    {{ train.destination }}
+                                </div>
+                                <div v-if="train.disruption" class="gares_container">
+                                    <div class="auto-scroll" style="font-size: 0.8rem;">
+                                        {{ train.disruption }}
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
 
@@ -58,6 +96,7 @@ const tcl = ref();
 const sncf = ref();
 const displayInfo1 = ref(true);
 const asAwait = ref(false);
+const displayInfo2 = ref(false);
 const transportation = useTransportation();
 onMounted(async () => {
     await transportation.getData();
@@ -71,6 +110,7 @@ setInterval( async () => {
     await transportation.getData();
     tcl.value = transportation.tcl;
     sncf.value = transportation.sncf;
+    displayInfo2.value = !displayInfo2.value;
 }, 15000);
 setInterval(() => {
     displayInfo1.value = !displayInfo1.value;
@@ -87,6 +127,8 @@ const giveClass = (type, comment) => {
             return 'delayBorder';
         } else if (comment === 'parti') {
             return 'goneBorder';
+        } else if (comment === 'supprimé'){
+            return 'cancelledBorder';
         } else {
             return 'onTimeBorder';
         }
@@ -97,11 +139,15 @@ const giveClass = (type, comment) => {
             return 'delay';
         } else if (comment === 'parti') {
             return 'gone';
+        } else if (comment === 'supprimé') {
+            return 'cancelled';
         } else {
             return '';
         }
+    } else if (type === 'cancelled') {
+        return comment === 'supprimé' ? 'crossedText' : '';
     } else if (type === 'late') {
-        return comment.includes('retard') ? 'crossedText' : '';
+        return comment.includes('retard') || comment.includes('supprimé') ? 'crossedText' : '';
     }
 }
 const giveBusClass = (direction) => {
@@ -262,18 +308,18 @@ const giveBlinkClass = (prochainDepart) => {
     text-decoration: line-through;
 }
 .hardDelayBorder {
-    border-left: 2px solid #f60700;
+    border-left: 2px solid #e74c3c;
     animation: hardDelay 2s infinite ease-in-out;
 }
 @keyframes hardDelay {
     0% {
-        border-left: 2px solid #f60700;
+        border-left: 2px solid #e74c3c;
     }
     50% {
         border-left: 2px solid #f6080000;
     }
     100% {
-        border-left: 2px solid #ff0000;
+        border-left: 2px solid #e74c3c;
     }
 }
 
@@ -321,7 +367,7 @@ const giveBlinkClass = (prochainDepart) => {
     }
 }
 .hardDelay {
-    color: #f60700;
+    color: #e74c3c;
 }
 .delay {
     color: #fc5d00;
@@ -332,6 +378,26 @@ const giveBlinkClass = (prochainDepart) => {
 .onTime {
     color: #0078f3;
 }
+
+.cancelledBorder {
+    border-left: 2px solid #f60700;
+}
+.cancelled {
+    color: #f60700;
+}
+@keyframes cancelled {
+    0% {
+        border-left: 2px solid #f60700;
+    }
+    50% {
+        border-left: 2px solid #f6070000;
+    }
+    100% {
+        border-left: 2px solid #f60700;
+    }
+    
+}
+
 .networkLogo {
     width: 5%;
     padding-left: 0.5rem;
@@ -341,10 +407,10 @@ const giveBlinkClass = (prochainDepart) => {
 }
 .trainDirection {
     width: 60%;
+    max-width: 60%;
     text-align: left;
     padding-left: 1rem;
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
 }
 .trainHour {
@@ -385,5 +451,33 @@ const giveBlinkClass = (prochainDepart) => {
     100% {
         opacity: 1;
     }
+}
+.auto-scroll {
+    overflow: hidden;
+    white-space: nowrap;
+    width: fit-content;
+    animation: scroll 10s ease-in-out infinite;
+}
+@keyframes scroll {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+.gares_container {
+    padding-left: 1rem;
+    max-width: 80%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.gares {
+    font-size: 0.8em;
+    color: #666666;
+    overflow: hidden;
+    white-space: nowrap;
+    width: fit-content;
+    animation: scroll 25s linear infinite;
 }
 </style>
