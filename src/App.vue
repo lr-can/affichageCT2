@@ -365,9 +365,28 @@ setTimeout(() => {setInterval(async () => {
         type: 'newVehicule',
         nomPhonetique: newVehicule.nomPhonetique,
       });
-      newStatusNotif += `${newVehicule.lib} devient ${newVehicule.statutLib}, \n`;
     }
   }
+  if (newStatusPopup.length > 0){
+    for (const vehicule of newStatusPopup){
+    const statusMap = {};
+    for (const vehicule of newStatusPopup) {
+        if (!statusMap[vehicule.msg_part3]) {
+            statusMap[vehicule.msg_part3] = [];
+        }
+        statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
+    }
+  }
+    for (const status in Object.keys(statusMap)){
+    if (statusMap[status].length > 1){
+      const lastVehicule = statusMap[status].pop();
+      newStatusNotif += `${statusMap[status].join(', ')} et ${lastVehicule} deviennent ${status} \n`;
+      } else {
+        newStatusNotif += `${statusMap[status][0]} devient ${status} \n`;
+      }
+    }
+  }
+  
   if (newStatusNotif !== ""){
     smartemis.sendNotification({
       newEngins: newStatusNotif,
