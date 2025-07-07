@@ -95,6 +95,7 @@ const weatherStore = useWeather();
 const interventionCheck = ref(false);
 const interventionData = ref({});
 const initialize = ref(true);
+const numberOfMessagesRadio = ref(0);
 
 const colorMapWeather = {
   "Advisory": '#f1c40f',
@@ -347,6 +348,24 @@ const smartemis = useSmartemis();
 setTimeout(() => {setInterval(async () => {
   if (interventionCheck.value) return;
   let newStatus = await smartemis.getStatus();
+  let messages = await smartemis.getMessagesRadio();
+  if (messages && messages.length > 0){
+        numberOfMessagesRadio.value = messages.length;
+        let newMsg = messages.pop();
+        if (newMsg && (Date.now() - new Date(newMsg.time)) < 10 * 60 * 1000) {
+        await smartemis.sendNotification({
+          newEngins: "null",
+          newMessage: newMsg.message,
+          pharmacie: "null",
+        })
+        let audio = new Audio("https://github.com/lr-can/affichageCT/raw/refs/heads/main/engChange.mp3");
+        audio.play();
+      }
+    } else if (messages && messages.length < numberOfMessagesRadio.value){
+        numberOfMessagesRadio.value = messages.length;
+    } else {
+        numberOfMessagesRadio.value = 0
+    };
   let newStatusPopup = [];
   let newStatusNotif = "";
   for (const vehicule of currentVehicules.value){
