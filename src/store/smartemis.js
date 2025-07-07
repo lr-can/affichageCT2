@@ -370,6 +370,22 @@ export const useSmartemis = defineStore('smartemis', () => {
         return formattedResult;
     }
 
+    const getMessagesRadio = async () => {
+                const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%2010', options);
+        const result = await response.json();
+        const parsedMessages = result.map(item => ({
+            time: new Date(item.Heure),
+            message: item.Message,
+        }));
+        return parsedMessages
+    }
+
     const sendNotification = async (message) => {
         console.log("Sending notification with message:", message);
 
@@ -410,6 +426,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getInterDetail,
         getInterventionType,
         sendNotification,
+        getMessagesRadio,
     };
 });
 
