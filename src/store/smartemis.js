@@ -406,6 +406,18 @@ export const useSmartemis = defineStore('smartemis', () => {
         }
     }
 
+    const isArah = async () => {
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%208', options);
+        const result = await response.json();
+        return result[0].isArah === 'OUI';
+    }
+
     return {
         statutsEngins,
         famillesEngins,
@@ -427,6 +439,7 @@ export const useSmartemis = defineStore('smartemis', () => {
         getInterventionType,
         sendNotification,
         getMessagesRadio,
+        isArah,
     };
 });
 

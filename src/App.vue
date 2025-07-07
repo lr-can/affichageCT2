@@ -96,6 +96,7 @@ const interventionCheck = ref(false);
 const interventionData = ref({});
 const initialize = ref(true);
 const numberOfMessagesRadio = ref(0);
+const isArah = ref(false);
 
 const colorMapWeather = {
   "Advisory": '#f1c40f',
@@ -170,6 +171,7 @@ const initializeApp = async () => {
   const now = new Date();
   const minutes = now.getMinutes();
   const reloadTime = minutes > 40 ? 25 * 60 * 1000 : 20 * 60 * 1000;
+  isArah.value = await smartemis.isArah();
   regularTimeout = setTimeout(() => {
     window.location.reload();
   }, reloadTime);
@@ -185,7 +187,7 @@ const initializeApp = async () => {
   const details = await smartemis.getInterDetail();
   console.log('Intervention details:', details);
   if (details){
-    if (details.status){
+    if (details.status && !isArah.value){
       views.value = views.value.map(view => {
         if (view.viewName === 'interEnCours') {
           return { ...view, time: 75 };
@@ -349,6 +351,20 @@ setTimeout(() => {setInterval(async () => {
   if (interventionCheck.value) return;
   let newStatus = await smartemis.getStatus();
   let messages = await smartemis.getMessagesRadio();
+  isArah.value = await smartemis.isArah();
+  if (isArah.value){
+    clearInterval(waitForInter);
+    views.value = views.value.map(view => {
+        if (
+        view.viewName === 'vehicule' ||
+        view.viewName === 'interEnCours' ||
+        view.viewName === 'interView'
+        ) {
+        return { ...view, time: 0 };
+        }
+        return view;
+      });
+  }
   if (messages && messages.length > 0){
         numberOfMessagesRadio.value = messages.length;
         let newMsg = messages.pop();
@@ -387,14 +403,12 @@ setTimeout(() => {setInterval(async () => {
     }
   }
   if (newStatusPopup.length > 0){
-    for (const vehicule of newStatusPopup){
     const statusMap = {};
     for (const vehicule of newStatusPopup) {
         if (!statusMap[vehicule.msg_part3]) {
             statusMap[vehicule.msg_part3] = [];
         }
         statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
-    }
   }
     for (const status in Object.keys(statusMap)){
     if (statusMap[status].length > 1){
@@ -415,6 +429,9 @@ setTimeout(() => {setInterval(async () => {
   }
   let audioNotif = new Audio();
   if (newStatusPopup.length > 0){
+    if (isArah.value){
+      console.log('Arah mode, no audio notification');
+    } else {
     showPopup.value = false;
     await new Promise((resolve) => setTimeout(resolve, 1000));
     popupList.value =  newStatusPopup;
@@ -439,6 +456,7 @@ setTimeout(() => {setInterval(async () => {
     }
     audioNotif.volume = 0.5;
     audioNotif.play();
+  }
   }
   }
   currentVehicules.value = newStatus;
