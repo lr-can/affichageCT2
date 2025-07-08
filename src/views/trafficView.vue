@@ -212,26 +212,9 @@ const giveBlinkClass = (prochainDepart) => {
     opacity: 0.9;
     transition: all 3s;
     overflow: hidden;
-    animation: hide 20s;
     text-align: left;
 }
-@keyframes hide {
-    0% {
-        opacity: 0.9;
-    }
-    49% {
-        opacity: 0.9;
-    }
-    50% {
-        opacity: 0.1;
-    }
-    99% {
-        opacity: 0.1;
-    }
-    100% {
-        opacity: 0.9;
-    }
-}
+
 .interContainer > div:first-child {
     z-index: 10;
     width: 100%;

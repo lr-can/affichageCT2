@@ -85,6 +85,9 @@ import weatherWarning from './views/weatherWarning.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
+import { useSmartemis } from './store/smartemis';
+import InterEnCours from './views/interEnCours.vue';
+const smartemis = useSmartemis();
 
 import IT from './assets/sounds/IT.wav';
 import Dl from './assets/sounds/Dl.wav';
@@ -343,9 +346,7 @@ const filterAndPushPopup = () => {
     });
   }
 }
-import { useSmartemis } from './store/smartemis';
-import InterEnCours from './views/interEnCours.vue';
-const smartemis = useSmartemis();
+
 
 setTimeout(() => {setInterval(async () => {
   if (interventionCheck.value) return;
