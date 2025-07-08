@@ -359,7 +359,8 @@ setTimeout(() => {setInterval(async () => {
         if (
         view.viewName === 'vehicule' ||
         view.viewName === 'interEnCours' ||
-        view.viewName === 'interView'
+        view.viewName === 'interView' ||
+          view.viewName === 'lastInter
         ) {
         return { ...view, time: 0 };
         }
