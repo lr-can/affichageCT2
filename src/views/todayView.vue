@@ -57,22 +57,8 @@
                     </div>
                 </div>
             </div>
-            <div class="teamsContainer">
-                <div :style="{textTransform: 'uppercase', color: 'black'}">
-                        Prochaine réunion
-                </div>
-                <div class="nextTeam">
-                    <div class="teamTitle nextReu" :style="{fontSize: '1.2em', backgroundColor: getBackGroundColor(), color: getColor()}">
-                        <div>
-                            {{ giveDuration("nextReu")}} à 19h
-                        </div>
-                        <div class="nextReuOrganisation" v-if="fullPlanning && fullPlanning.length > 0">
-                            <calendar-garde
-                                :calendar="fullPlanning"
-                            />
-                        </div>
-                    </div>
-                </div>
+            <div class="teamsContainer" v-if="fullPlanning && fullPlanning.length > 0">
+                <calendarGarde :calendar="fullPlanning" />
             </div>
         </div>
         <div class="fullRow">
@@ -127,6 +113,7 @@ const teamColors = ref({
 onMounted(async () => {
     const planningTeams = await planning.getCurrentTeamAndNextTeam();
     fullPlanning.value = await planning.getFullPlanning();
+    console.log(fullPlanning.value);
     const data = planningTeams.planningData;
     currentTeam.value = data.currentTeam;
     nextTeam.value = data.nextTeam;
