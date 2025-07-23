@@ -85,6 +85,9 @@
                     <div v-if="train.voie && train.voie !== ''" class="voie">
                         {{ train.voie }}
                     </div>
+                    <div v-else class="voie_empty">
+                        X
+                    </div>
                 </div>
             </div>
 
@@ -477,5 +480,17 @@ const giveBlinkClass = (prochainDepart) => {
     padding-bottom: 0.2rem;
     border-radius: 5px;
     border: 1px solid #0078f3;
+}
+.voie_empty {
+    width: 5%;
+    margin-right: 0.5rem;
+    text-align: center;
+    font-weight: bold;
+    color: transparent;
+    padding: 0.5rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    border-radius: 5px;
+    border: 1px solid transparent;
 }
 </style>
