@@ -468,11 +468,13 @@ const giveBlinkClass = (prochainDepart) => {
 }
 .voie {
     width: 5%;
-    margin-right: 0;
+    margin-right: 0.5rem;
     text-align: center;
     font-weight: bold;
     color: #0078f3;
     padding: 0.5rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
     border-radius: 5px;
     border: 1px solid #0078f3;
 }
