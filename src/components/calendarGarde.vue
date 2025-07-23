@@ -65,7 +65,7 @@ const calendarDays = computed(() => {
 
 .calendar-header {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 0.8em;
     font-weight: bold;
     margin-bottom: 20px;
 }
@@ -73,13 +73,13 @@ const calendarDays = computed(() => {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    gap: 2px;
 }
 
 .calendar-day-header {
     text-align: center;
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 0.3em;
 }
 
 .calendar-day {
@@ -89,50 +89,12 @@ const calendarDays = computed(() => {
     font-size: 0.8em;
 }
 
-@media (max-width: 768px) {
-    .calendar-header {
-        font-size: 1.2em;
-    }
-
-    .calendar-grid {
-        gap: 5px;
-    }
-
-    .calendar-day-header {
-        font-size: 0.8em;
-    }
-
-    .calendar-day {
-        font-size: 0.7em;
-        padding: 5px;
-    }
-}
-
-@media (max-width: 480px) {
-    .calendar-header {
-        font-size: 1em;
-    }
-
-    .calendar-grid {
-        gap: 3px;
-    }
-
-    .calendar-day-header {
-        font-size: 0.7em;
-    }
-
-    .calendar-day {
-        font-size: 0.6em;
-        padding: 3px;
-    }
-}
-
 .past-day {
     color: grey;
 }
 
 .day-number {
-    font-size: 1.2em;
+    font-size: 0.8em;
 }
 
 .garde-dot {
@@ -141,6 +103,7 @@ const calendarDays = computed(() => {
     border-radius: 50%;
     margin: auto;
     margin-top: 5px;
+    display: block;
 }
 
 .garde-dot.A {
