@@ -109,27 +109,27 @@ const calendarDays = computed(() => {
     font-size: 0.5em;
 }
 
-.garde-dot.A {
+.A {
     border-bottom: 2px solid #a02b93;
 }
 
-.garde-dot.B {
+.B {
     border-bottom: 2px solid #4ea72e;
 }
 
-.garde-dot.C {
+.C {
     border-bottom: 2px solid #ffc000;
 }
 
-.garde-dot.D {
+.D {
     border-bottom: 2px solid #e97132;
 }
 
-.garde-dot.E {
+.E {
     border-bottom: 2px solid #00b0f0;
 }
 
-.garde-dot.F {
+.F {
     border-bottom: 2px solid #ff0000;
 }
 </style>
