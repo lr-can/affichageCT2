@@ -54,12 +54,13 @@ const calendarDays = computed(() => {
 <style scoped>
 .calendar-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 100%;
     margin: auto;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    box-sizing: border-box;
 }
 
 .calendar-header {
@@ -78,12 +79,52 @@ const calendarDays = computed(() => {
 .calendar-day-header {
     text-align: center;
     font-weight: bold;
+    font-size: 0.9em;
 }
 
 .calendar-day {
     text-align: center;
     padding: 10px;
     border-radius: 5px;
+    font-size: 0.8em;
+}
+
+@media (max-width: 768px) {
+    .calendar-header {
+        font-size: 1.2em;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .calendar-day-header {
+        font-size: 0.8em;
+    }
+
+    .calendar-day {
+        font-size: 0.7em;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-header {
+        font-size: 1em;
+    }
+
+    .calendar-grid {
+        gap: 3px;
+    }
+
+    .calendar-day-header {
+        font-size: 0.7em;
+    }
+
+    .calendar-day {
+        font-size: 0.6em;
+        padding: 3px;
+    }
 }
 
 .past-day {
