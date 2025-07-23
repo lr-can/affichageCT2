@@ -39,7 +39,10 @@ const calendarDays = computed(() => {
     for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(currentYear, today.getMonth(), i);
         const isPast = date < today;
-        const garde = props.calendar.find((entry) => entry.Date === date.toISOString().split('T')[0]);
+        const garde = props.calendar.find((entry) => {
+            const entryDate = new Date(entry.Date);
+            return entryDate.toDateString() === date.toDateString();
+        });
         days.push({
             date,
             isPast,
