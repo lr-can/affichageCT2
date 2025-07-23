@@ -66,7 +66,7 @@
                         <div>
                             {{ giveDuration("nextReu")}} à 19h
                         </div>
-                        <div class="nextReuOrganisation" v-if="fullPlanning">
+                        <div class="nextReuOrganisation" v-if="fullPlanning && fullPlanning.length > 0">
                             <calendar-garde
                                 :calendar="fullPlanning"
                             />
