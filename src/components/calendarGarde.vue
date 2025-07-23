@@ -12,8 +12,7 @@
                 :key="index"
                 :class="['calendar-day', { 'past-day': day.isPast }]"
             >
-                <div class="day-number">{{ day.date.getDate() }}</div>
-                <div v-if="day.equipeGarde" :class="['garde-dot', day.equipeGarde]">-</div>
+                <div :class="['day-number', day.isPast ? "" : day.equipeGarde]">{{ day.date.getDate() }}</div>
             </div>
         </div>
     </div>
@@ -85,7 +84,7 @@ const calendarDays = computed(() => {
     text-align: center;
     padding: 10px;
     border-radius: 5px;
-    font-size: 0.5em;
+    font-size: 0.8em;
 }
 
 .past-day {
@@ -108,26 +107,26 @@ const calendarDays = computed(() => {
 }
 
 .garde-dot.A {
-    background-color: #a02b93;
+    border-bottom: 2px solid #a02b93;
 }
 
 .garde-dot.B {
-    background-color: #4ea72e;
+    border-bottom: 2px solid #4ea72e;
 }
 
 .garde-dot.C {
-    background-color: #ffc000;
+    border-bottom: 2px solid #ffc000;
 }
 
 .garde-dot.D {
-    background-color: #e97132;
+    border-bottom: 2px solid #e97132;
 }
 
 .garde-dot.E {
-    background-color: #00b0f0;
+    border-bottom: 2px solid #00b0f0;
 }
 
 .garde-dot.F {
-    background-color: #ff0000;
+    border-bottom: 2px solid #ff0000;
 }
 </style>
