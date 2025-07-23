@@ -67,11 +67,34 @@ export const useWeather = defineStore('weather', () => {
             planningData
         };
     }
+
+    const getFullPlanning = async () => {
+        const options = {
+            method: 'GET',
+            headers: {accept: 'application/json', 'accept-encoding': 'deflate, gzip, br'}
+          };
+        const data = await fetch('https://opensheet.elk.sh/1zFKFK_tlFQD3_Y6JkgRYm_E0THA6AVkYGYJjMpM8DPY/Feuille%201', options)
+        const fullPlanningData = await data.json();
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+
+        const mappedPlanningData = fullPlanningData
+          .map(item => ({
+            Date: new Date(item.Date.split('/').reverse().join('-')), // Convert "DD/MM/YYYY" to "YYYY-MM-DD" and create a Date object
+            equipeGarde: item.equipeGarde
+          }))
+          .filter(item => item.Date.getMonth() === currentMonth && item.Date.getFullYear() === currentYear);
+        return {
+            mappedPlanningData
+        };
+    }
     return {
         weather,
         getWeather,
         alertWeather,
         vigilanceMap,
         getCurrentTeamAndNextTeam,
+        getFullPlanning
     }
 });

@@ -66,8 +66,10 @@
                         <div>
                             {{ giveDuration("nextReu")}} à 19h
                         </div>
-                        <div class="nextReuOrganisation">
-                            <span :style="{fontSize: '0.8rem', fontWeight: 'normal'}">Organisée par l'équipe</span> <span :style="{backgroundColor: teamColors[nextReunionTeam], color: 'white'}" class="nextReuTeam">{{ nextReunionTeam }}</span>
+                        <div class="nextReuOrganisation" v-if="fullPlanning">
+                            <calendar-garde
+                                :calendar="fullPlanning"
+                            />
                         </div>
                     </div>
                 </div>
@@ -101,6 +103,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useWeather } from '../store/weather';
+import calendarGarde from '../components/calendarGarde.vue';
 const planning = useWeather();
 const currentTeam = ref(null);
 const nextTeam = ref(null);
@@ -110,6 +113,7 @@ const nextReu = ref(null);
 const nextAniv = ref(null);
 const nextEvent = ref(null);
 const nextReunionTeam = ref(null);
+const fullPlanning = ref(null);
 
 const teamColors = ref({
     "A": "#a02b93",
@@ -122,6 +126,7 @@ const teamColors = ref({
 
 onMounted(async () => {
     const planningTeams = await planning.getCurrentTeamAndNextTeam();
+    fullPlanning.value = await planning.getFullPlanning();
     const data = planningTeams.planningData;
     currentTeam.value = data.currentTeam;
     nextTeam.value = data.nextTeam;
