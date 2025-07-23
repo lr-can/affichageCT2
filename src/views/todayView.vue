@@ -337,14 +337,7 @@ img {
     background-color: #ffffff59;
     margin-right: 2rem;
 }
-.teamsContainer:last-child > div {
-    padding: 1rem;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    flex-basis: 1;
-}
-.teamsContainer > div:first-child {
+.teamsContainer:first-child > div:first-child {
     font-size: 1.5em;
     color: red;
     width: 100%;
