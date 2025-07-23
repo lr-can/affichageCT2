@@ -412,7 +412,7 @@ setTimeout(() => {setInterval(async () => {
         }
         statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
   }
-    for (const status in Object.keys(statusMap)){
+    for (const status of Object.keys(statusMap)){
     if (statusMap[status].length > 1){
       const lastVehicule = statusMap[status].pop();
       newStatusNotif += `${statusMap[status].join(', ')} et ${lastVehicule} deviennent ${status} \n`;

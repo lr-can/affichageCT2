@@ -82,6 +82,9 @@
                             </div>
                         </template>
                     </div>
+                    <div v-if="train.voie && train.voie !== ''" class="voie">
+                        {{ train.voie }}
+                    </div>
                 </div>
             </div>
 
@@ -462,5 +465,15 @@ const giveBlinkClass = (prochainDepart) => {
     white-space: nowrap;
     width: fit-content;
     animation: scroll 25s linear infinite;
+}
+.voie {
+    width: 5%;
+    margin-right: 0;
+    text-align: center;
+    font-weight: bold;
+    color: #0078f3;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #0078f3;
 }
 </style>
