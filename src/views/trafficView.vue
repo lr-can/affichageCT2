@@ -34,12 +34,12 @@
         <div class="sncf">
             <div class="logo">
                 <img src="../assets/transport/SNCF.svg" alt="" width="50px" height="auto">
-                Gare de Collonges - Fontaines
+                Gare de {{ displayInfo3 ? 'Collonges-Fontaines' : 'Lyon Part-Dieu'}}
             </div>
             <div class="sncf-info">
                 <div v-for="train in sncf" :key="train.numTrain" class="sameRow3" :style="train.comment == 'parti' ? {opacity: 0.5} : {}" :class="giveClass('container', train.comment)" style="margin-left: 1rem;">
                     <div class="networkLogo">
-                        <img src="../assets/transport/TER.svg" alt="" width="30px" height="auto">
+                        <img :src="giveLogo(train.service)" alt="" width="30px" height="auto">
                     </div>
                     <div class="trainNumber" :class="giveClass('comment', train.comment)">
                         <div v-if="displayInfo1" :class="giveClass('cancelled', train.comment)">{{ train.numTrain }}</div>
@@ -100,14 +100,19 @@ import wazeView from '../components/wazeView.vue';
 import { useTransportation } from '../store/transportation';
 const tcl = ref();
 const sncf = ref();
+const sncfLYD = ref();
+const sncfCol = ref();
 const displayInfo1 = ref(true);
 const asAwait = ref(false);
 const displayInfo2 = ref(false);
+const displayInfo3 = ref(false);
 const transportation = useTransportation();
 onMounted(async () => {
     await transportation.getData();
     tcl.value = transportation.tcl;
+    sncfCol.value = transportation.sncf;
     sncf.value = transportation.sncf;
+    sncfLYD.value = transportation.sncfLYD;
 });
 setTimeout(() => {
     asAwait.value = true;
@@ -118,6 +123,14 @@ setInterval( async () => {
     sncf.value = transportation.sncf;
     displayInfo2.value = !displayInfo2.value;
 }, 15000);
+setInterval(() => {
+    displayInfo3.value = !displayInfo3.value;
+    if (displayInfo3.value) {
+        sncf.value = sncfCol.value
+    } else {
+        sncf.value = sncfLYD.value;
+    };
+    }, 30000);
 setInterval(() => {
     displayInfo1.value = !displayInfo1.value;
 }, 3000);
@@ -168,6 +181,35 @@ const giveBlinkClass = (prochainDepart) => {
     }
     return '';
 }
+
+import ter_url from '../assets/transport/TER.svg';
+import lyria_url from '../assets/transport/LYRIA.svg';
+import intercite_url from '../assets/transport/INTERCITE.svg';
+import db_url from '../assets/transport/DB.svg';
+import inoui_url from '../assets/transport/INOUI.svg';
+import ouigo_url from '../assets/transport/OUIGO.svg';
+import ouigo_url from '../assets/transport/TGV.svg';
+import sncf_url from "../assets/transport/SNCF.svg";
+
+const commercial_modes = {
+    "DB SNCF": db_url,
+    "Rémi": ter_url,
+    "REGIONAURA": ter_url,
+    "MOBIGO": ter_url,
+    "Intercités": intercite_url,
+    "TER": ter_url,
+    "TGV LYRIA": lyria_url,
+    "TGV INOUI": inoui_url,
+    "OUIGO": ouigo_url,
+    "TGV": ouigo_url,
+    "additional service": sncf_url,
+    "SNCF": sncf_url,
+}
+
+const giveLogo = (service) => {
+    return commercial_modes[service] || sncf_url;
+}
+
 </script>
 <style scoped>
 #Title {

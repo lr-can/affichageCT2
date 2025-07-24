@@ -250,7 +250,7 @@ const views = ref([
   {viewName : 'lastInter',
   time : 40},
   {viewName : 'traffic',
-  time : 45},
+  time : 75},
   {viewName : 'interEnCours',
     time: 0},
   {viewName : 'weatherWarning',
