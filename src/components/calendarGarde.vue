@@ -146,28 +146,47 @@ const calendarDays = computed(() => {
 .F {
     border-bottom: 2px solid #ff0000;
 }
-.today {
+
+.todayA {
+    background-color: #a02b93;
     color: white;
     font-weight: bold;
     border-radius: 5px;
     border-bottom: 2px solid transparent;
 }
-.todayA {
-    background-color: #a02b93;
-}
 .todayB {
     background-color: #4ea72e;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 2px solid transparent;
 }
 .todayC {
     background-color: #ffc000;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 2px solid transparent;
 }
 .todayD {
     background-color: #e97132;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 2px solid transparent;
 }
 .todayE {
     background-color: #00b0f0;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 2px solid transparent;
 }
 .todayF {
     background-color: #ff0000;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 2px solid transparent;
 }
 </style>
