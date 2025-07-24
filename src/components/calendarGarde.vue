@@ -12,7 +12,7 @@
                 :key="index"
                 :class="['calendar-day', { 'past-day': day.isPast }]"
             >
-                <div :class="['day-number', day.isPast ? null : day.equipeGarde]">{{ day.date ? day.date.getDate() : '' }}</div>
+                <div :class="['day-number', day.isPast ? null : day.equipeGarde, day.isToday ? null : 'today']">{{ day.date ? day.date.getDate() : '' }}</div>
             </div>
         </div>
     </div>
@@ -51,6 +51,7 @@ const calendarDays = computed(() => {
     for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(currentYear, today.getMonth(), i);
         const isPast = date < yesterday;
+        const isToday = date.toDateString() === today.toDateString();
         const garde = props.calendar.find((entry) => {
             const entryDate = new Date(entry.Date);
             return entryDate.toDateString() === date.toDateString();
@@ -58,6 +59,7 @@ const calendarDays = computed(() => {
         days.push({
             date,
             isPast,
+            isToday,
             equipeGarde: garde ? garde.equipeGarde : null,
         });
     }
@@ -143,5 +145,9 @@ const calendarDays = computed(() => {
 
 .F {
     border-bottom: 2px solid #ff0000;
+}
+.today {
+    background-color: #e0f7fa;
+    border-radius: 5px;
 }
 </style>
