@@ -120,7 +120,8 @@ setTimeout(() => {
 setInterval( async () => {
     await transportation.getData();
     tcl.value = transportation.tcl;
-    sncf.value = transportation.sncf;
+    sncfCol.value = transportation.sncf;
+    sncfLYD.value = transportation.sncfLYD;
     displayInfo2.value = !displayInfo2.value;
 }, 15000);
 setInterval(() => {
@@ -130,7 +131,7 @@ setInterval(() => {
     } else {
         sncf.value = sncfLYD.value;
     };
-    }, 30000);
+    }, 29000);
 setInterval(() => {
     displayInfo1.value = !displayInfo1.value;
 }, 3000);
