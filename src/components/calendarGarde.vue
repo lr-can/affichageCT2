@@ -12,7 +12,7 @@
                 :key="index"
                 :class="['calendar-day', { 'past-day': day.isPast }]"
             >
-                <div :class="['day-number', day.isPast ? null : day.equipeGarde]">{{ day.date.getDate() }}</div>
+                <div :class="['day-number', day.isPast ? null : day.equipeGarde]">{{ day.date ? day.date.getDate() : '' }}</div>
             </div>
         </div>
     </div>
