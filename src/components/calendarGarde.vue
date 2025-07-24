@@ -28,7 +28,7 @@ const props = defineProps({
     },
 });
 
-const today = new Date();.
+const today = new Date();
 let yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
 const currentMonth = today.toLocaleString('fr-FR', { month: 'long' });
