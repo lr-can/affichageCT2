@@ -12,7 +12,7 @@
                 :key="index"
                 :class="['calendar-day', { 'past-day': day.isPast }]"
             >
-                <div :class="['day-number', day.isPast ? null : day.equipeGarde, day.isToday ? null : 'today']">{{ day.date ? day.date.getDate() : '' }}</div>
+                <div :class="['day-number', day.isPast ? null : day.equipeGarde, day.isToday ? 'today' + day.equipeGarde : null]">{{ day.date ? day.date.getDate() : '' }}</div>
             </div>
         </div>
     </div>
@@ -147,7 +147,27 @@ const calendarDays = computed(() => {
     border-bottom: 2px solid #ff0000;
 }
 .today {
-    background-color: #e0f7fa;
+    color: white;
+    font-weight: bold;
     border-radius: 5px;
+    border-bottom: 2px solid transparent;
+}
+.todayA {
+    background-color: #a02b93;
+}
+.todayB {
+    background-color: #4ea72e;
+}
+.todayC {
+    background-color: #ffc000;
+}
+.todayD {
+    background-color: #e97132;
+}
+.todayE {
+    background-color: #00b0f0;
+}
+.todayF {
+    background-color: #ff0000;
 }
 </style>
