@@ -28,17 +28,29 @@ const props = defineProps({
     },
 });
 
-const today = new Date();
+const today = new Date();.
+let yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
 const currentMonth = today.toLocaleString('fr-FR', { month: 'long' });
 const currentYear = today.getFullYear();
 const daysOfWeek = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];
 
 const calendarDays = computed(() => {
     const daysInMonth = new Date(currentYear, today.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = new Date(currentYear, today.getMonth(), 1).getDay();
     const days = [];
+
+    // Adjust firstDayOfMonth to match the daysOfWeek array (Monday = 0, Sunday = 6)
+    const adjustedFirstDay = (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1);
+
+    // Add empty slots for days before the first day of the month
+    for (let i = 0; i < adjustedFirstDay; i++) {
+        days.push({ date: null, isPast: false, equipeGarde: null });
+    }
+
     for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(currentYear, today.getMonth(), i);
-        const isPast = date < today;
+        const isPast = date < yesterday;
         const garde = props.calendar.find((entry) => {
             const entryDate = new Date(entry.Date);
             return entryDate.toDateString() === date.toDateString();
@@ -68,7 +80,7 @@ const calendarDays = computed(() => {
     text-align: center;
     font-size: 0.8em;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .calendar-grid {
@@ -85,7 +97,7 @@ const calendarDays = computed(() => {
 
 .calendar-day {
     text-align: center;
-    padding: 10px;
+    padding: 8px;
     border-radius: 5px;
     font-size: 0.8em;
 }

@@ -410,7 +410,9 @@ setTimeout(() => {setInterval(async () => {
         if (!statusMap[vehicule.msg_part3]) {
             statusMap[vehicule.msg_part3] = [];
         }
-        statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
+        if (statusMap[vehicule.msg_part3] !== vehicule.msg_part1){
+          statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
+        };
   }
     for (const status of Object.keys(statusMap)){
     if (statusMap[status].length > 1){
