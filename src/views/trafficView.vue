@@ -188,7 +188,7 @@ import intercite_url from '../assets/transport/INTERCITE.svg';
 import db_url from '../assets/transport/DB.svg';
 import inoui_url from '../assets/transport/INOUI.svg';
 import ouigo_url from '../assets/transport/OUIGO.svg';
-import ouigo_url from '../assets/transport/TGV.svg';
+import tgv_url from '../assets/transport/TGV.svg';
 import sncf_url from "../assets/transport/SNCF.svg";
 
 const commercial_modes = {
@@ -201,7 +201,7 @@ const commercial_modes = {
     "TGV LYRIA": lyria_url,
     "TGV INOUI": inoui_url,
     "OUIGO": ouigo_url,
-    "TGV": ouigo_url,
+    "TGV": tgv_url,
     "additional service": sncf_url,
     "SNCF": sncf_url,
 }
