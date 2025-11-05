@@ -271,7 +271,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    index.value = 2;
+    //index.value = 2;
   }
 }
 main();
