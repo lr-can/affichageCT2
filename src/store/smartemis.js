@@ -427,7 +427,23 @@ export const useSmartemis = defineStore('smartemis', () => {
         };
         const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%2012', options);
         let result = await response.json();
+        const intervention = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%205', options);
+        let interventionResult = await intervention.json();
+        for (const person of interventionResult){
+            let personFind = result.find(p => p.matricule === person.matricule);
+            if (!personFind){
+                result.push({
+                    matricule: person.matricule,
+                    nom: person.nom,
+                    prenom: person.prenom,
+                    status: "INTER",
+                    statusColor: "FF0000",
+                    grade: person.grade,
+                });
+            }
+        }
         const dict_status = {
+            "INTER": 0,
             "GP": 1,
             "DCT": 1,
             "DP": 2,

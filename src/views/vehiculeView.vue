@@ -55,7 +55,7 @@
             </div>
             <span
                 class="personStatus"
-                :style="{ backgroundColor: '#' + person.statusColor, color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000'), padding: '0.25rem 0.5rem', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.8rem'}"
+                :style="{ backgroundColor: '#' + person.statusColor, color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000'), padding: '0.25rem 0.5rem', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.8rem',  animation: person.status === 'INTER' ? 'blink 4s infinite' : '' }"
             >
                 {{ person.status }}
             </span>
@@ -412,5 +412,12 @@ const colorConvert = (color) => {
     z-index: 4;
     color: white;
     font-size: 0.8rem;
+}
+@keyframes blink {
+  0% { background-color: #f60700; color: white;}
+  49% { background-color: #f60700; color: white;}
+  50% { background-color: #ffbdbd; color: white; }
+  99% { background-color: #ffbdbd; color: white; }
+  100% { background-color: #f60700; color: white;}
 }
 </style>
