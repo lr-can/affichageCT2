@@ -37,19 +37,19 @@
             class="personCard"
             v-for="person in agentList"
             :key="person.matricule"
-            style="display:flex; align-items:center; gap:0.6rem; background: rgba(255,255,255,0.85); padding:0.5rem 0.7rem; border-radius:0.8rem; box-shadow:0 4px 10px rgba(0,0,0,0.08); min-width: 220px;"
+            style="display:flex; align-items:center; gap:0.6rem; background: rgba(255,255,255,0.85); padding:0.2rem 0.5rem; border-radius:0.8rem; box-shadow:0 4px 10px rgba(0,0,0,0.08); min-width: 100px;"
             :style="{ opacity: person.status === 'IN' ? 0.3 : 1 }"
             >
             <img
                 :src="giveAgentGrade(person.grade)"
                 :alt="person.grade"
-                style="height:32px; width:auto; border-radius:6px; object-fit:cover; flex-shrink:0;"
+                style="height:20px; width:auto; border-radius:6px; object-fit:cover; flex-shrink:0;"
             />
             <div style="display:flex; flex-direction:column; gap:0.1rem; flex:1; min-width:0;">
-                <div style="font-weight:700; font-size:0.95rem; color:#0b0b0b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                <div style="font-weight:700; font-size:0.70rem; color:#0b0b0b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
                 {{ person.nom }}
                 </div>
-                <div style="font-size:0.85rem; color:#333; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                <div style="font-size:0.60rem; color:#333; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
                 {{ person.prenom }}
                 </div>
             </div>
