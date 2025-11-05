@@ -101,6 +101,9 @@ const initialize = ref(true);
 const numberOfMessagesRadio = ref(0);
 const isArah = ref(false);
 
+const agentList = ref([]);
+const changedAgents = ref([]);
+
 const colorMapWeather = {
   "Advisory": '#f1c40f',
   "Watch": '#e67e22',
@@ -182,6 +185,7 @@ const initializeApp = async () => {
   await new Promise((resolve) => setTimeout(resolve, 5000));
   currentVehicules.value = await smartemis.getStatus();
   alertData.value = await weatherStore.alertWeather();
+  agentList.value = await smartemis.getAvailablePeople();
   filterAndPushPopup();
   if (popupList.value.length > 0){
     popupInfo.value = popupList.value[0];
@@ -246,7 +250,7 @@ const views = ref([
   {viewName : 'weather',
   time : 40},
   {viewName : 'vehicule',
-  time : 30},
+  time : 45},
   {viewName : 'lastInter',
   time : 40},
   {viewName : 'traffic',
@@ -267,7 +271,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    //index.value = 4;
+    index.value = 2;
   }
 }
 main();
@@ -353,6 +357,7 @@ setTimeout(() => {setInterval(async () => {
   let newStatus = await smartemis.getStatus();
   let messages = await smartemis.getMessagesRadio();
   isArah.value = await smartemis.isArah();
+  changedAgents.value = await smartemis.getChangedPeople(agentList.value);
   if (isArah.value){
     clearInterval(waitForInter);
     views.value = views.value.map(view => {
@@ -404,6 +409,21 @@ setTimeout(() => {setInterval(async () => {
       });
     }
   }
+  if (changedAgents.value && changedAgents.value.length > 0 && changedAgents.value.length <= 10){
+      for (const agent of changedAgents.value){
+        newStatusPopup.push({
+          img_url: `../assets/grades/${agent.grade}.png`,
+          msg_part1: agent.nom + ' ' + agent.prenom,
+          msg_part2: 'passe en',
+          msg_part3: agent.status,
+          color_part3: agent.statusColor && agent.statusColor.length ? (parseInt(agent.statusColor.replace('#',''),16) > 0x999999 ? '#111' : '#fff') : '#000',
+          backgroundColor_part3: "#" + agent.statusColor,
+          type: 'newVehicule',
+        });
+      }
+      agentList.value = await smartemis.getAvailablePeople();
+      changedAgents.value = [];
+  }
   if (newStatusPopup.length > 0){
     const statusMap = {};
     for (const vehicule of newStatusPopup) {
@@ -451,9 +471,9 @@ setTimeout(() => {setInterval(async () => {
     } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Alerte')){
       let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Alerte').map(v => v.nomPhonetique).join(' , ')} . Alerte`;
       audioNotif = await getTTS(message);
-    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé')){
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé' || vehicule.msg_part3 === 'AEC' || vehicule.msg_part3 === 'DP' || vehicule.msg_part3 === 'DIP' || vehicule.msg_part3 === 'AOR')){
       audioNotif = new Audio(Dl);
-    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible')){
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible' || vehicule.msg_part3 === 'IN' || vehicule.msg_part3 === 'IND')){
       audioNotif = new Audio(DM);
     } else {
       audioNotif = new Audio(IT);
@@ -461,8 +481,9 @@ setTimeout(() => {setInterval(async () => {
     audioNotif.volume = 0.5;
     audioNotif.play();
   }
+    }
   }
-  }
+
   currentVehicules.value = newStatus;
 }, 17000);}, 30000);
 

@@ -418,6 +418,53 @@ export const useSmartemis = defineStore('smartemis', () => {
         return result[0].isArah === 'OUI';
     }
 
+    const getAvailablePeople = async () => {
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        const response = await fetch('https://opensheet.elk.sh/1-S_8VCPQ76y3XTiK1msvjoglv_uJVGmRNvUZMYvmCnE/Feuille%2012', options);
+        let result = await response.json();
+        const dict_status = {
+            "GP": 1,
+            "DCT": 1,
+            "DP": 2,
+            "DIP": 3,
+            "AEC": 4,
+            "AOR": 5,
+            "IN": 6,
+            "IND": 7,
+        };
+        result = result.sort((a, b) => {
+            if (dict_status[a.status] < dict_status[b.status]) {
+                return -1;
+            } else if (dict_status[a.status] > dict_status[b.status]) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        return result
+    };
+
+    const getChangedPeople = async (original_status) => {
+        const newPeople = await getAvailablePeople();
+        let changedPeople = [];
+        for (const newPerson of newPeople) {
+            const originalPerson = original_status.find(person => person.matricule === newPerson.matricule);
+            if (originalPerson && originalPerson.status !== newPerson.status) {
+                changedPeople.push({
+                    ...newPerson,
+                    oldStatus: originalPerson.status,
+                });
+            }
+        }
+        return changedPeople;
+
+    }
+
     return {
         statutsEngins,
         famillesEngins,
@@ -440,6 +487,8 @@ export const useSmartemis = defineStore('smartemis', () => {
         sendNotification,
         getMessagesRadio,
         isArah,
+        getAvailablePeople,
+        getChangedPeople,
     };
 });
 

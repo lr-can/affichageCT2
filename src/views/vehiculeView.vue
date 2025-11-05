@@ -4,12 +4,12 @@
     </div>
     <div>
         <div id="Title">
-            <h1>Synoptique des engins</h1>
+            <h1>{{showPeople ? "Agents disponibles" : "Synoptique des engins" }}</h1>
         </div>
         <div class="agents" :style="{ backgroundColor: giveBackground(agents.available), color: giveForeground(agents.available) }" v-if="agents">
             <span :style="{fontSize : '2rem', fontWeight : 'bold'}">🧑‍🚒{{ agents.available }}</span> / {{ agents.total }}
         </div>
-        <div class="vehiculeContainer" v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5">
+        <div class="vehiculeContainer" v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5 && !showPeople">
             <div class="famille" v-for="famille in familles" :key="famille.famEngCod">
                 <div class="familleTitle">
                     {{ famille.famEngLib }}
@@ -28,9 +28,38 @@
                 </div>
             </div>
         </div>
-        <div class="vehiculeContainer" v-else style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="vehiculeContainer" v-if="familles.length == 0 || giveNumberOfEngin() >= numberOfEngins + 5" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
             <div style="margin-top: 1rem"><img src="../assets/vehiculeLoader.gif" alt="" width="150px" height="auto"></div>
             <div style="margin-top: 1rem; color: black; font-size: 1.5rem;">Chargement des engins...</div>
+        </div>
+        <div class="vehiculeContainer" v-if="agentList && agentList.length && showPeople" style="flex-direction: column">
+            <div
+            class="personCard"
+            v-for="person in agentList"
+            :key="person.matricule"
+            style="display:flex; align-items:center; gap:0.6rem; background: rgba(255,255,255,0.85); padding:0.5rem 0.7rem; border-radius:0.8rem; box-shadow:0 4px 10px rgba(0,0,0,0.08); min-width: 220px;"
+            :style="{ opacity: person.status === 'IN' ? 0.3 : 1 }"
+            >
+            <img
+                :src="giveAgentGrade(person.grade)"
+                :alt="person.grade"
+                style="height:32px; width:auto; border-radius:6px; object-fit:cover; flex-shrink:0;"
+            />
+            <div style="display:flex; flex-direction:column; gap:0.1rem; flex:1; min-width:0;">
+                <div style="font-weight:700; font-size:0.95rem; color:#0b0b0b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                {{ person.nom }}
+                </div>
+                <div style="font-size:0.85rem; color:#333; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                {{ person.prenom }}
+                </div>
+            </div>
+            <span
+                class="personStatus"
+                :style="{ backgroundColor: '#' + person.statusColor, color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000'), padding: '0.25rem 0.5rem', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.8rem'}"
+            >
+                {{ person.status }}
+            </span>
+            </div>
         </div>
         <div class="info">
             <p> Mise à jour : Il y a {{ timeElapsed }} environ.</p>
@@ -47,9 +76,49 @@ const miseAJour = ref();
 const timeElapsed = ref();
 const agents = ref();
 const numberOfEngins = ref(0);
+const showPeople = ref(false);
+
+const agentList = ref([]);
+import Sap2CL from '../assets/grades/Sap 2CL.png';
+import Sap1CL from '../assets/grades/Sap 1CL.png';
+import Caporal from '../assets/grades/Caporal.png';
+import CaporalChef from '../assets/grades/Caporal-Chef.png';
+import Sergent from '../assets/grades/Sergent.png';
+import SergentChef from '../assets/grades/Sergent-Chef.png';
+import Adjudant from '../assets/grades/Adjudant.png';
+import AdjudantChef from '../assets/grades/Adjudant-Chef.png';
+import Lieutenant from '../assets/grades/Lieutenant.png';
+import Capitaine from '../assets/grades/Capitaine.png';
+import Commandant from '../assets/grades/Commandant.png';
+import Professeur from '../assets/grades/Professeur.png';
+import Infirmiere from '../assets/grades/Infirmière.png';
+const currentTime = new Date();
+
+const dict_grades = {
+  'Sap 2CL': Sap2CL,
+  'Sap 1CL': Sap1CL,
+  'Caporal': Caporal,
+  'Caporal-Chef': CaporalChef,
+  'Sergent': Sergent,
+  'Sergent-Chef': SergentChef,
+  'Adjudant': Adjudant,
+  'Adjudant-Chef': AdjudantChef,
+  'Lieutenant': Lieutenant,
+  'Capitaine': Capitaine,
+  'Commandant': Commandant,
+  'Infirmière': Infirmiere,
+  'Professeur': Professeur
+};
+
+const giveAgentGrade = (grade) => {
+    return dict_grades[grade];
+};
+
+const counter = ref(0);
 
 onMounted(async () => {
     familles.value = await smartemis.getEngins();
+    agentList.value = await smartemis.getAvailablePeople();
     for (let i = 0; i < familles.value.length; i++){
         for (let j = 0; j < familles.value[i].engins.length; j++){
             numberOfEngins.value += 1;
@@ -71,9 +140,11 @@ onMounted(async () => {
 
     
     setInterval(async () => {
+    counter.value += 1;
         familles.value = await smartemis.getEngins();
     miseAJour.value = await smartemis.getLastUpdateEngins();
     agents.value = await smartemis.getAgentsAvailable();
+    agentList.value = await smartemis.getAvailablePeople();
     const now = new Date();
     let timeElapsedValue = now - new Date(miseAJour.value);
     const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
@@ -84,6 +155,7 @@ onMounted(async () => {
         const remainingSeconds = secondsElapsed % 60;
         timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
     }
+    counter.value % 2 === 0 ? showPeople.value = !showPeople.value : null;
     }
     , 10000);
 
@@ -164,6 +236,8 @@ const colorConvert = (color) => {
     const b = parseInt(hex.substring(4, 6), 16);
     return `rgba(${r}, ${g}, ${b}, 0.1)`;
 }
+
+
 </script>
 <style scoped>
 #Background {
