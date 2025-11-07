@@ -32,7 +32,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() > 23 || new Date().getHours() < 6">
+    <div v-if="new Date().getHours() >= 22 || new Date().getHours() < 6">
       <vehiculeViewNight />
     </div>
     <div v-else>
@@ -92,6 +92,10 @@ const smartemis = useSmartemis();
 import IT from './assets/sounds/IT.wav';
 import Dl from './assets/sounds/Dl.wav';
 import DM from './assets/sounds/DM.wav';
+import RE from './assets/sounds/RE.wav';
+import AL from './assets/sounds/AL.mp3';
+import lessPeople from './assets/sounds/lessPeople.wav'
+import morePeople from './assets/sounds/morePeople.wav';
 
 const weatherStore = useWeather();
 
@@ -103,6 +107,7 @@ const isArah = ref(false);
 
 const agentList = ref([]);
 const changedAgents = ref([]);
+const familles = ref([]);
 
 const colorMapWeather = {
   "Advisory": '#f1c40f',
@@ -184,6 +189,7 @@ const initializeApp = async () => {
   console.log('App initialized, next update in ' + reloadTime / 1000 + ' seconds');
   await new Promise((resolve) => setTimeout(resolve, 5000));
   currentVehicules.value = await smartemis.getStatus();
+  familles.value = await smartemis.getEngins();
   alertData.value = await weatherStore.alertWeather();
   agentList.value = await smartemis.getAvailablePeople();
   filterAndPushPopup();
@@ -355,6 +361,7 @@ const filterAndPushPopup = () => {
 setTimeout(() => {setInterval(async () => {
   if (interventionCheck.value) return;
   let newStatus = await smartemis.getStatus();
+  familles.value = await smartemis.getEngins();
   let messages = await smartemis.getMessagesRadio();
   isArah.value = await smartemis.isArah();
   changedAgents.value = await smartemis.getChangedPeople(agentList.value);
@@ -430,7 +437,7 @@ setTimeout(() => {setInterval(async () => {
         if (!statusMap[vehicule.msg_part3]) {
             statusMap[vehicule.msg_part3] = [];
         }
-        if (statusMap[vehicule.msg_part3] !== vehicule.msg_part1){
+        if (!statusMap[vehicule.msg_part3].includes(vehicule.msg_part1)){
           statusMap[vehicule.msg_part3].push(vehicule.msg_part1);
         };
   }
@@ -461,25 +468,38 @@ setTimeout(() => {setInterval(async () => {
     popupList.value =  newStatusPopup;
     showPopup.value = true;
     popupInfo.value = popupList.value[0];
+    let audioNotif2 = null;
     console.log('New vehicules status detected', newStatusPopup);
     if (interventionCheck.value){
       console.log('Intervention ongoing, no audio notification');
     } else {
       if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Retenu')){
       let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Retenu').map(v => v.nomPhonetique).join(' , ')} . Retenu`;
-      audioNotif = await getTTS(message);
+      audioNotif = new Audio(RE);
+      audioNotif2 = await getTTS(message);
     } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Alerte')){
       let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Alerte').map(v => v.nomPhonetique).join(' , ')} . Alerte`;
-      audioNotif = await getTTS(message);
-    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé' || vehicule.msg_part3 === 'AEC' || vehicule.msg_part3 === 'DP' || vehicule.msg_part3 === 'DIP' || vehicule.msg_part3 === 'AOR')){
+      audioNotif = new Audio(AL);
+      audioNotif2 = await getTTS(message);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible Armé')){
       audioNotif = new Audio(Dl);
-    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible' || vehicule.msg_part3 === 'IN' || vehicule.msg_part3 === 'IND')){
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Disponible matériel' || vehicule.msg_part3 === 'Indisponible' || vehicule.msg_part3 === 'Réservé indisponible')){
       audioNotif = new Audio(DM);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'DP' || vehicule.msg_part3 === 'DIP' || vehicule.msg_part3 === 'AOR' || vehicule.msg_part3 === "AEC")){
+      audioNotif = new Audio(morePeople);
+    } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'IN' || vehicule.msg_part3 === 'IND')){
+      audioNotif = new Audio(lessPeople);
     } else {
       audioNotif = new Audio(IT);
     }
     audioNotif.volume = 0.5;
     audioNotif.play();
+    audioNotif.onended = () => {
+      if (audioNotif2){
+        audioNotif2.volume = 0.7;
+        audioNotif2.play();
+  }
+    }
   }
     }
   }

@@ -4,12 +4,12 @@
     </div>
     <div>
         <div id="Title">
-            <h1>Bonne nuit</h1>
+            <h1>{{showPeople ? "Agents disponibles" : "Synoptique des engins" }}</h1>
         </div>
         <div class="agents" :style="{ backgroundColor: giveBackground(agents.available), color: giveForeground(agents.available) }" v-if="agents">
             <span :style="{fontSize : '2rem', fontWeight : 'bold'}">🧑‍🚒{{ agents.available }}</span> / {{ agents.total }}
         </div>
-        <div class="vehiculeContainer"  v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5">
+        <div class="vehiculeContainer" v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5 && !showPeople">
             <div class="famille" v-for="famille in familles" :key="famille.famEngCod">
                 <div class="familleTitle">
                     {{ famille.famEngLib }}
@@ -28,9 +28,38 @@
                 </div>
             </div>
         </div>
-        <div class="vehiculeContainer" v-else style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="vehiculeContainer" v-if="familles.length == 0 || giveNumberOfEngin() >= numberOfEngins + 5" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
             <div style="margin-top: 1rem"><img src="../assets/vehiculeLoader.gif" alt="" width="150px" height="auto"></div>
-            <div style="margin-top: 1rem; color: white; font-size: 1.5rem;">Chargement des engins...</div>
+            <div style="margin-top: 1rem; color: black; font-size: 1.5rem;">Chargement des engins...</div>
+        </div>
+        <div class="vehiculeContainer" v-if="agentList && agentList.length && showPeople" style="flex-direction: column">
+            <div
+            class="personCard"
+            v-for="person in agentList"
+            :key="person.matricule"
+            style="display:flex; align-items:center; gap:0.6rem; background: rgba(255,255,255,0.85); padding:0.5rem 0.7rem; border-radius:0.8rem; box-shadow:0 4px 10px rgba(0,0,0,0.08); min-width: 220px;"
+            :style="{ opacity: person.status === 'IN' ? 0.3 : 1 }"
+            >
+            <img
+                :src="giveAgentGrade(person.grade)"
+                :alt="person.grade"
+                style="height:32px; width:auto; border-radius:6px; object-fit:cover; flex-shrink:0;"
+            />
+            <div style="display:flex; flex-direction:column; gap:0.1rem; flex:1; min-width:0;">
+                <div style="font-weight:700; font-size:0.95rem; color:#0b0b0b; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                {{ person.nom }}
+                </div>
+                <div style="font-size:0.85rem; color:#333; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                {{ person.prenom }}
+                </div>
+            </div>
+            <span
+                class="personStatus"
+                :style="{ backgroundColor: '#' + person.statusColor, color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000'), padding: '0.25rem 0.5rem', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.8rem',  animation: person.status === 'INTER' ? 'blink 4s infinite' : '' }"
+            >
+                {{ person.status }}
+            </span>
+            </div>
         </div>
         <div class="info">
             <p> Mise à jour : Il y a {{ timeElapsed }} environ.</p>
@@ -47,6 +76,90 @@ const miseAJour = ref();
 const timeElapsed = ref();
 const agents = ref();
 const numberOfEngins = ref(0);
+const showPeople = ref(false);
+
+const agentList = ref([]);
+import Sap2CL from '../assets/grades/Sap 2CL.png';
+import Sap1CL from '../assets/grades/Sap 1CL.png';
+import Caporal from '../assets/grades/Caporal.png';
+import CaporalChef from '../assets/grades/Caporal-Chef.png';
+import Sergent from '../assets/grades/Sergent.png';
+import SergentChef from '../assets/grades/Sergent-Chef.png';
+import Adjudant from '../assets/grades/Adjudant.png';
+import AdjudantChef from '../assets/grades/Adjudant-Chef.png';
+import Lieutenant from '../assets/grades/Lieutenant.png';
+import Capitaine from '../assets/grades/Capitaine.png';
+import Commandant from '../assets/grades/Commandant.png';
+import Professeur from '../assets/grades/Professeur.png';
+import Infirmiere from '../assets/grades/Infirmière.png';
+const currentTime = new Date();
+
+const dict_grades = {
+  'Sap 2CL': Sap2CL,
+  'Sap 1CL': Sap1CL,
+  'Caporal': Caporal,
+  'Caporal-Chef': CaporalChef,
+  'Sergent': Sergent,
+  'Sergent-Chef': SergentChef,
+  'Adjudant': Adjudant,
+  'Adjudant-Chef': AdjudantChef,
+  'Lieutenant': Lieutenant,
+  'Capitaine': Capitaine,
+  'Commandant': Commandant,
+  'Infirmière': Infirmiere,
+  'Professeur': Professeur
+};
+
+const giveAgentGrade = (grade) => {
+    return dict_grades[grade];
+};
+
+const counter = ref(0);
+
+onMounted(async () => {
+    familles.value = await smartemis.getEngins();
+    agentList.value = await smartemis.getAvailablePeople();
+    for (let i = 0; i < familles.value.length; i++){
+        for (let j = 0; j < familles.value[i].engins.length; j++){
+            numberOfEngins.value += 1;
+        }
+    }
+    console.log("Found" + numberOfEngins.value + "engins");
+    miseAJour.value = await smartemis.getLastUpdateEngins();
+    agents.value = await smartemis.getAgentsAvailable();
+    const now = new Date();
+    let timeElapsedValue = now - new Date(miseAJour.value);
+    const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
+    if (secondsElapsed < 60) {
+        timeElapsed.value = `${secondsElapsed} s`;
+    } else {
+        const minutes = Math.floor(secondsElapsed / 60);
+        const remainingSeconds = secondsElapsed % 60;
+        timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
+    }
+
+    
+    setInterval(async () => {
+    counter.value += 1;
+        familles.value = await smartemis.getEngins();
+    miseAJour.value = await smartemis.getLastUpdateEngins();
+    agents.value = await smartemis.getAgentsAvailable();
+    agentList.value = await smartemis.getAvailablePeople();
+    const now = new Date();
+    let timeElapsedValue = now - new Date(miseAJour.value);
+    const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
+    if (secondsElapsed < 60) {
+        timeElapsed.value = `${secondsElapsed} s`;
+    } else {
+        const minutes = Math.floor(secondsElapsed / 60);
+        const remainingSeconds = secondsElapsed % 60;
+        timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
+    }
+    counter.value % 2 === 0 ? showPeople.value = !showPeople.value : null;
+    }
+    , 10000);
+
+});
 
 const giveNumberOfEngin = () => {
     let number = 0;
@@ -57,46 +170,6 @@ const giveNumberOfEngin = () => {
     }
     return number;
 }
-
-onMounted(async () => {
-    familles.value = await smartemis.getEngins();
-    for (let i = 0; i < familles.value.length; i++){
-        for (let j = 0; j < familles.value[i].engins.length; j++){
-            numberOfEngins.value += 1;
-        }
-    }
-    miseAJour.value = await smartemis.getLastUpdateEngins();
-    agents.value = await smartemis.getAgentsAvailable();
-    const now = new Date();
-    let timeElapsedValue = now - new Date(miseAJour.value);
-    const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
-    if (secondsElapsed < 60) {
-        timeElapsed.value = `${secondsElapsed} s`;
-    } else {
-        const minutes = Math.floor(secondsElapsed / 60);
-        const remainingSeconds = secondsElapsed % 60;
-        timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
-    }
-
-    setInterval(async () => {
-        familles.value = await smartemis.getEngins();
-    miseAJour.value = await smartemis.getLastUpdateEngins();
-    agents.value = await smartemis.getAgentsAvailable();
-    const now = new Date();
-    let timeElapsedValue = now - new Date(miseAJour.value);
-    const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
-    if (secondsElapsed < 60) {
-        timeElapsed.value = `${secondsElapsed} s`;
-    } else {
-        const minutes = Math.floor(secondsElapsed / 60);
-        const remainingSeconds = secondsElapsed % 60;
-        timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
-    }
-    }
-    , 15000);
-
-});
-
 const giveEnginImg = (engin) => {
     if (engin.statut == 'Dl'){
         if (engin.lib.startsWith('L') || engin.lib.includes('MPRGP')){
@@ -133,13 +206,13 @@ const giveBackground = (available) => {
     const vsav02 = familles.value.find(famille => famille.engins.some(engin => engin.lib === 'VSAV 02' && engin.statut === 'DM'));
 
     if (available < 2){
-        return '#f6070020';
+        return '#fff4f4B3';
     } else if (vsav01 && vsav02) {
-        return '#fc5d0020';
+        return '#fff4f3B3';
     } else if (vsav01 || vsav02) {
-        return '#0078f320';
+        return '#f4f6ffB3';
     } else {
-        return '#1f8d4920';
+        return '#dffee6B3';
     }
 }
 const giveForeground = (available) => {
@@ -163,6 +236,8 @@ const colorConvert = (color) => {
     const b = parseInt(hex.substring(4, 6), 16);
     return `rgba(${r}, ${g}, ${b}, 0.1)`;
 }
+
+
 </script>
 <style scoped>
 #Background {
@@ -173,22 +248,20 @@ const colorConvert = (color) => {
     height: 100vh;
     overflow: hidden;
     z-index: 1;
-    filter: brightness(0.6);
-    scale: 1;
-
+    scale: 1.1;
 }
 #Title {
     position: absolute;
     top: 1.2rem;
     left: 2.5rem;
     z-index: 4;
-    color: rgb(161, 161, 161);
+    color: white;
     font-size: 1em;
     text-align: center;
     text-transform: uppercase;
 }
 .vehiculeContainer {
-    color: rgb(65, 65, 65);
+    color: white;
     position: absolute;
     top: 40%;
     left: 50%;
@@ -202,7 +275,7 @@ const colorConvert = (color) => {
     height: 65%;
     padding: 1rem;
     border-radius: 30px;
-    background-color: #ffffff0f;
+    background-color: #ffffff10;
     z-index: 3;
 }
 .enginContainer {
@@ -224,7 +297,7 @@ const colorConvert = (color) => {
     color: black;
     font-size: 1rem;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff2a;
+    background-color: #ffffff33;
     backdrop-filter: blur(10px);
     padding: 1rem;
     border-radius: 1rem;
@@ -234,7 +307,8 @@ const colorConvert = (color) => {
     opacity: 0;
     border-radius: 1rem;
     animation: slideIn 0.5s ease-out forwards;
-    background-color: #ffffff17;
+    background-color: #ffffff42;
+    color: white;
     min-width: 20%;
 }
 @keyframes slideIn {
@@ -327,8 +401,8 @@ const colorConvert = (color) => {
 }
 .familleTitle {
     text-align: left;
-    color: #c1c1c1;
-    border-bottom: 1px solid #666666;
+    color: #ffffff;
+    border-bottom: 1px solid #ffffff;
     padding: 0.5rem;
 }
 .info{
@@ -338,5 +412,12 @@ const colorConvert = (color) => {
     z-index: 4;
     color: white;
     font-size: 0.8rem;
+}
+@keyframes blink {
+  0% { background-color: #f60700; color: white;}
+  49% { background-color: #f60700; color: white;}
+  50% { background-color: #ffbdbd; color: white; }
+  99% { background-color: #ffbdbd; color: white; }
+  100% { background-color: #f60700; color: white;}
 }
 </style>
