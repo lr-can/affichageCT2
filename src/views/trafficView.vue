@@ -108,7 +108,7 @@ const displayInfo2 = ref(false);
 const displayInfo3 = ref(false);
 const transportation = useTransportation();
 onMounted(async () => {
-    await transportation.getData();
+    await transportation.fetchAllSheetsFromAPI();
     tcl.value = transportation.tcl;
     sncfCol.value = transportation.sncf;
     sncf.value = transportation.sncf;
@@ -118,7 +118,7 @@ setTimeout(() => {
     asAwait.value = true;
 }, 5000);
 setInterval( async () => {
-    await transportation.getData();
+    await transportation.fetchAllSheetsFromAPI();
     tcl.value = transportation.tcl;
     sncfCol.value = transportation.sncf;
     sncfLYD.value = transportation.sncfLYD;

@@ -231,7 +231,7 @@ onMounted(async () => {
     ThirdInterDisplay.value = inters.value[2];
     setInterval(updateIntersDisplay, 5000);
     okay.value = true;
-    console.log(inters.value);
+    //console.log(inters.value);
 });
 
 const giveLink = () => {

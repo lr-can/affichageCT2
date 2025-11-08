@@ -114,7 +114,7 @@ onMounted(async () => {
     const planningTeams = await planning.getCurrentTeamAndNextTeam();
     const planning_data = await planning.getFullPlanning();
     fullPlanning.value = planning_data.mappedPlanningData;
-    console.log(fullPlanning.value);
+    //console.log(fullPlanning.value);
     const data = planningTeams.planningData;
     currentTeam.value = data.currentTeam;
     nextTeam.value = data.nextTeam;

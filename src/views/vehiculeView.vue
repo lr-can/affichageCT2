@@ -124,7 +124,7 @@ onMounted(async () => {
             numberOfEngins.value += 1;
         }
     }
-    console.log("Found" + numberOfEngins.value + "engins");
+    //console.log("Found" + numberOfEngins.value + "engins");
     miseAJour.value = await smartemis.getLastUpdateEngins();
     agents.value = await smartemis.getAgentsAvailable();
     const now = new Date();

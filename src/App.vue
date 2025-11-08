@@ -64,6 +64,9 @@
       <div v-show="index == 6 || initialize" key="weatherWarning">
         <weatherWarning />
       </div>
+      <div v-show="(index == 7 || initialize) && consignesData && consignesData.length > 0" key="consignes">
+        <consignesView :instruction-data="consignesData" />
+      </div>
       </TransitionGroup>
     </div>
   </div>
@@ -82,6 +85,7 @@ import vehiculeView from './views/vehiculeView.vue';
 import vehiculeViewNight from './views/vehiculeViewNight.vue';
 import interEnCours from './views/interEnCours.vue';
 import weatherWarning from './views/weatherWarning.vue';
+import consignesView from './views/consignesView.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
@@ -96,6 +100,7 @@ import RE from './assets/sounds/RE.wav';
 import AL from './assets/sounds/AL.mp3';
 import lessPeople from './assets/sounds/lessPeople.wav'
 import morePeople from './assets/sounds/morePeople.wav';
+import consigne from './assets/sounds/consigne.mp3';
 
 const weatherStore = useWeather();
 
@@ -108,6 +113,7 @@ const isArah = ref(false);
 const agentList = ref([]);
 const changedAgents = ref([]);
 const familles = ref([]);
+const consignesData = ref([]);
 
 const colorMapWeather = {
   "Advisory": '#f1c40f',
@@ -179,6 +185,8 @@ const getTTS = async (message) => {
 let regularTimeout = null;
 
 const initializeApp = async () => {
+  await smartemis.fetchAllSheetsFromAPI();
+  await updateConsignes();
   const now = new Date();
   const minutes = now.getMinutes();
   const reloadTime = minutes > 40 ? 25 * 60 * 1000 : 20 * 60 * 1000;
@@ -186,7 +194,7 @@ const initializeApp = async () => {
   regularTimeout = setTimeout(() => {
     window.location.reload();
   }, reloadTime);
-  console.log('App initialized, next update in ' + reloadTime / 1000 + ' seconds');
+  //console.log('App initialized, next update in ' + reloadTime / 1000 + ' seconds');
   await new Promise((resolve) => setTimeout(resolve, 5000));
   currentVehicules.value = await smartemis.getStatus();
   familles.value = await smartemis.getEngins();
@@ -198,7 +206,7 @@ const initializeApp = async () => {
     showPopup.value = true;
   }
   const details = await smartemis.getInterDetail();
-  console.log('Intervention details:', details);
+  //console.log('Intervention details:', details);
   if (details){
     if (details.status && !isArah.value){
       views.value = views.value.map(view => {
@@ -220,12 +228,13 @@ const initializeApp = async () => {
 initializeApp();
 
 const waitForInter = setInterval(async () => {
+  await smartemis.fetchAllSheetsFromAPI();
   const data = await smartemis.getInterventionsList();
   if (data.identifiant === 'Aucune intervention en cours'){
     return;
   }
   if (!/^🚧 N°\d+\/1 - /.test(data.notification)) {
-    console.log("Intervention is not first ordre départ.")
+    //console.log("Intervention is not first ordre départ.")
     let currentAlerteVehicule = currentVehicules.value.filter(vehicule => vehicule.statut == 'AL' || vehicule.statut == 'RE' || vehicule.statut == 'PP' || vehicule.statut == 'DE');
     if (!currentAlerteVehicule || currentAlerteVehicule.length == 0){
       return;
@@ -264,7 +273,9 @@ const views = ref([
   {viewName : 'interEnCours',
     time: 0},
   {viewName : 'weatherWarning',
-    time: 0}
+    time: 0},
+  {viewName : 'consignes',
+    time: 0},
 ]);
 const main = async () => {
   while (true){
@@ -277,7 +288,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    //index.value = 2;
+    //index.value = 2; // FOR TESTING ONLY
   }
 }
 main();
@@ -292,6 +303,26 @@ const backgroundIf = (viewName) => {
 const popupPersistency = computed(() => {
   return popupList.value && popupList.value.length == 1 && popupList.value[0].type != 'newVehicule';
 });
+
+const updateConsignes = async () => {
+  const consignes = await smartemis.getConsignes();
+  consignesData.value = consignes;
+  if (consignesData.value && consignesData.value.length > 0){
+    views.value = views.value.map(view => {
+      if (view.viewName === 'consignes') {
+        return { ...view, time: 45 };
+      }
+      return view;
+    });
+  } else {
+    views.value = views.value.map(view => {
+      if (view.viewName === 'consignes') {
+        return { ...view, time: 0 };
+      }
+      return view;
+    });
+  }
+}
 
 const filterAndPushPopup = () => {
   if (alertData.value.alerteType){
@@ -330,7 +361,21 @@ const filterAndPushPopup = () => {
         type: 'vehicule'
       });
     }
-  }  
+  }
+  if (consignesData.value && consignesData.value.length > 0){
+    let findConsignes = popupList.value.find(popup => popup.type === 'consignes');
+    if (!findConsignes) {
+      popupList.value.push({
+        img_url: `../assets/smartemis.png`,
+        msg_part1: 'Consignes opérationnelles',
+        msg_part2: '',
+        msg_part3: `${consignesData.value.length} consignes actives`,
+        color_part3: 'white',
+        backgroundColor_part3: '#fd4a45',
+        type: 'consignes',
+      });
+    }
+  }
   if (connectionProblem.value){
     popupList.value.push({
       img_url: `../assets/vehicules/statuts/XX.png`,
@@ -364,6 +409,8 @@ setTimeout(() => {setInterval(async () => {
   familles.value = await smartemis.getEngins();
   let messages = await smartemis.getMessagesRadio();
   isArah.value = await smartemis.isArah();
+  let previousConsignes = consignesData.value ? [...consignesData.value] : [];
+  await updateConsignes();
   changedAgents.value = await smartemis.getChangedPeople(agentList.value);
   if (isArah.value){
     clearInterval(waitForInter);
@@ -403,7 +450,7 @@ setTimeout(() => {setInterval(async () => {
     let newVehicule = await newStatus.find(engin => vehicule.lib === engin.lib);
     let newVehiculeStatus = newVehicule.statut;
     if (previousStatus !== newVehiculeStatus){
-      console.log('New status detected for', vehicule.lib);
+      //console.log('New status detected for', vehicule.lib);
       newStatusPopup.push({
         img_url: giveEnginImg(newVehicule),
         msg_part1: newVehicule.lib,
@@ -430,6 +477,19 @@ setTimeout(() => {setInterval(async () => {
       }
       agentList.value = await smartemis.getAvailablePeople();
       changedAgents.value = [];
+  }
+  if (previousConsignes.length !== consignesData.value.length){
+    if (consignesData.value.length > previousConsignes.length){
+      newStatusPopup.push({
+        img_url: `../assets/smartemis.png`,
+        msg_part1: 'Nouvelle consigne',
+        msg_part2: '',
+        msg_part3: `${consignesData.value.length} consignes actives`,
+        color_part3: 'white',
+        backgroundColor_part3: '#fd4a45',
+        type: 'consignes',
+      });
+    }
   }
   if (newStatusPopup.length > 0){
     const statusMap = {};
@@ -461,7 +521,7 @@ setTimeout(() => {setInterval(async () => {
   let audioNotif = new Audio();
   if (newStatusPopup.length > 0){
     if (isArah.value){
-      console.log('Arah mode, no audio notification');
+      //console.log('Arah mode, no audio notification');
     } else {
     showPopup.value = false;
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -469,9 +529,9 @@ setTimeout(() => {setInterval(async () => {
     showPopup.value = true;
     popupInfo.value = popupList.value[0];
     let audioNotif2 = null;
-    console.log('New vehicules status detected', newStatusPopup);
+    //console.log('New vehicules status detected', newStatusPopup);
     if (interventionCheck.value){
-      console.log('Intervention ongoing, no audio notification');
+      //console.log('Intervention ongoing, no audio notification');
     } else {
       if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'Retenu')){
       let message = `${newStatusPopup.filter(v => v.msg_part3 === 'Retenu').map(v => v.nomPhonetique).join(' , ')} . Retenu`;
@@ -489,6 +549,8 @@ setTimeout(() => {setInterval(async () => {
       audioNotif = new Audio(morePeople);
     } else if (newStatusPopup.some(vehicule => vehicule.msg_part3 === 'IN' || vehicule.msg_part3 === 'IND')){
       audioNotif = new Audio(lessPeople);
+    } else if (newStatusPopup.some(vehicule => vehicule.type === 'consignes')){
+      audioNotif = new Audio(consigne);
     } else {
       audioNotif = new Audio(IT);
     }
