@@ -33,7 +33,7 @@
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
     <div v-if="new Date().getHours() >= 22 || new Date().getHours() < 6">
-      <vehiculeViewNight />
+      <vehiculeViewNight :instruction-data="consignesData"/>
     </div>
     <div v-else>
       <TransitionGroup name="cool">
@@ -288,7 +288,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    //index.value = 2; // FOR TESTING ONLY
+    //index.value = 7; // FOR TESTING ONLY
   }
 }
 main();

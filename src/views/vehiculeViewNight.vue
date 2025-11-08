@@ -64,10 +64,22 @@
         <div class="info">
             <p> Mise à jour : Il y a {{ timeElapsed }} environ.</p>
         </div>
+            <!-- 🟢 BULLE DE CONSIGNE -->
+        <transition name="bubble-fade" mode="out-in">
+        <div v-if="currentInstruction" key="currentInstructionIndex" class="instruction-bubble">
+            <div class="titre">{{ currentInstruction.titre }}</div>
+            <div class="meta">
+            <span>{{ formatDuration(currentInstruction.debut) }} → {{ formatTarget(currentInstruction.fin) }}</span> - <span>{{ currentInstruction.origine }} – {{ currentInstruction.nom }}</span>
+            </div>
+            <div class="texte">{{ currentInstruction.texte }}</div>
+        </div>
+        </transition>
+
+
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed, watchEffect } from 'vue';
 import { useSmartemis } from '../store/smartemis';
 
 const smartemis = useSmartemis();
@@ -77,6 +89,25 @@ const timeElapsed = ref();
 const agents = ref();
 const numberOfEngins = ref(0);
 const showPeople = ref(false);
+
+const props = defineProps({
+  instructionData: {
+    type: Array,
+    default: () => []
+  }
+});
+
+const currentInstructionIndex = ref(0);
+const currentInstruction = ref(null);
+const hasInstructions = computed(() => props.instructionData && props.instructionData.length > 0);
+
+watchEffect(() => {
+  if (hasInstructions.value) {
+    currentInstruction.value = props.instructionData[currentInstructionIndex.value];
+  }
+});
+
+
 
 const agentList = ref([]);
 import Sap2CL from '../assets/grades/Sap 2CL.png';
@@ -113,6 +144,42 @@ const dict_grades = {
 const giveAgentGrade = (grade) => {
     return dict_grades[grade];
 };
+
+// Utilitaires formatage temps
+const formatDuration = (start) => {
+  const debut = new Date(start);
+  const now = new Date();
+  const diff = now - debut;
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const heures = Math.floor(minutes / 60);
+  const jours = Math.floor(heures / 24);
+
+  const resteH = heures % 24;
+  const resteM = minutes % 60;
+
+  let result = "depuis ";
+  if (jours > 0) result += `${jours} j `;
+  if (resteH > 0) result += `${resteH} h `;
+  if (resteM > 0 && jours === 0) result += `${resteM} min`;
+  return result.trim();
+};
+
+const formatTarget = (end) => {
+  const fin = new Date(end);
+  const now = new Date();
+
+  const isToday = fin.toDateString() === now.toDateString();
+  const isTomorrow = fin.getDate() === now.getDate() + 1;
+
+  const heures = fin.getHours().toString().padStart(2, "0");
+  const minutes = fin.getMinutes().toString().padStart(2, "0");
+
+  if (isToday) return `aujourd’hui ${heures}h${minutes}`;
+  if (isTomorrow) return `demain ${heures}h${minutes}`;
+  return `${fin.getDate()}/${fin.getMonth() + 1} ${heures}h${minutes}`;
+};
+
 
 const counter = ref(0);
 
@@ -156,6 +223,11 @@ onMounted(async () => {
         timeElapsed.value = remainingSeconds != 0 ? `${minutes} min ${remainingSeconds} s` : `${minutes} min`;
     }
     counter.value % 2 === 0 ? showPeople.value = !showPeople.value : null;
+    if (hasInstructions.value) {
+        currentInstructionIndex.value = (currentInstructionIndex.value + 1) % props.instructionData.length;
+        currentInstruction.value = props.instructionData[currentInstructionIndex.value];
+    }
+
     }
     , 10000);
 
@@ -420,4 +492,68 @@ const colorConvert = (color) => {
   99% { background-color: #ffbdbd; color: white; }
   100% { background-color: #f60700; color: white;}
 }
+.instruction-bubble {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 45%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 0.9rem 1.4rem;
+  border-radius: 1rem;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  animation: float 0.7s ease;
+  z-index: 50;
+}
+
+.instruction-bubble .titre {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  color: #ff6767;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.instruction-bubble .texte {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  line-height: 1.3;
+  margin-bottom: 0.4rem;
+  white-space: pre-wrap;
+}
+
+.instruction-bubble .meta {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  display: flex;
+  gap: 0.1rem;
+  justify-content: center;
+}
+
+.bubble-fade-enter-active,
+.bubble-fade-leave-active {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.bubble-fade-enter-from,
+.bubble-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+@keyframes float {
+  from {
+    transform: translateX(-50%) translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
 </style>

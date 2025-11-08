@@ -2,13 +2,17 @@
   <section
     class="consignes-page"
     :style="{
-      '--alert-color': '#2596be',
+      '--alert-color': '#ed1c24',
       '--alert-color-2': '#fd4a45'
     }"
   >
     <div class="content">
       <!-- ASIDE : LOGOS -->
       <aside class="side">
+        <header class="side-header">
+          <h2 class="title">Consignes opérationnelles</h2>
+        </header>
+
         <figure class="logo-wrapper">
           <img src="../assets/smartemis.png" alt="SmartEmis Logo" />
         </figure>
@@ -31,18 +35,13 @@
               <h3 class="bubble-title">{{ item.titre }}</h3>
               <p class="bubble-meta">
                 <strong>{{ item.origine }}</strong> • 
-                <span>{{ item.nom }}</span>
+                <span>{{ item.nom }}</span><br/>
+                <strong>Depuis </strong> {{ item.relativeStart }} →
+                <strong>Jusqu’à </strong> {{ item.relativeEnd }}
               </p>
             </header>
 
             <p class="bubble-text">{{ item.texte }}</p>
-
-            <footer class="bubble-footer">
-              <p>
-                <strong>Depuis :</strong> {{ item.relativeStart }}<br />
-                <strong>Jusqu’à :</strong> {{ item.relativeEnd }}
-              </p>
-            </footer>
           </article>
 
           <p v-if="parsedInstructions.length === 0" class="empty-msg">
@@ -189,6 +188,7 @@ const parsedInstructions = computed(() =>
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   margin: 0 0 0.5rem 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  color: var(--alert-color);
 }
 
 .subtitle {
@@ -203,6 +203,7 @@ const parsedInstructions = computed(() =>
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .consigne-bubble {
@@ -244,6 +245,7 @@ const parsedInstructions = computed(() =>
 .bubble-text {
   line-height: 1.5;
   white-space: pre-line;
+  font-size: 1.2rem;
 }
 
 .bubble-footer {
