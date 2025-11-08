@@ -19,10 +19,6 @@
 
       <!-- MAIN SECTION -->
       <main class="details">
-        <header class="details-header">
-          <h1 class="title">Consignes opérationnelles</h1>
-          <h2 class="subtitle">Dernières instructions reçues</h2>
-        </header>
 
         <!-- BULLES DE CONSIGNES -->
         <section class="consignes-list">
@@ -85,10 +81,10 @@ function formatRelativeTime(dateString, isStart = true) {
 
   if (isStart) {
     if (diffDays > 0)
-      return `il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+      return `${diffDays} jour${diffDays > 1 ? 's' : ''}`;
     if (diffHours > 0)
-      return `il y a ${diffHours} h ${diffMin % 60} min`;
-    return `il y a ${diffMin} min`;
+      return `${diffHours} h ${diffMin % 60} min`;
+    return `${diffMin} min`;
   } else {
     const dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
     const targetDay = dayNames[date.getDay()];
