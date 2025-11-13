@@ -114,6 +114,7 @@ const agentList = ref([]);
 const changedAgents = ref([]);
 const familles = ref([]);
 const consignesData = ref([]);
+const pavoisementAndHommage = ref([]);
 
 const colorMapWeather = {
   "Advisory": '#f1c40f',
@@ -200,6 +201,7 @@ const initializeApp = async () => {
   familles.value = await smartemis.getEngins();
   alertData.value = await weatherStore.alertWeather();
   agentList.value = await smartemis.getAvailablePeople();
+  pavoisementAndHommage.value = await smartemis.getPavoisementAndHommage();
   filterAndPushPopup();
   if (popupList.value.length > 0){
     popupInfo.value = popupList.value[0];
@@ -373,6 +375,20 @@ const filterAndPushPopup = () => {
         color_part3: 'white',
         backgroundColor_part3: '#fd4a45',
         type: 'consignes',
+      });
+    }
+  }
+  if (pavoisementAndHommage.value && (pavoisementAndHommage.value.pavoisement || pavoisementAndHommage.value.hommage)){
+    let findPavoisement = popupList.value.find(popup => popup.type === 'pavoisementAndHommage');
+    if (!findPavoisement) {
+      popupList.value.push({
+        img_url: `../assets/flags/${pavoisementAndHommage.value.evenementDrapeau}.png`,
+        msg_part1: pavoisementAndHommage.value.evenementType,
+        msg_part2: '',
+        msg_part3: pavoisementAndHommage.value.evenementNomCourt,
+        color_part3: 'white',
+        backgroundColor_part3: '#34495e',
+        type: 'pavoisementAndHommage',
       });
     }
   }

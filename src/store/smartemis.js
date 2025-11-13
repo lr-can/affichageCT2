@@ -579,6 +579,25 @@ export const useSmartemis = defineStore('smartemis', () => {
     return result;
   };
 
+  // ---- PAVOISEMENT ET HOMMAGE (Feuille 14) ----
+  const getPavoisementAndHommage = async () => {
+    await fetchAllSheetsFromAPI();
+    const result = sheetsData.value['Feuille 14'] || [];
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const today_ddmm = `${day}/${month}`;
+    const today_ddmmyyyy = `${day}/${month}/${today.getFullYear()}`;
+    const filteredResult = result.filter(
+      (item) =>
+        item.date === today_ddmm + "/1900" || item.date === today_ddmmyyyy
+    );
+    if (filteredResult.length === 0) {
+      return null;
+    }
+    return result[0];
+  }
+
   // ---- EXPORT ----
   return {
     // cache feuilles
@@ -613,5 +632,6 @@ export const useSmartemis = defineStore('smartemis', () => {
     getAvailablePeople,
     getChangedPeople,
     getConsignes,
+    getPavoisementAndHommage,
   };
 });
