@@ -595,7 +595,15 @@ export const useSmartemis = defineStore('smartemis', () => {
     if (filteredResult.length === 0) {
       return null;
     }
-    return result[0];
+    if (filteredResult.length === 1) {
+      return filteredResult[0];
+    }
+    const currentYear = String(today.getFullYear());
+    const withCurrentYear = filteredResult.find(
+      (item) => item.date && item.date.includes(currentYear)
+    );
+    console.log('Pavoisement et hommage du jour:', withCurrentYear || filteredResult[0]);
+    return withCurrentYear || filteredResult[0];
   }
 
   // ---- EXPORT ----

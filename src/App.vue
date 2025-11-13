@@ -67,6 +67,9 @@
       <div v-show="(index == 7 || initialize) && consignesData && consignesData.length > 0" key="consignes">
         <consignesView :instruction-data="consignesData" />
       </div>
+      <div v-show="(index == 8 || initialize) && pavoisementAndHommage" key="hommage">
+        <hommageView :evenement-data="pavoisementAndHommage" />
+      </div>
       </TransitionGroup>
     </div>
   </div>
@@ -86,6 +89,7 @@ import vehiculeViewNight from './views/vehiculeViewNight.vue';
 import interEnCours from './views/interEnCours.vue';
 import weatherWarning from './views/weatherWarning.vue';
 import consignesView from './views/consignesView.vue';
+import hommageView from './views/hommageView.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
@@ -225,6 +229,14 @@ const initializeApp = async () => {
       });
     }
   }
+  if (pavoisementAndHommage.value){
+    views.value = views.value.map(view => {
+      if (view.viewName === 'hommage') {
+        return { ...view, time: 60 };
+      }
+      return view;
+    });
+  }
   
 }
 initializeApp();
@@ -278,6 +290,8 @@ const views = ref([
     time: 0},
   {viewName : 'consignes',
     time: 0},
+  {viewName : 'hommage',
+    time: 0},
 ]);
 const main = async () => {
   while (true){
@@ -290,7 +304,7 @@ const main = async () => {
       }
     }
     index.value = next_index;
-    //index.value = 7; // FOR TESTING ONLY
+    //index.value = 8; // FOR TESTING ONLY
   }
 }
 main();
@@ -378,7 +392,7 @@ const filterAndPushPopup = () => {
       });
     }
   }
-  if (pavoisementAndHommage.value && (pavoisementAndHommage.value.pavoisement || pavoisementAndHommage.value.hommage)){
+  if (pavoisementAndHommage.value){
     let findPavoisement = popupList.value.find(popup => popup.type === 'pavoisementAndHommage');
     if (!findPavoisement) {
       popupList.value.push({
