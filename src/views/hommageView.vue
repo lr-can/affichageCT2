@@ -1,6 +1,6 @@
 <template>
     <div class="hommage-container">
-        <div class="left-image" :style="{ backgroundImage: `url(${hommage})` }" />
+        <div class="left-image" :style="{ backgroundImage: `url(${type[evenement.evenementType]})` }" />
 
         <div class="right-pane">
             <div class="header">
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="meta">
-                    <span class="meta-item">{{ evenement.date.replace("1900", "") }}</span>
+                    <span class="meta-item">{{ evenement.date?.replace("1900", "") }}</span>
                     <span class="meta-sep">•</span>
                     <span class="meta-item">{{ evenement.evenementType }}</span>
                 </div>
@@ -25,6 +25,9 @@
             <div class="body">
                 <h3>Description</h3>
                 <p>{{ evenement.evenementDescription }}</p>
+                <div class="image" v-if="evenement.complementaryImage">
+                    <img :src="evenement.complementaryImage" alt="Image complémentaire" />
+                </div>
             </div>
         </div>
     </div>
@@ -32,17 +35,41 @@
 
 <script setup>
 import hommage from '../assets/backgrounds/hommage.jpeg';
+import commemoration from '../assets/backgrounds/commemoration.jpeg';
+import steBarbe from '../assets/backgrounds/steBarbe.jpeg';
+import jNationale from '../assets/backgrounds/jNationale.jpeg';
+import armistice from '../assets/backgrounds/armistice.jpeg';
+import fNationale from '../assets/backgrounds/fNationale.jpeg';
+import jEurope from '../assets/backgrounds/jEurope.jpeg';
+import { ref } from 'vue';
 
-const evenement = {
-    date: '13/11/2025',
-    evenementType: 'Commémoration',
-    evenementNom: 'Hommage aux victimes des attentats du 13 novembre 2015',
-    evenementNomCourt: 'Hommage 13 novembre',
-    evenementDrapeau: 'France',
-    evenementHymne: 'France',
-    evenementDescription:
-        'Le 13 novembre 2015, une série d’attentats terroristes frappait Paris et Saint-Denis, visant notamment le Bataclan, le Stade de France et plusieurs terrasses de café. Ces attaques coordonnées, revendiquées par l’organisation État islamique, ont fait 130 morts et plus de 400 blessés, marquant durablement la Nation. Dix ans plus tard, la France se souvient avec émotion de cette nuit tragique, en rendant hommage aux victimes, à leurs familles et à tous les intervenants des secours et de la sécurité. Les cérémonies rappellent la résilience collective, la solidarité et la défense des valeurs républicaines face à la barbarie.'
-}
+const type = ref({
+    "Commémoration": hommage,
+    "Hommage": hommage,
+    "Catastrophe commémorative": commemoration,
+    "Fête patronale": steBarbe,
+    "Journée nationale": jNationale,
+    "Armistice": armistice,
+    "Fête nationale": fNationale,
+    "Journée européenne": jEurope
+});
+
+const { evenement } = defineProps({
+    evenement: {
+        type: Object,
+        default: () => ({
+            date: '13/11/2025',
+            evenementType: 'Commémoration',
+            evenementNom: 'Hommage aux victimes des attentats du 13 novembre 2015',
+            evenementNomCourt: 'Hommage 13 novembre',
+            evenementDrapeau: 'France',
+            evenementHymne: 'France',
+            complementaryImage: null,
+            evenementDescription:
+                'Le 13 novembre 2015, une série d’attentats terroristes frappait Paris et Saint-Denis, visant notamment le Bataclan, le Stade de France et plusieurs terrasses de café. Ces attaques coordonnées, revendiquées par l’organisation État islamique, ont fait 130 morts et plus de 400 blessés, marquant durablement la Nation. Dix ans plus tard, la France se souvient avec émotion de cette nuit tragique, en rendant hommage aux victimes, à leurs familles et à tous les intervenants des secours et de la sécurité. Les cérémonies rappellent la résilience collective, la solidarité et la défense des valeurs républicaines face à la barbarie.'
+        })
+    }
+});
 </script>
 
 <style scoped>
@@ -179,6 +206,18 @@ const evenement = {
     font-size: 1.2rem;
     color: #222;
     white-space: pre-wrap;
+}
+
+.image {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+}
+.image img {
+    max-width: 40%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* Responsive: stack on small screens */

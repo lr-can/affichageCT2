@@ -68,7 +68,7 @@
         <consignesView :instruction-data="consignesData" />
       </div>
       <div v-show="(index == 8 || initialize) && pavoisementAndHommage" key="hommage">
-        <hommageView :evenement-data="pavoisementAndHommage" />
+        <hommageView :evenement="pavoisementAndHommage" />
       </div>
       </TransitionGroup>
     </div>
