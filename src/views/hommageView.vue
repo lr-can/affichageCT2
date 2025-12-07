@@ -1,6 +1,7 @@
 <template>
-    <div class="hommage-container">
-        <div class="left-image" :style="{ backgroundImage: `url(${type[evenement.evenementType]})` }" />
+    <template>
+    <div v-if="evenement" class="hommage-container">
+        <div class="left-image" :style="{ backgroundImage: `url(${backgroundImage})` }" />
 
         <div class="right-pane">
             <div class="header">
@@ -26,12 +27,16 @@
                 <h3>Description</h3>
                 <p>{{ evenement.evenementDescription }}</p>
                 <div class="image" v-if="evenement.complementaryImage">
-                    <img :src="evenement.complementaryImage" alt="Image complémentaire" />
+                    <img :src="evenement.complementaryImage" alt="Image complémentaire" loading="lazy" />
                 </div>
             </div>
         </div>
     </div>
+    <div v-else>
+        <p>Aucun événement sélectionné.</p>
+    </div>
 </template>
+
 
 <script setup>
 import hommage from '../assets/backgrounds/hommage.jpeg';
