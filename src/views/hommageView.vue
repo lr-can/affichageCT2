@@ -1,5 +1,4 @@
 <template>
-    <template>
     <div v-if="evenement" class="hommage-container">
         <div class="left-image" :style="{ backgroundImage: `url(${backgroundImage})` }" />
 
