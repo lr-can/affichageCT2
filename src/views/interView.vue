@@ -6,7 +6,11 @@
             <img src="../assets/vehicules/statuts/DE.png" alt="" width="300px" height="auto">
         </div>
         <div v-if="giveClass == 'interConfig'" class="info">
-            <div class="infoHeader"><span :class="typeInterClass">{{ typeInter }}</span> <span id="interLibelle">{{ libelleInter.toUpperCase().replace(/\|/g, '-')  }}</span></div>
+            <div class="infoHeader">
+                <span :class="typeInterClass">{{ typeInter }}</span>
+                <span v-if="hasRedLabel" class="redLabel">{{ redLabelText }}</span>
+                <span id="interLibelle">{{ cleanLibelleInter }}</span>
+            </div>
             <div class="infoDetail"><span><img src="../assets/icons/number.svg" style="filter: invert(100%) brightness(1000%);height: 1.8rem; width: auto ;" /></span><span>N°{{ numeroInter }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/citySign.svg" style="filter: invert(100%) brightness(1000%);height: 2rem; width: auto ;" /></span><span>{{ villeInter.toUpperCase() }}</span></div>
             <div class="infoDetail"><span><img src="../assets/icons/address.svg" style="filter: invert(100%) brightness(1000%);height: 2rem; width: auto ;" /></span><span>{{ adresseInter.toUpperCase() }}</span></div>
@@ -244,6 +248,38 @@ const typeInterClass = computed(() => {
     } else {
         return 'Div';
     }
+});
+
+// Gestion des libellés rouges (DV, DFUR, DFU, DFE, DF20)
+const hasRedLabel = computed(() => {
+    if (!libelleInter.value) return false;
+    return libelleInter.value.includes('DF20') || 
+           libelleInter.value.includes('DFE') || 
+           libelleInter.value.includes('DFUR') || 
+           libelleInter.value.includes('DFU') || 
+           (libelleInter.value.includes('DV') && !libelleInter.value.includes('DF20') && !libelleInter.value.includes('DFE') && !libelleInter.value.includes('DFUR') && !libelleInter.value.includes('DFU'));
+});
+
+const redLabelText = computed(() => {
+    if (!libelleInter.value) return '';
+    if (libelleInter.value.includes('DF20')) return 'DF20';
+    if (libelleInter.value.includes('DFE')) return 'DFE';
+    if (libelleInter.value.includes('DFUR')) return 'DFUR';
+    if (libelleInter.value.includes('DFU')) return 'DFU';
+    if (libelleInter.value.includes('DV')) return 'DV';
+    return '';
+});
+
+const cleanLibelleInter = computed(() => {
+    if (!libelleInter.value) return '';
+    return libelleInter.value.toUpperCase()
+        .replace(/\|/g, '-')
+        .replace('DF20', '')
+        .replace('DFE', '')
+        .replace('DFUR', '')
+        .replace('DFU', '')
+        .replace('DV', '')
+        .trim();
 });
 const props = defineProps({
     data: Object,
@@ -584,6 +620,17 @@ div {
     padding: 0.5rem;
     border-radius: 0.3rem;
     margin-right: 0.5rem;
+}
+.redLabel {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f60700;
+    border: 2px solid #f60700;
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    background-color: transparent;
 }
 #interLibelle {
     font-size: 2.3rem;

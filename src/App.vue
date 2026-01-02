@@ -1,4 +1,10 @@
 <template>
+  <navigationMenu 
+    v-if="!interventionCheck"
+    :views="views"
+    :current-index="index"
+    @view-change="handleViewChange"
+  />
   <div class="clock-container">
     <clockComponent />
   </div>
@@ -32,7 +38,7 @@
   <div v-if="interventionCheck" class="logo"><img src="./assets/logoCollongesModif.png" alt="" width="700px" height="auto"></div>   
   <regularBackground />
   <div class="fullView" v-if="!interventionCheck">
-    <div v-if="new Date().getHours() >= 22 || new Date().getHours() < 6">
+    <div v-if="new Date().getHours() >= 23 || new Date().getHours() < 6">
       <vehiculeViewNight :instruction-data="consignesData"/>
     </div>
     <div v-else>
@@ -79,6 +85,7 @@ import clockComponent from './components/clockComponent.vue';
 import ytbBackGround from './components/ytbBackGround.vue';
 import regularBackground from './components/regularBackground.vue';
 import popupComponent from './components/popupComponent.vue';
+import navigationMenu from './components/navigationMenu.vue';
 import todayView from './views/todayView.vue';
 import trafficView from './views/trafficView.vue';
 import interView from './views/interView.vue';
@@ -86,7 +93,6 @@ import lastInter from './views/lastInter.vue';
 import weatherView from './views/weatherView.vue';
 import vehiculeView from './views/vehiculeView.vue';
 import vehiculeViewNight from './views/vehiculeViewNight.vue';
-import interEnCours from './views/interEnCours.vue';
 import weatherWarning from './views/weatherWarning.vue';
 import consignesView from './views/consignesView.vue';
 import hommageView from './views/hommageView.vue';
@@ -273,6 +279,7 @@ const waitForInter = setInterval(async () => {
 }, 15000);
 
 const index = ref(0);
+const isManualMode = ref(false);
 const views = ref([
   {viewName : 'today',
   time : 30},
@@ -293,17 +300,34 @@ const views = ref([
   {viewName : 'hommage',
     time: 0},
 ]);
+
+const handleViewChange = (newIndex) => {
+  if (newIndex >= 0 && newIndex < views.value.length) {
+    index.value = newIndex;
+    isManualMode.value = true;
+    // Réactiver le mode automatique après 60 secondes d'inactivité manuelle
+    setTimeout(() => {
+      isManualMode.value = false;
+    }, 60000);
+  }
+};
+
 const main = async () => {
   while (true){
-    await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
-    let next_index = (index.value + 1) % views.value.length;
-    if (views.value[next_index].time === 0) { // if suivant time is 0, skip to next
-      next_index = (next_index + 1) % views.value.length;
-      if (views.value[next_index.time === 0]){ // if next next time is also 0, skip again
+    if (!isManualMode.value) {
+      await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
+      let next_index = (index.value + 1) % views.value.length;
+      if (views.value[next_index].time === 0) { // if suivant time is 0, skip to next
         next_index = (next_index + 1) % views.value.length;
+        if (views.value[next_index.time === 0]){ // if next next time is also 0, skip again
+          next_index = (next_index + 1) % views.value.length;
+        }
       }
+      index.value = next_index;
+    } else {
+      // En mode manuel, attendre un peu avant de vérifier à nouveau
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    index.value = next_index;
     //index.value = 8; // FOR TESTING ONLY
   }
 }

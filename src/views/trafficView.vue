@@ -13,22 +13,36 @@
                 <img src="../assets/transport/TCL.svg" alt="" width="50px" height="auto">
                 Réseau TCL
             </div>
-            <div v-if="tcl && tcl.length > 1" class="tcl-info">
-                <div v-for="stop in tcl" :key="stop.arrêt" class="stop">
+            <div v-if="tcl && tcl.length > 0" class="tcl-info">
+                <div v-for="stop in validTCLStops" :key="stop.arret" class="stop">
                     <div class="sameRow">
-                        <img :src="giveSource(stop.line)" alt="" height="20px" width="auto">
+                        <img v-if="stop.ligne" :src="giveSource(stop.ligne)" alt="" height="20px" width="auto">
                         <div>
-                            {{ stop.arrêt }}
+                            {{ stop.arret || 'Arrêt inconnu' }}
                         </div>
                     </div>
-                    <div>
-                        <div v-for="bus in stop.buses" :class="giveBusClass(bus.prochainDepart)" :key="bus.direction" class="sameRow2">
-                            <div class="bus-direction"><i>{{ bus.direction }}</i></div>
-                            <span class="next-departure" :class="giveBlinkClass(bus.prochainDepart)">{{ bus.prochainDepart == 'Fin de service' ? '' : bus.prochainDepart}}</span>
-                            <span class="ensuite-departure">{{ bus.ensuiteDepart == 'Fin de service' ? '': bus.ensuiteDepart }}</span>
+                    <div v-if="stop.buses && stop.buses.length > 0">
+                        <div v-for="bus in stop.buses" :key="`${bus.direction}-${bus.prochainDepart}`" 
+                             :class="[giveBusClass(bus.prochainDepart), { 'bus-hors-service': isBusHorsService(bus) }]" 
+                             class="sameRow2">
+                            <div class="bus-direction"><i>{{ bus.direction || 'Direction inconnue' }}</i></div>
+                            <span v-if="!isBusHorsService(bus)" class="next-departure" :class="giveBlinkClass(bus.prochainDepart)">
+                                {{ formatDepartureTime(bus.prochainDepart) }}
+                            </span>
+                            <span v-else class="next-departure hs-message">HS</span>
+                            <span v-if="!isBusHorsService(bus)" class="ensuite-departure">{{ formatDepartureTime(bus.ensuiteDepart) }}</span>
+                            <span v-else class="ensuite-departure hs-message">HS</span>
                         </div>
                     </div>
+                    <div v-else class="no-departure-message">
+                        <p>Pas de départ dans l'heure à cet arrêt</p>
+                    </div>
+                </div>
             </div>
+            <div v-else-if="tcl && tcl.length === 0" class="tcl-info">
+                <div class="no-data-message">
+                    <p>Aucune donnée TCL disponible</p>
+                </div>
             </div>
         </div>
         <div class="sncf">
@@ -95,7 +109,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import wazeView from '../components/wazeView.vue';
 import { useTransportation } from '../store/transportation';
 const tcl = ref();
@@ -110,6 +124,7 @@ const transportation = useTransportation();
 onMounted(async () => {
     await transportation.fetchAllSheetsFromAPI();
     tcl.value = transportation.tcl;
+    console.log(tcl.value);
     sncfCol.value = transportation.sncf;
     sncf.value = transportation.sncf;
     sncfLYD.value = transportation.sncfLYD;
@@ -137,7 +152,14 @@ setInterval(() => {
 }, 3000);
 
 const giveSource = (ligne) => {
-    return new URL(`../assets/transport/${ligne}.svg`, import.meta.url).href;
+    if (!ligne || ligne.trim() === '') {
+        return new URL(`../assets/transport/TCL.svg`, import.meta.url).href;
+    }
+    try {
+        return new URL(`../assets/transport/${ligne}.svg`, import.meta.url).href;
+    } catch (e) {
+        return new URL(`../assets/transport/TCL.svg`, import.meta.url).href;
+    }
 }
 const giveClass = (type, comment) => {
     if (type === 'container') {
@@ -170,13 +192,39 @@ const giveClass = (type, comment) => {
         return comment.includes('retard') || comment.includes('supprimé') ? 'crossedText' : '';
     }
 }
-const giveBusClass = (direction) => {
-    if (direction == 'Fin de service' || direction == '-' || direction == 'HS'){
-        return 'noData'
+// Filtre les arrêts valides (avec nom d'arrêt)
+const validTCLStops = computed(() => {
+    if (!tcl.value || !Array.isArray(tcl.value)) return [];
+    return tcl.value.filter(stop => stop && stop.arret && stop.arret.trim() !== '');
+});
+
+// Vérifie si un bus est hors service (HS)
+const isBusHorsService = (bus) => {
+    if (!bus) return true;
+    const hsValues = ['HS', 'Fin de service', '-', '', null, undefined];
+    const prochainIsHS = !bus.prochainDepart || hsValues.includes(bus.prochainDepart);
+    const ensuiteIsHS = !bus.ensuiteDepart || hsValues.includes(bus.ensuiteDepart);
+    return prochainIsHS && ensuiteIsHS;
+};
+
+// Formate l'heure de départ (gère les cas spéciaux)
+const formatDepartureTime = (time) => {
+    if (!time) return '';
+    const noDataValues = ['Fin de service', '-', 'HS', 'Pas de départ dans l\'heure à cet arrêt'];
+    if (noDataValues.includes(time)) return '';
+    return time;
+};
+
+const giveBusClass = (prochainDepart) => {
+    if (!prochainDepart) return '';
+    const noDataValues = ['Fin de service', '-', 'HS', 'Pas de départ dans l\'heure à cet arrêt'];
+    if (noDataValues.includes(prochainDepart)) {
+        return '';
     }
     return '';
 }
 const giveBlinkClass = (prochainDepart) => {
+    if (!prochainDepart) return '';
     if (prochainDepart === '1 min' || prochainDepart === '2 min' || prochainDepart === 'Proche'){
         return 'blinkTime';
     }
@@ -470,6 +518,16 @@ const giveLogo = (service) => {
 .noData{
     display: none;
 }
+
+.bus-hors-service {
+    opacity: 0.6;
+}
+
+.hs-message {
+    color: #878787;
+    font-style: italic;
+    font-size: 0.9rem;
+}
 .blinkTime {
     animation: blink2 2s infinite ease-in-out;
 }
@@ -535,5 +593,23 @@ const giveLogo = (service) => {
     padding-bottom: 0.2rem;
     border-radius: 5px;
     border: 1px solid transparent;
+}
+
+.no-departure-message,
+.no-data-message {
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+    color: #878787;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+    border: 1px dashed rgba(135, 135, 135, 0.3);
+}
+
+.no-departure-message p,
+.no-data-message p {
+    margin: 0;
+    font-size: 0.9rem;
 }
 </style>

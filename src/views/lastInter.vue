@@ -16,8 +16,10 @@
                     <div class="interTitle" :style="{fontSize : '1.7em', fontWeight : 'bold', color: '#f60700'}">
                        <span v-if="firstInter.notificationTitre.includes('DF20')" class="DV">DF20</span>
                        <span v-if="firstInter.notificationTitre.includes('DFE')" class="DV">DFE</span>
-                        <span v-if="firstInter.notificationTitre.includes('DV')" class="DV">DV</span>
-                        <span :style="['DF20', 'DFE', 'DV'].some(r => firstInter.notificationTitre.includes(r)) ? { marginLeft: '1rem' } : {}">{{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "").trim() }}</span>
+                       <span v-if="firstInter.notificationTitre.includes('DFUR')" class="DV">DFUR</span>
+                       <span v-if="firstInter.notificationTitre.includes('DFU')" class="DV">DFU</span>
+                       <span v-if="firstInter.notificationTitre.includes('DV') && !firstInter.notificationTitre.includes('DF20') && !firstInter.notificationTitre.includes('DFE') && !firstInter.notificationTitre.includes('DFUR') && !firstInter.notificationTitre.includes('DFU')" class="DV">DV</span>
+                        <span :style="['DF20', 'DFE', 'DV', 'DFUR', 'DFU'].some(r => firstInter.notificationTitre.includes(r)) ? { marginLeft: '1rem' } : {}">{{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "").replace("DFUR", "").replace("DFU", "").trim() }}</span>
                     </div>
                     <div>
                         Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
@@ -35,20 +37,23 @@
                     </div>
                     <div :key="FirstInterDisplay.numeroInter" class="displayInfo" :class="isSlider(1)">
                         <div class="date">{{ calculateDelta(FirstInterDisplay.dateTime) }}</div>
-                        <div>N°{{ FirstInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ FirstInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
+                        <div>N°{{ FirstInterDisplay.numeroInter }} - </div>
+                        <span v-if="getRedLabel(FirstInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(FirstInterDisplay.notificationTitre) }}</span>
+                        <div>  {{ cleanTitle(FirstInterDisplay.notificationTitre) }} à </div>
                         <div> {{ FirstInterDisplay.notificationVille }}</div>
                     </div>
                     <div :key="SecInterDisplay.numeroInter" class="displayInfo" :class="isSlider(2)">
                         <div class="date"> {{ calculateDelta(SecInterDisplay.dateTime) }}</div>
-                        <div>N°{{ SecInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ SecInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
+                        <div>N°{{ SecInterDisplay.numeroInter }} - </div>
+                        <span v-if="getRedLabel(SecInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(SecInterDisplay.notificationTitre) }}</span>
+                        <div>  {{ cleanTitle(SecInterDisplay.notificationTitre) }} à </div>
                         <div> {{ SecInterDisplay.notificationVille }}</div>
                     </div>
                     <div :key="ThirdInterDisplay.numeroInter" class="displayInfo" :class="isSlider(3)">
                         <div class="date"> {{ calculateDelta(ThirdInterDisplay.dateTime) }}</div>
-                        <div>N°{{ ThirdInterDisplay.numeroInter }} - </div> 
-                        <div>  {{ ThirdInterDisplay.notificationTitre.replace(/\|/g, '-')  }} à </div>
+                        <div>N°{{ ThirdInterDisplay.numeroInter }} - </div>
+                        <span v-if="getRedLabel(ThirdInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(ThirdInterDisplay.notificationTitre) }}</span>
+                        <div>  {{ cleanTitle(ThirdInterDisplay.notificationTitre) }} à </div>
                         <div> {{ ThirdInterDisplay.notificationVille }}</div>
                     </div>
                 </div>
@@ -202,8 +207,21 @@
     padding-right: 0.8rem;
     background-color: transparent;
     color: #f60700;
-    border: 1px solid #f60700;
+    border: 2px solid #f60700;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+.DV-small {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    background-color: transparent;
+    color: #7b7b7b;
+    border: 1.5px solid #7b7b7b;
     border-radius: 3px;
+    font-weight: 700;
+    margin-right: 0.4rem;
+    margin-left: 0.3rem;
 }
 </style>
 <script setup>
@@ -277,6 +295,27 @@ const calculateDelta = (dateTime) => {
     }
     const days = Math.floor(hours / 24);
     return `Il y a ${days} jour${days > 1 ? 's' : ''} environ`;
+};
+
+const getRedLabel = (title) => {
+    if (!title) return '';
+    if (title.includes('DF20')) return 'DF20';
+    if (title.includes('DFE')) return 'DFE';
+    if (title.includes('DFUR')) return 'DFUR';
+    if (title.includes('DFU')) return 'DFU';
+    if (title.includes('DV') && !title.includes('DF20') && !title.includes('DFE') && !title.includes('DFUR') && !title.includes('DFU')) return 'DV';
+    return '';
+};
+
+const cleanTitle = (title) => {
+    if (!title) return '';
+    return title.replace(/\|/g, '-')
+        .replace('DF20', '')
+        .replace('DFE', '')
+        .replace('DFUR', '')
+        .replace('DFU', '')
+        .replace('DV', '')
+        .trim();
 };
 
 </script>
