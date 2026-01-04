@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="meta">
-                    <span class="meta-item">{{ evenement.date?.replace("1900", "") }}</span>
+                    <span class="meta-item">{{ evenement.date?.replace("/1900", "") }}</span>
                     <span class="meta-sep">•</span>
                     <span class="meta-item">{{ evenement.evenementType }}</span>
                 </div>
@@ -45,7 +45,7 @@ import jNationale from '../assets/backgrounds/jNationale.jpeg';
 import armistice from '../assets/backgrounds/armistice.jpeg';
 import fNationale from '../assets/backgrounds/fNationale.jpeg';
 import jEurope from '../assets/backgrounds/jEurope.jpeg';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const type = ref({
     "Commémoration": hommage,
@@ -70,9 +70,16 @@ const { evenement } = defineProps({
             evenementHymne: 'France',
             complementaryImage: null,
             evenementDescription:
-                'Le 13 novembre 2015, une série d’attentats terroristes frappait Paris et Saint-Denis, visant notamment le Bataclan, le Stade de France et plusieurs terrasses de café. Ces attaques coordonnées, revendiquées par l’organisation État islamique, ont fait 130 morts et plus de 400 blessés, marquant durablement la Nation. Dix ans plus tard, la France se souvient avec émotion de cette nuit tragique, en rendant hommage aux victimes, à leurs familles et à tous les intervenants des secours et de la sécurité. Les cérémonies rappellent la résilience collective, la solidarité et la défense des valeurs républicaines face à la barbarie.'
+                "Le 13 novembre 2015, une série d'attentats terroristes frappait Paris et Saint-Denis, visant notamment le Bataclan, le Stade de France et plusieurs terrasses de café. Ces attaques coordonnées, revendiquées par l'organisation État islamique, ont fait 130 morts et plus de 400 blessés, marquant durablement la Nation. Dix ans plus tard, la France se souvient avec émotion de cette nuit tragique, en rendant hommage aux victimes, à leurs familles et à tous les intervenants des secours et de la sécurité. Les cérémonies rappellent la résilience collective, la solidarité et la défense des valeurs républicaines face à la barbarie."
         })
     }
+});
+
+const backgroundImage = computed(() => {
+    if (!evenement || !evenement.evenementType) {
+        return hommage; // image par défaut
+    }
+    return type.value[evenement.evenementType] || hommage;
 });
 </script>
 

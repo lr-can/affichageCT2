@@ -14,12 +14,8 @@
                 <div class="interInfo">
                     <div class="numInter" :style="{color: '#f60700', marginTop: '1.5rem'}">Intervention n°{{ firstInter.numeroInter }}</div> 
                     <div class="interTitle" :style="{fontSize : '1.7em', fontWeight : 'bold', color: '#f60700'}">
-                       <span v-if="firstInter.notificationTitre.includes('DF20')" class="DV">DF20</span>
-                       <span v-if="firstInter.notificationTitre.includes('DFE')" class="DV">DFE</span>
-                       <span v-if="firstInter.notificationTitre.includes('DFUR')" class="DV">DFUR</span>
-                       <span v-if="firstInter.notificationTitre.includes('DFU')" class="DV">DFU</span>
-                       <span v-if="firstInter.notificationTitre.includes('DV') && !firstInter.notificationTitre.includes('DF20') && !firstInter.notificationTitre.includes('DFE') && !firstInter.notificationTitre.includes('DFUR') && !firstInter.notificationTitre.includes('DFU')" class="DV">DV</span>
-                        <span :style="['DF20', 'DFE', 'DV', 'DFUR', 'DFU'].some(r => firstInter.notificationTitre.includes(r)) ? { marginLeft: '1rem' } : {}">{{ firstInter.notificationTitre.replace(/\|/g, '-').replace("DF20", "").replace("DV", "").replace("DFE", "").replace("DFUR", "").replace("DFU", "").trim() }}</span>
+                       <span v-if="getRedLabel(firstInter.notificationTitre)" class="DV">{{ getRedLabel(firstInter.notificationTitre) }}</span>
+                        <span :style="getRedLabel(firstInter.notificationTitre) ? { marginLeft: '1rem' } : {}">{{ cleanTitle(firstInter.notificationTitre) }}</span>
                     </div>
                     <div>
                         Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
@@ -309,6 +305,7 @@ const getRedLabel = (title) => {
 
 const cleanTitle = (title) => {
     if (!title) return '';
+    // Remplacer dans l'ordre : les plus longs d'abord pour éviter les problèmes (DFUR avant DFU)
     return title.replace(/\|/g, '-')
         .replace('DF20', '')
         .replace('DFE', '')

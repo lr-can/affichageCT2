@@ -15,7 +15,7 @@
         <main class="main-content">
             <!-- Vue des engins -->
             <div class="vehiculeContainer" v-if="familles.length > 0 && giveNumberOfEngin() < numberOfEngins + 5 && !showPeople">
-                <div class="famille" v-for="famille in familles" :key="famille.famEngCod">
+                <div class="famille" :class="{ 'famille-inactive': isFamilleInactive(famille) }" v-for="famille in familles" :key="famille.famEngCod">
                     <div class="familleTitle">
                         {{ famille.famEngLib }}
                     </div>
@@ -209,6 +209,14 @@ const giveNumberOfEngin = () => {
     }
     return number;
 }
+
+const isFamilleInactive = (famille) => {
+    if (!famille || !famille.engins || famille.engins.length === 0) {
+        return false;
+    }
+    // Vérifier si tous les engins de la famille sont "IN" ou "DM"
+    return famille.engins.every(engin => engin.statut === 'IN' || engin.statut === 'DM');
+}
 const giveEnginImg = (engin) => {
     if (engin.statut == 'Dl'){
         if (engin.lib.startsWith('L') || engin.lib.includes('MPRGP')){
@@ -302,7 +310,6 @@ const colorConvert = (color) => {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Header */
@@ -596,6 +603,10 @@ const colorConvert = (color) => {
     border-radius: 2rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    opacity: 0.5;
+}
+.famille-inactive {
+    opacity: 0.4;
 }
 
 .personCardCompact {

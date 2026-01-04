@@ -365,7 +365,7 @@ const updateConsignes = async () => {
 }
 
 const filterAndPushPopup = () => {
-  if (alertData.value.alerteType){
+  if (alertData.value && alertData.value.alerteType){
     let findAlerte = popupList.value.find(popup => popup.msg_part1 === alertData.value.alerteType);
     if (!findAlerte) {
       popupList.value.push({

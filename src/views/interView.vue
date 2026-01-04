@@ -7,7 +7,7 @@
         </div>
         <div v-if="giveClass == 'interConfig'" class="info">
             <div class="infoHeader">
-                <span :class="typeInterClass">{{ typeInter }}</span>
+                <span v-if="false" :class="typeInterClass">{{ typeInter }}</span>
                 <span v-if="hasRedLabel" class="redLabel">{{ redLabelText }}</span>
                 <span id="interLibelle">{{ cleanLibelleInter }}</span>
             </div>
@@ -262,11 +262,12 @@ const hasRedLabel = computed(() => {
 
 const redLabelText = computed(() => {
     if (!libelleInter.value) return '';
+    // Vérifier dans l'ordre : les plus spécifiques d'abord (DFUR avant DFU)
     if (libelleInter.value.includes('DF20')) return 'DF20';
     if (libelleInter.value.includes('DFE')) return 'DFE';
     if (libelleInter.value.includes('DFUR')) return 'DFUR';
     if (libelleInter.value.includes('DFU')) return 'DFU';
-    if (libelleInter.value.includes('DV')) return 'DV';
+    if (libelleInter.value.includes('DV') && !libelleInter.value.includes('DF20') && !libelleInter.value.includes('DFE') && !libelleInter.value.includes('DFUR') && !libelleInter.value.includes('DFU')) return 'DV';
     return '';
 });
 
