@@ -1000,7 +1000,8 @@
 		{
 			"code": "019",
 			"name": "BELLEVILLE/ST GEORGES",
-			"shortname": "BELLEVIL"
+			"shortname": "BELLEVIL",
+			"nomPhonetique": "Belleville"
 		},
 		{
 			"code": "021",
@@ -1025,7 +1026,8 @@
 		{
 			"code": "228",
 			"name": "CHABANIERE",
-			"shortname": "CHABAN"
+			"shortname": "CHABAN",
+			"nomPhonetique": "Chabanière"
 		},
 		{
 			"code": "270",
@@ -1035,7 +1037,8 @@
 		{
 			"code": "043",
 			"name": "CHAPONOST",
-			"shortname": "CHAPONOS"
+			"shortname": "CHAPONOS",
+			"nomPhonetique": "Chaponost"
 		},
 		{
 			"code": "056",
@@ -1045,12 +1048,14 @@
 		{
 			"code": "063",
 			"name": "COLLONGES AU MONT D'OR",
-			"shortname": "COLLONGE"
+			"shortname": "COLLONGE",
+			"nomPhonetique": "Collonges"
 		},
 		{
 			"code": "299",
 			"name": "COLOMBIER SAUGNIEU",
-			"shortname": "COLOMBIE"
+			"shortname": "COLOMBIE",
+			"nomPhonetique": "Colombier"
 		},
 		{
 			"code": "272",
@@ -1345,7 +1350,8 @@
 		{
 			"code": "DSPOP",
 			"name": "DISPOSITIFS OPERATIONNELS",
-			"shortname": "DSPOP"
+			"shortname": "DSPOP",
+			"nomPhonetique": "Dispositifs Opérationnels"
 		},
 		{
 			"code": "080",
@@ -1360,7 +1366,8 @@
 		{
 			"code": "999",
 			"name": "EVENEMENTIEL",
-			"shortname": "EVENT"
+			"shortname": "EVENT",
+			"nomPhonetique": "Événementiel"
 		},
 		{
 			"code": "010",
@@ -1380,7 +1387,8 @@
 		{
 			"code": "088",
 			"name": "FONTAINES SUR SAONE",
-			"shortname": "FONTAINE"
+			"shortname": "FONTAINE",
+			"nomPhonetique": "Fontaines"
 		},
 		{
 			"code": "CF41",
@@ -1390,7 +1398,8 @@
 		{
 			"code": "383_2",
 			"name": "GARDE DEPARTEMENTALE",
-			"shortname": "GARDEDEP"
+			"shortname": "GARDEDEP",
+			"nomPhonetique": "Garde Départementale"
 		},
 		{
 			"code": "271",
@@ -1410,7 +1419,8 @@
 		{
 			"code": "099",
 			"name": "HAUTE RIVOIRE",
-			"shortname": "HTERIVOI"
+			"shortname": "HTERIVOI",
+			"nomPhonetique": "Haute-Rivoire"
 		},
 		{
 			"code": "279",
@@ -1420,7 +1430,8 @@
 		{
 			"code": "106",
 			"name": "LACHASSAGNE/POMMIERS/MARCY SUR",
-			"shortname": "LACHASSA"
+			"shortname": "LACHASSA",
+			"nomPhonetique": "Lachassagne"
 		},
 		{
 			"code": "107",
@@ -1430,22 +1441,26 @@
 		{
 			"code": "110",
 			"name": "LARAJASSE",
-			"shortname": "LARAJASS"
+			"shortname": "LARAJASS",
+			"nomPhonetique": "Larajasse"
 		},
 		{
 			"code": "082",
 			"name": "LE FIEF",
-			"shortname": "LEFIEF"
+			"shortname": "LEFIEF",
+			"nomPhonetique": "Le fief"
 		},
 		{
 			"code": "139",
 			"name": "LES AUBERGES",
-			"shortname": "LESAUBER"
+			"shortname": "LESAUBER",
+			"nomPhonetique": "Les auberges"
 		},
 		{
 			"code": "197",
 			"name": "LES BRIADES",
-			"shortname": "LESBRIAD"
+			"shortname": "LESBRIAD",
+			"nomPhonetique": "Les briades"
 		},
 		{
 			"code": "117",
@@ -1455,32 +1470,38 @@
 		{
 			"code": "382_1",
 			"name": "LYON CONFLUENCE",
-			"shortname": "LYCONFLU"
+			"shortname": "LYCONFLU",
+			"nomPhonetique": "Lyon Confluence"
 		},
 		{
 			"code": "383_1",
 			"name": "LYON CORNEILLE",
-			"shortname": "LYCORNEI"
+			"shortname": "LYCORNEI",
+			"nomPhonetique": "Lyon Corneille"
 		},
 		{
 			"code": "384_1",
 			"name": "LYON CROIX ROUSSE",
-			"shortname": "LYCRXROU"
+			"shortname": "LYCRXROU",
+			"nomPhonetique": "Lyon Croix Rousse"
 		},
 		{
 			"code": "389_1",
 			"name": "LYON DUCHERE",
-			"shortname": "LYDUCHER"
+			"shortname": "LYDUCHER",
+			"nomPhonetique": "Lyon Duchère"
 		},
 		{
 			"code": "387_1",
 			"name": "LYON GERLAND",
-			"shortname": "LYGERLAN"
+			"shortname": "LYGERLAN",
+			"nomPhonetique": "Lyon Gerland"
 		},
 		{
 			"code": "387_2",
 			"name": "LYON ROCHAT",
-			"shortname": "LYROCHAT"
+			"shortname": "LYROCHAT",
+			"nomPhonetique": "Lyon Rochat"
 		},
 		{
 			"code": "127",
@@ -1520,7 +1541,8 @@
 		{
 			"code": "PS1",
 			"name": "PC STADE",
-			"shortname": "PCSTADE"
+			"shortname": "PCSTADE",
+			"nomPhonetique": "PC Stade"
 		},
 		{
 			"code": "PCO",
@@ -1530,17 +1552,20 @@
 		{
 			"code": "152",
 			"name": "PIERRE BENITE",
-			"shortname": "PIERREBE"
+			"shortname": "PIERREBE",
+			"nomPhonetique": "Pierre-Benite"
 		},
 		{
 			"code": "153",
 			"name": "POLEYMIEUX AU MONT D'OR",
-			"shortname": "POLEMIEU"
+			"shortname": "POLEMIEU",
+			"nomPhonetique": "Poleymieux"
 		},
 		{
 			"code": "114",
 			"name": "PORTE DES PIERRES DOREES",
-			"shortname": "PIERDORE"
+			"shortname": "PIERDORE",
+			"nomPhonetique": "Portes des Pierres Dorées"
 		},
 		{
 			"code": "PC1",
@@ -1560,17 +1585,20 @@
 		{
 			"code": "160",
 			"name": "POULE LES E / PROPIERES",
-			"shortname": "POULPROP"
+			"shortname": "POULPROP",
+			"nomPhonetique": "Poule-les-écharmeaux"
 		},
 		{
 			"code": "285",
 			"name": "PUSIGNAN",
-			"shortname": "PUSIGNAN"
+			"shortname": "PUSIGNAN",
+			"nomPhonetique": "Pusignan"
 		},
 		{
 			"code": "163",
 			"name": "QUINCIEUX",
-			"shortname": "QUINCIEU"
+			"shortname": "QUINCIEU",
+			"nomPhonetique": "Quincié-sur-Béronne"
 		},
 		{
 			"code": "AVEIZ",
@@ -1810,12 +1838,14 @@
 		{
 			"code": "290_7",
 			"name": "RESERVE OPERATIONNELLE",
-			"shortname": "RES OPER"
+			"shortname": "RES OPER",
+			"nomPhonetique": "Réserve Opérationnelle"
 		},
 		{
 			"code": "290_8",
 			"name": "RESERVE ROUGE",
-			"shortname": "RES ROUG"
+			"shortname": "RES ROUG",
+			"nomPhonetique": "Réserve Rouge"
 		},
 		{
 			"code": "286",
@@ -1830,7 +1860,8 @@
 		{
 			"code": "290_3",
 			"name": "SDS",
-			"shortname": "SDS"
+			"shortname": "SDS",
+			"nomPhonetique": "Sous Direction Santé"
 		},
 		{
 			"code": "387_3",
@@ -1845,77 +1876,92 @@
 		{
 			"code": "287",
 			"name": "ST BONNET DE MURE",
-			"shortname": "STBOMURE"
+			"shortname": "STBOMURE",
+			"nomPhonetique": "Saint-Bonnet de Mure"
 		},
 		{
 			"code": "189",
 			"name": "ST COLOMBE",
-			"shortname": "STCOLOMB"
+			"shortname": "STCOLOMB",
+			"nomPhonetique": "Sainte Colombe"
 		},
 		{
 			"code": "190",
 			"name": "ST CONSORCE",
-			"shortname": "STCONSOR"
+			"shortname": "STCONSOR",
+			"nomPhonetique": "Sainte-Consorce"
 		},
 		{
 			"code": "191",
 			"name": "ST CYR/ST DIDIER AU MONT D'OR",
-			"shortname": "STCYR"
+			"shortname": "STCYR",
+			"nomPhonetique": "Saint-Cyr"
 		},
 		{
 			"code": "201",
 			"name": "ST FOY L'ARGENTIERE",
-			"shortname": "STFOYARG"
+			"shortname": "STFOYARG",
+			"nomPhonetique": "Saint-Foy l'Argentière"
 		},
 		{
 			"code": "202",
 			"name": "ST FOY/FRANCHEVILLE",
-			"shortname": "STFOYLYO"
+			"shortname": "STFOYLYO",
+			"nomPhonetique": "Sainte-Foy-Lès-Lyon"
 		},
 		{
 			"code": "208",
 			"name": "ST GERMAIN NUELLES",
-			"shortname": "STGERMAI"
+			"shortname": "STGERMAI",
+			"nomPhonetique": "Saint-Germain-Nuelles"
 		},
 		{
 			"code": "209",
 			"name": "ST IGNY DE VERS",
-			"shortname": "STIGNY"
+			"shortname": "STIGNY",
+			"nomPhonetique": "Saint-Igny-de-Vers"
 		},
 		{
 			"code": "217",
 			"name": "ST JUST D'AVRAY",
-			"shortname": "STJUST"
+			"shortname": "STJUST",
+			"nomPhonetique": "Saint-Just d'Avray"
 		},
 		{
 			"code": "218",
 			"name": "ST LAGER/CERCIE",
-			"shortname": "STLAGER"
+			"shortname": "STLAGER",
+			"nomPhonetique": "Saint-Lager"
 		},
 		{
 			"code": "220",
 			"name": "ST LAURENT DE CHAMOUSSET",
-			"shortname": "STLAUCHA"
+			"shortname": "STLAUCHA",
+			"nomPhonetique": "Saint-Laurent de Chamousset"
 		},
 		{
 			"code": "288",
 			"name": "ST LAURENT DE MURE",
-			"shortname": "STLAUMUR"
+			"shortname": "STLAUMUR",
+			"nomPhonetique": "Saint-Laurent de Mure"
 		},
 		{
 			"code": "227",
 			"name": "ST MARTIN EN HAUT",
-			"shortname": "STMARTIN"
+			"shortname": "STMARTIN",
+			"nomPhonetique": "Saint-Martin-en-Haut"
 		},
 		{
 			"code": "289",
 			"name": "ST PIERRE DE CHANDIEU",
-			"shortname": "STPIERRE"
+			"shortname": "STPIERRE",
+			"nomPhonetique": "Saint-Pierre de Chandieu"
 		},
 		{
 			"code": "290_1",
 			"name": "ST PRIEST",
-			"shortname": "STPRIEST"
+			"shortname": "STPRIEST",
+			"nomPhonetique": "Saint-Priest"
 		},
 		{
 			"code": "290_6",
@@ -1930,12 +1976,14 @@
 		{
 			"code": "238",
 			"name": "ST SYMPHORIEN SUR COISE",
-			"shortname": "STSYMCOI"
+			"shortname": "STSYMCOI",
+			"nomPhonetique": "Saint-Symphorien-sur-Coise"
 		},
 		{
 			"code": "240",
 			"name": "ST VINCENT DE REINS",
-			"shortname": "STVINCEN"
+			"shortname": "STVINCEN",
+			"nomPhonetique": "Saint-Vincent-de-Reins"
 		},
 		{
 			"code": "136",
@@ -1955,7 +2003,8 @@
 		{
 			"code": "246",
 			"name": "THEIZE",
-			"shortname": "THEIZE"
+			"shortname": "THEIZE",
+			"nomPhonetique": "Theizé"
 		},
 		{
 			"code": "248",
@@ -1980,7 +2029,8 @@
 		{
 			"code": "024",
 			"name": "VAL D'OINGT",
-			"shortname": "VALDOIN"
+			"shortname": "VALDOIN",
+			"nomPhonetique": "Val d'Oingt"
 		},
 		{
 			"code": "188",
@@ -1990,27 +2040,32 @@
 		{
 			"code": "255",
 			"name": "VAUGNERAY",
-			"shortname": "VAUGNERA"
+			"shortname": "VAUGNERA",
+			"nomPhonetique": "Vaugneray"
 		},
 		{
 			"code": "260",
 			"name": "VERNAISON/CHARLY",
-			"shortname": "VERNAISO"
+			"shortname": "VERNAISO",
+			"nomPhonetique": "Vernaison"
 		},
 		{
 			"code": "264",
 			"name": "VILLEFRANCHE SUR SAONE",
-			"shortname": "VILFRANC"
+			"shortname": "VILFRANC",
+			"nomPhonetique": "Villefranche"
 		},
 		{
 			"code": "266_1",
 			"name": "VILLEURBANNE CUSSET",
-			"shortname": "VCUSSET"
+			"shortname": "VCUSSET",
+			"nomPhonetique": "Villeurbanne Cusset"
 		},
 		{
 			"code": "266_2",
 			"name": "VILLEURBANNE LA DOUA",
-			"shortname": "VDOUA"
+			"shortname": "VDOUA",
+			"nomPhonetique": "Villeurbanne La Doua"
 		},
 		{
 			"code": "267",

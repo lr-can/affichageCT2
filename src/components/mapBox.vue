@@ -13,20 +13,25 @@ async function getFireUnits(){
 }
 
 const mapCenter = ref([4.8473705, 45.8172767]);
-const mapStyle = ref('mapbox://styles/mapbox/dark-v11');
-const width = ref(100);
-const height = ref(100);
+const mapStyle = ref("mapbox://styles/mapbox/streets-v11");
 const zoom = ref(10);
 const customMarker = ref(null);
 const props = defineProps({
   lon: Number,
   lat: Number,
+  showRoute: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 let mapInstance = ref(null);
 
 onMounted(() => {
-  getFireUnits();
+  // Mode itinéraire: plus léger, pas de casernes
+  if (!props.showRoute) {
+    getFireUnits();
+  }
 });
 
 
@@ -51,35 +56,52 @@ const handleMapReady = (map) => {
   mapInstance.value = map;
   console.log('Map ready!');
 
-  // Ajout de la couche de bâtiments en 3D
-  map.on('load', () => {
-    map.addLayer({
-      id: '3d-buildings',
-      source: 'composite',
-      'source-layer': 'building',
-      filter: ['==', 'extrude', 'true'], // Filtre uniquement les bâtiments avec extrusion
-      type: 'fill-extrusion',
-      paint: {
-        'fill-extrusion-color': '#aaa', // Couleur des bâtiments
-        'fill-extrusion-height': ['get', 'height'], // Hauteur des bâtiments
-        'fill-extrusion-base': ['get', 'min_height'], // Base des bâtiments
-        'fill-extrusion-opacity': 0.6, // Opacité des bâtiments
-      },
-    });
-  });
+  map.on('load', async () => {
+    // Ajout de la couche de bâtiments en 3D uniquement sur la carte principale
+    if (!props.showRoute) {
+      map.addLayer({
+        id: '3d-buildings',
+        source: 'composite',
+        'source-layer': 'building',
+        filter: ['==', 'extrude', 'true'],
+        type: 'fill-extrusion',
+        paint: {
+          'fill-extrusion-color': '#aaa',
+          'fill-extrusion-height': ['get', 'height'],
+          'fill-extrusion-base': ['get', 'min_height'],
+          'fill-extrusion-opacity': 0.6,
+        },
+      });
+    }
 
-  setTimeout(() => {
-    flyToLocation(4.8473705, 45.8172767, 13, 10); // Premier flyTo
-  }, 5000);
-  // Déclenche les animations flyTo
-  setTimeout(() => {
-    addTruckRouteToMap(mapInstance.value, [4.8473705, 45.8172767], [props.lon, props.lat]);
-    flyToLocation(props.lon, props.lat, 13, 10); // Premier flyTo
-    customMarker.value = [props.lon, props.lat];
-  }, 10000);
-  setTimeout(() => {
-    flyToLocation(props.lon, props.lat, 17.5, 60); // Deuxième flyTo
-  }, 16000);
+    const start = [4.8473705, 45.8172767];
+    const end = [props.lon, props.lat];
+    if (!end[0] || !end[1]) return;
+
+    if (props.showRoute) {
+      // Mode itinéraire: focus route + style clair
+      mapStyle.value = 'mapbox://styles/mapbox/navigation-day-v1';
+      zoom.value = 13;
+      await addTruckRouteToMap(mapInstance.value, start, end);
+      flyToLocation(end[0], end[1], 13, 0, 1200);
+      customMarker.value = end;
+      return;
+    }
+
+    // Mode principal: animation existante
+    mapStyle.value = 'mapbox://styles/mapbox/streets-v11';
+    setTimeout(() => {
+      flyToLocation(start[0], start[1], 13, 10);
+    }, 5000);
+    setTimeout(async () => {
+      await addTruckRouteToMap(mapInstance.value, start, end);
+      flyToLocation(end[0], end[1], 13, 10);
+      customMarker.value = end;
+    }, 10000);
+    setTimeout(() => {
+      flyToLocation(end[0], end[1], 17.5, 60);
+    }, 16000);
+  });
 };
 
 const giveFireUnitClass = (type) => {
@@ -154,7 +176,7 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
 
 <template>
   <MapboxMap
-    :style="`width: 100vw; height: 100vh;`"
+    :style="`width: 100%; height: 100%;`"
     access-token="pk.eyJ1IjoibHItY2FuIiwiYSI6ImNsdnc2aXhpMjFpMDkyaW53cmdpajg2aWQifQ.fQ6ILPhZRb05CfdWrsxOvQ"
     class="map"
     :map-style="mapStyle"
@@ -162,7 +184,7 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
     :zoom="zoom"
     @mb-created="handleMapReady"
   >
-    <MapboxMarker :lng-lat="mapCenter">
+    <MapboxMarker v-if="!props.showRoute" :lng-lat="mapCenter">
         <div class="everythingCentered Beating" style="background-color: #0078f3; width: 30px; height: 30px; border-radius: 50%">
           <div class="blue_growing_circle"></div>
           <img src="../assets/icons/firestation.svg" style="filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%); width: 25px; height: 25px;" />
@@ -174,7 +196,7 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
             <img src="../assets/icons/sos.svg" style="filter: invert(100%) brightness(1000%); width: 20px; height: 20px;" />
         </div>
     </MapboxMarker>
-    <MapboxMarker v-for="fireUnit in fireUnits" :key="fireUnit.id" :lng-lat="[fireUnit.lon, fireUnit.lat]">
+    <MapboxMarker v-if="!props.showRoute" v-for="fireUnit in fireUnits" :key="fireUnit.id" :lng-lat="[fireUnit.lon, fireUnit.lat]">
         <div class="everythingCentered">
           <img src="../assets/icons/firestation.svg" style="width: 15px; height: 15;" :class="giveFireUnitClass(fireUnit.type)" />
         </div>

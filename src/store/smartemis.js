@@ -273,6 +273,17 @@ export const useSmartemis = defineStore('smartemis', () => {
       ...agent,
       colorBgFul: '#' + agent.statusColor,
     }));
+    
+    // Dédupliquer les agents par matricule avant le tri
+    const agentsMap = new Map();
+    for (const agent of agents) {
+      const matricule = (agent.matricule || '').toString().trim();
+      if (matricule && !agentsMap.has(matricule)) {
+        agentsMap.set(matricule, agent);
+      }
+    }
+    agents = Array.from(agentsMap.values());
+    
     agents = agents.sort(
       (a, b) =>
         gradeOrder[a.grade.toLowerCase()] -
@@ -397,6 +408,35 @@ export const useSmartemis = defineStore('smartemis', () => {
     return new Audio(result['google/fr-FR-Standard-B'].audio_resource_url);
   };
 
+  const giveNomPhonetique = (label) => {
+  const vehicule = {
+    engLib: label,
+  };
+  let nomPhonetique = '';
+  if (vehicule.engLib.includes('+')) {
+      nomPhonetique =
+      vehicule.engLib.replace('+', '').split(' ')[0].split('').join(' ') +
+      ' de remplacement';
+  } else if (vehicule.engLib.includes('VSAV')) {
+      nomPhonetique =
+      'V S A V ' + vehicule.engLib.replace(' 0', ' ').split(' ')[1];
+  } else if (vehicule.engLib.startsWith('L')) {
+      const base = vehicule.engLib.split(' ')[0];
+      const dict = {
+      LBACHE: 'Lot bache',
+      LBALIS: 'Lot balisage',
+      LCTHER: 'Lot Caméra thermique',
+      LDNOY: 'Lot dénoyage',
+      LECLE: 'Lot éclairage',
+      LTRON: 'Lot tronçonneuse',
+      };
+      nomPhonetique = dict[base] ? dict[base] + ' ' : 'Lot ' + base + ' ';
+  } else {
+      nomPhonetique = vehicule.engLib.split(' ')[0].split('').join(' ') + ' ';
+  }
+  return nomPhonetique;
+}
+
   // ---- INTER DETAIL (Feuille 9 + 10 + Artemis + Agents) ----
   const getInterDetail = async () => {
     await fetchAllSheetsFromAPI();
@@ -409,7 +449,14 @@ export const useSmartemis = defineStore('smartemis', () => {
     const casernes = await fetch('/artemisData.json');
     const casernesData = await casernes.json();
     const casernesDict = casernesData.fireunits.reduce((acc, caserne) => {
-      acc[caserne.shortname] = caserne.name;
+      acc[caserne.shortname] = {
+        name: caserne.name,
+        nomPhonetique: caserne.nomPhonetique
+          ? caserne.nomPhonetique
+          : caserne.shortname
+            ? caserne.shortname.charAt(0).toUpperCase() + caserne.shortname.slice(1).toLowerCase()
+            : undefined,
+      };
       return acc;
     }, {});
 
@@ -436,20 +483,29 @@ export const useSmartemis = defineStore('smartemis', () => {
     }));
 
     const formattedResult = {
-      details: parsedDetail.map((detail) => ({
-        interventionId: detail.itvId,
-        stationId: detail.depItvCsId,
-        stationName: detail.depItvCsLib,
-        stationFullName:
-          casernesDict[detail.depItvCsLib] || detail.depItvCsLib,
-        vehicles: detail.depItvEngList.map((vehicle) => ({
-          id: vehicle.engId,
-          name: vehicle.engLib,
-          status: vehicle.engStatusCod,
-          backgroundColor: `#${vehicle.engStatusBgRgb}`,
-          textColor: `#${vehicle.engStatusFgRgb}`,
-        })),
-      })),
+      details: parsedDetail.map((detail) => {
+        const caserneInfo = casernesDict[detail.depItvCsLib];
+        // Utiliser name pour le nom complet (ex: "COLLONGES AU MONT D'OR")
+        // et nomPhonetique pour le nom phonétique (ex: "Collonges")
+        const stationFullName = caserneInfo?.name || detail.depItvCsLib;
+        const stationNomPhonetique = caserneInfo?.nomPhonetique || caserneInfo?.name || detail.depItvCsLib;
+        
+        return {
+          interventionId: detail.itvId,
+          stationId: detail.depItvCsId,
+          stationName: detail.depItvCsLib,
+          stationFullName: stationFullName,
+          stationNomPhonetique: stationNomPhonetique,
+          vehicles: detail.depItvEngList.map((vehicle) => ({
+            id: vehicle.engId,
+            name: vehicle.engLib,
+            status: vehicle.engStatusCod,
+            backgroundColor: `#${vehicle.engStatusBgRgb}`,
+            textColor: `#${vehicle.engStatusFgRgb}`,
+            nomPhonetique: giveNomPhonetique(vehicle.engLib),
+          })),
+        };
+      }),
       externalServices: parsedExt.map((service) => ({
         id: service.srvCod,
         name: service.srvLib,

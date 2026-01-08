@@ -716,9 +716,9 @@ const giveBackgroundColor = () => {
   left: 0;
   width: 100dvw;
   height: 100dvh;
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.877);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
   z-index: 99;
 }
 .fullView {

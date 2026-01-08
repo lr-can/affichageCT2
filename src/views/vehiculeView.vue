@@ -51,26 +51,39 @@
                         v-for="person in availableAgents"
                         :key="person.matricule"
                     >
-                        <div class="person-avatar">
-                            <img
-                                :src="giveAgentGrade(person.grade)"
-                                :alt="person.grade"
-                            />
+                        <div class="person-header">
+                            <div class="person-avatar">
+                                <img
+                                    :src="giveAgentGrade(person.grade)"
+                                    :alt="person.grade"
+                                />
+                            </div>
+                            <div class="person-info">
+                                <div class="person-nom">{{ person.nom }}</div>
+                                <div class="person-prenom">{{ person.prenom }}</div>
+                            </div>
+                            <span
+                                class="personStatus"
+                                :style="{ 
+                                    backgroundColor: '#' + person.statusColor, 
+                                    color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000')
+                                }"
+                                :class="{ 'status-blink': person.status === 'INTER' }"
+                            >
+                                {{ person.status }}
+                            </span>
                         </div>
-                        <div class="person-info">
-                            <div class="person-nom">{{ person.nom }}</div>
-                            <div class="person-prenom">{{ person.prenom }}</div>
+                        <div class="person-details">
+                            <div class="person-emplois" :style="getDetailsStyle(person)">
+                                <div v-for="emploi in getEmplois(person)" :key="emploi.icon" class="emploi-item">
+                                    <img :src="emploi.icon" :alt="emploi.name" class="emploi-icon" :style="getIconStyle(person)">
+                                    <span v-if="emploi.chip" class="emploi-chip" :style="getChipStyle(person)">{{ emploi.chip }}</span>
+                                </div>
+                            </div>
+                            <div v-if="getPermis(person).length > 0" class="person-permis" :style="getDetailsStyle(person)">
+                                <img v-for="permis in getPermis(person)" :key="permis" :src="permis" :alt="permis" class="permis-icon" :style="getPermisIconStyle(person)">
+                            </div>
                         </div>
-                        <span
-                            class="personStatus"
-                            :style="{ 
-                                backgroundColor: '#' + person.statusColor, 
-                                color: (person.statusColor && person.statusColor.length ? (parseInt(person.statusColor,16) > 0x999999 ? '#111' : '#fff') : '#000')
-                            }"
-                            :class="{ 'status-blink': person.status === 'INTER' }"
-                        >
-                            {{ person.status }}
-                        </span>
                     </div>
                 </div>
                 <!-- Agents indisponibles (IN) - style compact -->
@@ -133,6 +146,20 @@ import Professeur from '../assets/grades/Professeur.png';
 import Infirmiere from '../assets/grades/Infirmière.png';
 const currentTime = new Date();
 
+// Importer les icônes des emplois et permis
+import ASUP from '../assets/vehiculeViewIcons/ASUP.svg';
+import INFAMU from '../assets/vehiculeViewIcons/INFAMU.svg';
+import SUAP from '../assets/vehiculeViewIcons/SUAP.svg';
+import PPBE from '../assets/vehiculeViewIcons/PPBE.svg';
+import INC from '../assets/vehiculeViewIcons/INC.svg';
+import CDG from '../assets/vehiculeViewIcons/CDG.png';
+import BATO from '../assets/vehiculeViewIcons/BATO.svg';
+import SAV from '../assets/vehiculeViewIcons/SAV.svg';
+import B from '../assets/vehiculeViewIcons/B.svg';
+import BTARS from '../assets/vehiculeViewIcons/BTARS.svg';
+import CCOD1 from '../assets/vehiculeViewIcons/CCOD1.png';
+import CCOD4 from '../assets/vehiculeViewIcons/CCOD4.png';
+
 const dict_grades = {
   'Sap 2CL': Sap2CL,
   'Sap 1CL': Sap1CL,
@@ -155,9 +182,32 @@ const giveAgentGrade = (grade) => {
 
 const counter = ref(0);
 
+// Fusionner les données des agents avec la feuille agentsASUP
+const mergeAgentData = async (agents) => {
+    try {
+        const response = await fetch('https://opensheet.elk.sh/1ottTPiBjgBXSZSj8eU8jYcatvQaXLF64Ppm3qOfYbbI/agentsAsup');
+        const agentsASUP = await response.json();
+        const agentsASUPDict = {};
+        agentsASUP.forEach(agent => {
+            if (agent.matricule) {
+                agentsASUPDict[agent.matricule] = agent;
+            }
+        });
+        
+        return agents.map(agent => {
+            const asupData = agentsASUPDict[agent.matricule] || {};
+            return { ...agent, ...asupData };
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données agentsASUP:', error);
+        return agents;
+    }
+};
+
 onMounted(async () => {
     familles.value = await smartemis.getEngins();
-    agentList.value = await smartemis.getAvailablePeople();
+    const rawAgents = await smartemis.getAvailablePeople();
+    agentList.value = await mergeAgentData(rawAgents);
     for (let i = 0; i < familles.value.length; i++){
         for (let j = 0; j < familles.value[i].engins.length; j++){
             numberOfEngins.value += 1;
@@ -183,7 +233,8 @@ onMounted(async () => {
         familles.value = await smartemis.getEngins();
     miseAJour.value = await smartemis.getLastUpdateEngins();
     agents.value = await smartemis.getAgentsAvailable();
-    agentList.value = await smartemis.getAvailablePeople();
+    const rawAgents = await smartemis.getAvailablePeople();
+    agentList.value = await mergeAgentData(rawAgents);
     const now = new Date();
     let timeElapsedValue = now - new Date(miseAJour.value);
     const secondsElapsed = Math.round(timeElapsedValue / 10000) * 10;
@@ -284,6 +335,146 @@ const colorConvert = (color) => {
     return `rgba(${r}, ${g}, ${b}, 0.1)`;
 }
 
+// Fonction pour obtenir les emplois d'un agent
+const getEmplois = (person) => {
+    const emplois = [];
+    const value = (key) => parseInt(person[key] || '0', 10);
+    
+    // 1. CDG (en premier)
+    if (value('CDG_cdg') === 1) {
+        emplois.push({ icon: CDG, name: 'CDG', chip: 'CDG' });
+    }
+    
+    // 2. INFAMU
+    if (value('INFAMU_inf') === 1) {
+        emplois.push({ icon: INFAMU, name: 'INFAMU', chip: 'PISU' });
+    }
+    
+    // 3. SUAP
+    if (value('SAP_ca') === 1) {
+        emplois.push({ icon: SUAP, name: 'SUAP', chip: 'CA' });
+    } else if (value('SAP_eq') === 1) {
+        emplois.push({ icon: SUAP, name: 'SUAP', chip: 'EQ' });
+    }
+    
+    // 4. PPBE
+    if (value('DIV_ca') === 1) {
+        emplois.push({ icon: PPBE, name: 'PPBE', chip: 'CA' });
+    } else if (value('DIV_eq') === 1) {
+        emplois.push({ icon: PPBE, name: 'PPBE', chip: 'EQ' });
+    }
+    
+    // 5. INC
+    if (value('INC_ca') === 1) {
+        emplois.push({ icon: INC, name: 'INC', chip: 'CA' });
+    } else if (value('INC_ce') === 1) {
+        emplois.push({ icon: INC, name: 'INC', chip: 'CE' });
+    } else if (value('INC_eq') === 1) {
+        emplois.push({ icon: INC, name: 'INC', chip: 'EQ' });
+    }
+    
+    // 6. BATO
+    if (value('BATO_ca') === 1) {
+        emplois.push({ icon: BATO, name: 'BATO', chip: 'CA' });
+    } else if (value('BATO_eq') === 1) {
+        emplois.push({ icon: BATO, name: 'BATO', chip: 'EQ' });
+    }
+    
+    // 7. SAV (AQUA)
+    if (value('AQUA_ca') === 1) {
+        emplois.push({ icon: SAV, name: 'SAV', chip: null });
+    }
+    
+    return emplois;
+};
+
+// Fonction pour obtenir les permis d'un agent
+const getPermis = (person) => {
+    const permis = [];
+    const value = (key) => parseInt(person[key] || '0', 10);
+    
+    if (value('INFAMU_cd') === 1) permis.push(B);
+    if (value('SAP_cd') === 1) permis.push(BTARS);
+    if (value('INC_cd') === 1) permis.push(CCOD1);
+    if (value('BATO_ca') === 1) permis.push(CCOD4);
+    
+    return permis;
+};
+
+// Fonction pour calculer le nombre total d'éléments
+const getTotalElements = (person) => {
+    const emplois = getEmplois(person);
+    const permis = getPermis(person);
+    return emplois.length + permis.length;
+};
+
+// Fonction pour calculer la taille des icônes en fonction du nombre d'éléments
+// Les icônes utilisent l'espace disponible de manière optimale
+const getIconSize = (person) => {
+    const total = getTotalElements(person);
+    if (total === 0) return 22;
+    if (total <= 3) return 22;
+    if (total <= 5) return 20;
+    if (total <= 7) return 18;
+    return 16;
+};
+
+// Fonction pour calculer la taille des icônes de permis (plus grandes)
+const getPermisIconSize = (person) => {
+    const total = getTotalElements(person);
+    if (total === 0) return 24;
+    if (total <= 3) return 24;
+    if (total <= 5) return 22;
+    if (total <= 7) return 20;
+    return 18;
+};
+
+// Fonction pour obtenir le style des icônes d'emplois
+const getIconStyle = (person) => {
+    const size = getIconSize(person);
+    return {
+        width: `${size}px`,
+        height: `${size}px`,
+        minWidth: `${size}px`,
+        minHeight: `${size}px`
+    };
+};
+
+// Fonction pour obtenir le style des icônes de permis
+const getPermisIconStyle = (person) => {
+    const size = getPermisIconSize(person);
+    return {
+        width: `${size}px`,
+        height: `${size}px`,
+        minWidth: `${size}px`,
+        minHeight: `${size}px`
+    };
+};
+
+// Fonction pour obtenir le style des chips
+const getChipStyle = (person) => {
+    const total = getTotalElements(person);
+    let fontSize = '0.5rem';
+    if (total > 7) fontSize = '0.4rem';
+    else if (total > 5) fontSize = '0.45rem';
+    
+    return {
+        fontSize: fontSize
+    };
+};
+
+// Fonction pour obtenir le style des détails (gaps réduits si beaucoup d'éléments)
+const getDetailsStyle = (person) => {
+    const total = getTotalElements(person);
+    let gap = '0.4rem';
+    if (total > 7) gap = '0.2rem';
+    else if (total > 5) gap = '0.3rem';
+    
+    return {
+        gap: gap
+    };
+};
+
 
 </script>
 <style scoped>
@@ -370,15 +561,15 @@ const colorConvert = (color) => {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 1rem 2rem 2rem 2rem;
+    padding: 1rem 1rem 2rem 1rem;
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
 }
 
 .vehiculeContainer {
-    width: 90%;
-    max-width: 1600px;
+    width: 98%;
+    max-width: 1800px;
     padding: 2.5rem;
     border-radius: 2rem;
     background: rgba(255, 255, 255, 0.95);
@@ -540,19 +731,19 @@ const colorConvert = (color) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px;
+    height: 58px;
 }
 
 .enginImage img {
-    height: 50px;
+    height: 58px;
     width: auto;
     object-fit: contain;
 }
 
 /* Agents Container */
 .agents-container {
-    width: 90%;
-    max-width: 1600px;
+    width: 98%;
+    max-width: 1800px;
     margin: 0 auto;
     max-height: calc(100vh - 200px);
     overflow-y: auto;
@@ -581,15 +772,15 @@ const colorConvert = (color) => {
 /* Agents Grid - Disponibles */
 .agents-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-    padding: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 2rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Agents Grid - Indisponibles (compact) */
@@ -652,15 +843,16 @@ const colorConvert = (color) => {
 
 .personCard {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.7rem 0.9rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 0.75rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     animation: fadeIn 0.4s ease-out;
+    min-width: 0;
 }
 
 .personCard:hover {
@@ -669,6 +861,11 @@ const colorConvert = (color) => {
     background: rgba(255, 255, 255, 1);
 }
 
+.person-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
 .person-avatar {
     flex-shrink: 0;
@@ -687,12 +884,12 @@ const colorConvert = (color) => {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.15rem;
 }
 
 .person-nom {
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #1a1a1a;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -700,11 +897,77 @@ const colorConvert = (color) => {
 }
 
 .person-prenom {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     color: #666;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.person-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    width: 100%;
+}
+
+.person-emplois {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    align-items: flex-start;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.emploi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.emploi-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    opacity: 0.75;
+    flex-shrink: 1;
+}
+
+.emploi-chip {
+    color: #000;
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.person-permis {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: #fbb8f6;
+    border-radius: 12px;
+    align-items: center;
+    opacity: 0.85;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.permis-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    opacity: 0.9;
+    flex-shrink: 1;
 }
 
 .personStatus {
