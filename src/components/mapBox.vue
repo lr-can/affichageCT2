@@ -27,6 +27,7 @@ const props = defineProps({
 
 let mapInstance = ref(null);
 
+// Charger les casernes
 onMounted(() => {
   // Mode itinéraire: plus léger, pas de casernes
   if (!props.showRoute) {
@@ -104,16 +105,43 @@ const handleMapReady = (map) => {
   });
 };
 
-const giveFireUnitClass = (type) => {
-  if(type === 'Site Etat-Major'){
-    return 'site_EM';
-  }else if(type === 'Caserne à garde postée Jour'){
-    return 'site_GPJ';
-  }else if(type === 'Caserne à garde postée 24/24'){
-    return 'site_GP24';
-  }else if(type === 'Caserne de volontaires'){
-    return 'site_SPV';
+// Fonction pour obtenir la couleur selon le type de caserne
+const getStationColor = (type) => {
+  if (!type) return '#6c757d'; // Gris par défaut
+  
+  if (type === 'Site Etat-Major') {
+    return '#d32f2f'; // Rouge
+  } else if (type === 'Caserne à garde postée Jour') {
+    return '#f57c00'; // Orange
+  } else if (type === 'Caserne à garde postée 24/24') {
+    return '#fbc02d'; // Jaune
+  } else if (type === 'Caserne de volontaires') {
+    return '#388e3c'; // Vert
   }
+  
+  return '#6c757d'; // Gris par défaut
+};
+
+const getStationCode = (name) => {
+  if (!name) return 'CT';
+  return `CT ${name}`;
+};
+
+// Fonction pour obtenir la classe CSS du label selon le type de caserne
+const getLabelClass = (type) => {
+  if (!type) return 'label-default';
+  
+  if (type === 'Site Etat-Major') {
+    return 'label-EM';
+  } else if (type === 'Caserne à garde postée Jour') {
+    return 'label-GPJ';
+  } else if (type === 'Caserne à garde postée 24/24') {
+    return 'label-GP24';
+  } else if (type === 'Caserne de volontaires') {
+    return 'label-SPV';
+  }
+  
+  return 'label-default';
 };
 
 // Fonction asynchrone pour calculer et afficher un itinéraire poids lourd
@@ -189,6 +217,7 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
           <div class="blue_growing_circle"></div>
           <img src="../assets/icons/firestation.svg" style="filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%); width: 25px; height: 25px;" />
         </div>
+        <div class="station-label-mapbox label-default">{{ getStationCode('Collonges-au-Mont-d\'Or') }}</div>
     </MapboxMarker>
     <MapboxMarker v-if="customMarker" :lng-lat="customMarker">
         <div class="everythingCentered Beating" style="background-color: #f60700; width: 50px; height: 50px; border-radius: 50%">
@@ -198,8 +227,11 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
     </MapboxMarker>
     <MapboxMarker v-if="!props.showRoute" v-for="fireUnit in fireUnits" :key="fireUnit.id" :lng-lat="[fireUnit.lon, fireUnit.lat]">
         <div class="everythingCentered">
-          <img src="../assets/icons/firestation.svg" style="width: 15px; height: 15;" :class="giveFireUnitClass(fireUnit.type)" />
+          <div class="fireunit-icon-container" :style="{ backgroundColor: getStationColor(fireUnit.type) }">
+            <img src="../assets/icons/firestation.svg" style="width: 12px; height: 12px; filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);" />
+          </div>
         </div>
+        <div class="fireunit-label-mapbox" :class="getLabelClass(fireUnit.type)">{{ getStationCode(fireUnit.name) }}</div>
     </MapboxMarker>
   </MapboxMap>
 </template>
@@ -231,24 +263,68 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
   border: 2px solid #0078f3;
   animation: growing 2s infinite;
 }
-.site_EM {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(7422%) hue-rotate(0deg) brightness(95%) contrast(102%);
-  opacity: 0.9;
+.fireunit-icon-container {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.site_GPJ {
-  filter: brightness(0) saturate(100%) invert(84%) sepia(63%) saturate(686%) hue-rotate(51deg) brightness(95%) contrast(88%);
-  opacity: 0.9;
+.station-label-mapbox {
+  font-size: 0.7em;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  margin-top: 0.3rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.site_GP24 {
-  filter: brightness(0) saturate(100%) invert(56%) sepia(91%) saturate(2098%) hue-rotate(9deg) brightness(100%) contrast(97%);
-  opacity: 0.9;
+.fireunit-label-mapbox {
+  font-size: 0.65em;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.site_SPV {
-  filter: brightness(0) saturate(100%) invert(30%) sepia(17%) saturate(1556%) hue-rotate(210deg) brightness(89%) contrast(95%);
-  opacity: 0.9;
+/* Classes pour les fonds selon le type de caserne */
+.label-EM {
+  background: #d32f2f; /* Rouge pour Etat-Major */
+}
+
+.label-GPJ {
+  background: #f57c00; /* Orange pour Garde Postée Jour */
+}
+
+.label-GP24 {
+  background: #fbc02d; /* Jaune pour Garde Postée 24/24 */
+}
+
+.label-SPV {
+  background: #388e3c; /* Vert pour Volontaires */
+}
+
+.label-default {
+  background: rgba(255, 255, 255, 0.95);
+  color: #2c2c2c;
 }
 
 .map{

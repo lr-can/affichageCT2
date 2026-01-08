@@ -55,7 +55,7 @@
       <div v-show="index == 2 || initialize" key="vehicule" :v-if="backgroundIf('vehicule')">
         <vehiculeView />
       </div>
-      <div v-show="index == 3 || initialize" key="lastInter">
+      <div v-if="index == 3 || initialize" key="lastInter">
         <lastInter />
       </div>
       <div class="backgroundTraffic" v-if="backgroundIf('traffic')" v-show="index == 4" key="BckGrndTraffic"> 

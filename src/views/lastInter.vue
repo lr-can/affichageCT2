@@ -1,59 +1,93 @@
 <template>
-     <div id="Background">
+    <div id="Background">
         <img src="../assets/backgrounds/inter.jpg" alt="Véhicule" style="width: 110vw; height: 110vh;">
     </div>
-    <div>
-        <div id="Title">
-            <h1>Opérationnel</h1>
+    <div id="Title">
+        <h1>Opérationnel</h1>
+    </div>
+    <div class="mainContainer" v-if="firstInter">
+        <!-- Carte avec l'intervention principale -->
+        <div class="card mapCard">
+            <mapBox2 
+                :lon="firstInter.notificationLon" 
+                :lat="firstInter.notificationLat"
+                :zoom="14"
+                :show-marker="true"
+                :marker-color="'#f60700'"
+                :should-animate="shouldAnimate"
+            />
         </div>
-        <div class="interContainer" v-if="firstInter">
-            <div>
-                <img :src="giveLink()" alt="" srcset="">
+        
+        <!-- Informations de l'intervention -->
+        <div class="card infoCard">
+            <div class="infoHeader">
+                <div class="numInter">N°{{ firstInter.numeroInter }}</div>
+                <span v-if="getRedLabel(firstInter.notificationTitre)" class="DV">{{ getRedLabel(firstInter.notificationTitre) }}</span>
+                <div class="interTitle">
+                {{ cleanTitle(firstInter.notificationTitre) }}
+                </div>
             </div>
-            <div class="Hundred">
-                <div class="interInfo">
-                    <div class="numInter" :style="{color: '#f60700', marginTop: '1.5rem'}">Intervention n°{{ firstInter.numeroInter }}</div> 
-                    <div class="interTitle" :style="{fontSize : '1.7em', fontWeight : 'bold', color: '#f60700'}">
-                       <span v-if="getRedLabel(firstInter.notificationTitre)" class="DV">{{ getRedLabel(firstInter.notificationTitre) }}</span>
-                        <span :style="getRedLabel(firstInter.notificationTitre) ? { marginLeft: '1rem' } : {}">{{ cleanTitle(firstInter.notificationTitre) }}</span>
+            <div class="infoGrid">
+                <div class="infoRowHorizontal">
+                    <div class="infoItem">
+                        <div class="infoIcon">📅</div>
+                        <div class="infoContent">
+                            <div class="infoLabel">Date & Heure</div>
+                            <div class="infoValue">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' }) }}</div>
+                            <div class="infoSubValue">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</div>
+                        </div>
                     </div>
-                    <div>
-                        Le <span class="bold">{{ new Date(firstInter.dateTime).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' }) }}</span> à <span class="bold">{{ new Date(firstInter.dateTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }}</span>
-                    </div>
-                    <div>
-                        Sur la commune de <span class="bold capitalize">{{ firstInter.notificationVille }}</span>
-                    </div>
-                    <div>
-                        Avec <span class="bold">{{ firstInter.notificationEngins }} engin{{ firstInter.notificationEngins > 1 ? 's' : '' }} engagé{{ firstInter.notificationEngins > 1 ? 's' : '' }}</span>
+                    <div class="infoItem">
+                        <div class="infoIcon">🚒</div>
+                        <div class="infoContent">
+                            <div class="infoLabel">Engins</div>
+                            <div class="infoValue">{{ firstInter.notificationEngins }} engin{{ firstInter.notificationEngins > 1 ? 's' : '' }}</div>
+                        </div>
                     </div>
                 </div>
-                <div class="interInfo" v-if="FirstInterDisplay && okay">
-                    <div>
-                        <div class="bold" :style="{fontWeight: 'bold'}">Interventions récentes</div>
+                <div class="infoItem">
+                    <div class="infoIcon">📍</div>
+                    <div class="infoContent">
+                        <div class="infoLabel">Commune</div>
+                        <div class="infoValue capitalize">{{ firstInter.notificationVille }}</div>
                     </div>
-                    <div :key="FirstInterDisplay.numeroInter" class="displayInfo" :class="isSlider(1)">
-                        <div class="date">{{ calculateDelta(FirstInterDisplay.dateTime) }}</div>
-                        <div>N°{{ FirstInterDisplay.numeroInter }} - </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interventions récentes -->
+        <div class="card recentCard" v-if="FirstInterDisplay && okay">
+            <div class="cardHeader">
+                <div class="cardTitle">Interventions récentes</div>
+            </div>
+            <div class="recentList">
+                <div :key="FirstInterDisplay.numeroInter" class="recentItem" :class="isSlider(1)">
+                    <div class="recentDate">{{ calculateDelta(FirstInterDisplay.dateTime) }}</div>
+                    <div class="recentContent">
+                        <span class="recentNum">N°{{ FirstInterDisplay.numeroInter }}</span>
                         <span v-if="getRedLabel(FirstInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(FirstInterDisplay.notificationTitre) }}</span>
-                        <div>  {{ cleanTitle(FirstInterDisplay.notificationTitre) }} à </div>
-                        <div> {{ FirstInterDisplay.notificationVille }}</div>
-                    </div>
-                    <div :key="SecInterDisplay.numeroInter" class="displayInfo" :class="isSlider(2)">
-                        <div class="date"> {{ calculateDelta(SecInterDisplay.dateTime) }}</div>
-                        <div>N°{{ SecInterDisplay.numeroInter }} - </div>
-                        <span v-if="getRedLabel(SecInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(SecInterDisplay.notificationTitre) }}</span>
-                        <div>  {{ cleanTitle(SecInterDisplay.notificationTitre) }} à </div>
-                        <div> {{ SecInterDisplay.notificationVille }}</div>
-                    </div>
-                    <div :key="ThirdInterDisplay.numeroInter" class="displayInfo" :class="isSlider(3)">
-                        <div class="date"> {{ calculateDelta(ThirdInterDisplay.dateTime) }}</div>
-                        <div>N°{{ ThirdInterDisplay.numeroInter }} - </div>
-                        <span v-if="getRedLabel(ThirdInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(ThirdInterDisplay.notificationTitre) }}</span>
-                        <div>  {{ cleanTitle(ThirdInterDisplay.notificationTitre) }} à </div>
-                        <div> {{ ThirdInterDisplay.notificationVille }}</div>
+                        <span class="recentTitle">{{ cleanTitle(FirstInterDisplay.notificationTitre) }}</span>
+                        <span class="recentCity">{{ FirstInterDisplay.notificationVille }}</span>
                     </div>
                 </div>
-                
+                <div :key="SecInterDisplay.numeroInter" class="recentItem" :class="isSlider(2)">
+                    <div class="recentDate">{{ calculateDelta(SecInterDisplay.dateTime) }}</div>
+                    <div class="recentContent">
+                        <span class="recentNum">N°{{ SecInterDisplay.numeroInter }}</span>
+                        <span v-if="getRedLabel(SecInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(SecInterDisplay.notificationTitre) }}</span>
+                        <span class="recentTitle">{{ cleanTitle(SecInterDisplay.notificationTitre) }}</span>
+                        <span class="recentCity">{{ SecInterDisplay.notificationVille }}</span>
+                    </div>
+                </div>
+                <div :key="ThirdInterDisplay.numeroInter" class="recentItem" :class="isSlider(3)">
+                    <div class="recentDate">{{ calculateDelta(ThirdInterDisplay.dateTime) }}</div>
+                    <div class="recentContent">
+                        <span class="recentNum">N°{{ ThirdInterDisplay.numeroInter }}</span>
+                        <span v-if="getRedLabel(ThirdInterDisplay.notificationTitre)" class="DV-small">{{ getRedLabel(ThirdInterDisplay.notificationTitre) }}</span>
+                        <span class="recentTitle">{{ cleanTitle(ThirdInterDisplay.notificationTitre) }}</span>
+                        <span class="recentCity">{{ ThirdInterDisplay.notificationVille }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -72,157 +106,224 @@
 }
 #Title {
     position: absolute;
-    top: 1.2rem;
-    left: 2.5rem;
+    top: 1.5rem;
+    left: 3rem;
     z-index: 4;
     color: white;
-    font-size: 1em;
+    font-size: 1.2em;
     text-align: center;
     text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-.interContainer {
-    display: flex;
-    align-items: center;
-    height: 70%;
-    width: 80%;
+#Title h1 {
+    margin: 0;
+    font-weight: 600;
+}
+.mainContainer {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+    width: 85%;
+    height: 75%;
     position: absolute;
-    top: 53%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
-    border-radius: 30px;
-    backdrop-filter: blur(10px) brightness(1);
-    background-color: #ffffffe5;
+}
+.card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.85) 100%);
+    backdrop-filter: blur(12px) brightness(1.05);
+    border-radius: 16px;
+    box-shadow: 0px 6px 24px rgba(0, 0, 0, 0.12), 0px 2px 6px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.8rem;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
 }
-.interContainer > div:first-child {
-    z-index: 4;
+.mapCard {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    padding: 0;
+    min-height: 0;
 }
-.Hundred {
-    width: 100%;
-    height: 100%;
+.infoCard {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    height: fit-content;
+    min-height: 45%;
+}
+.recentCard {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    height: fit-content;
+    min-height: 0;
+    overflow-y: auto;
+    margin-top: 0;
+}
+.cardHeader {
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(246, 7, 0, 0.2);
+}
+.cardTitle {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #2c2c2c;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.infoHeader {
     display: flex;
     align-items: center;
-    text-align: left;
-    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(246, 7, 0, 0.2);
 }
-.Hundred > div {
-    padding-left: 3rem;
-    padding-top: 1rem;
-}
-.interInfo {
-    display: flex;
-    align-items: flex-start;
-    text-align: left;
-    width: 100%;
-    padding: 0.5rem;
-    flex-direction: column;
-    z-index: 3;
-}
-.interInfo:first-child {
-    background-color: #ffffff76;
-    margin-left: 0;
-    padding-left: 3rem;
-    padding-bottom: 1rem;
-}
-.interInfo > div {
-    text-align: left;
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.3rem;
-    color: #7b7b7b;
-}
-
 .numInter {
-    padding: 0.2rem 0.5rem;
-    border-bottom: 1px solid #f60700;
-    margin-right: 0.5rem;
-    width: fit-content;
-    max-width: fit-content;
-    padding: 0.2rem 0.5rem;
-    font-size: 1.1rem;
-
+    font-size: 0.95em;
+    font-weight: 700;
+    color: #f60700;
 }
 .interTitle {
-    font-size: 1.5em;
-    margin-top: 0.5rem;
-    font-weight: bold;
+    font-size: 1.15em;
+    font-weight: 700;
+    color: #2c2c2c;
     text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    text-align: left;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
 }
-.bold{
-    font-size: 1.3rem;
-    color: #3a3a3a;
+.infoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.infoRowHorizontal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+.infoItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+.infoItem:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(2px);
+}
+.infoIcon {
+    font-size: 1.1em;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+.infoContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.infoLabel {
+    font-size: 0.65em;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.infoValue {
+    font-size: 0.8em;
+    color: #2c2c2c;
+    font-weight: 600;
+}
+.infoSubValue {
+    font-size: 0.75em;
+    color: #666;
+    font-weight: 500;
 }
 .capitalize {
     text-transform: capitalize;
 }
-.displayInfo {
+.recentList {
     display: flex;
-    align-items: center;
-    text-align: left;
-    padding: 0.5rem;
-    padding-right: 1rem;
-    flex-direction: row;
-    width: fit-content;
-    max-width: fit-content;
-    transition: all 0.5s ease-in-out;
-    margin-top: 0.7rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.6rem;
 }
-.displayInfo > div {
-    margin-left: 0.5rem;
-    transition: all 0.5s ease-in-out;
-}
-.slider {
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 6px 20px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
+.recentItem {
+    padding: 0.8rem;
     border-radius: 10px;
-    transition: all 0.5s ease-in-out;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
-.slider > div {
-    font-size: 1.1rem;
-    background: linear-gradient(to right bottom, #0078f3, #1f8d49);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: all 0.5s ease-in-out;   
+.recentItem.slider {
+    background: linear-gradient(135deg, rgba(0, 120, 243, 0.1) 0%, rgba(31, 141, 73, 0.1) 100%);
+    border: 2px solid rgba(0, 120, 243, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 120, 243, 0.2);
+    transform: scale(1.02);
 }
-.date {
-    font-size: 0.8rem;
+.recentDate {
+    font-size: 0.7em;
     color: #7b7b7b;
-    flex-basis: 100%;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
 }
-.DV{
-    font-size: 0.8rem;
-    padding: 0.5rem;
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
+.recentContent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85em;
+    color: #2c2c2c;
+}
+.recentNum {
+    font-weight: 700;
+    color: #f60700;
+}
+.recentTitle {
+    font-weight: 500;
+}
+.recentCity {
+    color: #666;
+    font-style: italic;
+}
+.DV {
+    font-size: 0.7em;
+    padding: 0.3rem 0.6rem;
     background-color: transparent;
     color: #f60700;
     border: 2px solid #f60700;
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: 700;
-    margin-right: 0.5rem;
+    white-space: nowrap;
 }
 .DV-small {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.5rem;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
     background-color: transparent;
     color: #7b7b7b;
     border: 1.5px solid #7b7b7b;
-    border-radius: 3px;
+    border-radius: 4px;
     font-weight: 700;
-    margin-right: 0.4rem;
-    margin-left: 0.3rem;
+    white-space: nowrap;
 }
 </style>
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useSmartemis } from '../store/smartemis';
+import mapBox2 from '../components/mapBox2.vue';
 
 const smartemis = useSmartemis();
 const inters = ref([]);
@@ -231,6 +332,7 @@ const FirstInterDisplay = ref(null);
 const SecInterDisplay = ref(null);
 const ThirdInterDisplay = ref(null);
 const okay = ref(false);
+const shouldAnimate = ref(false);
 
 onMounted(async () => {
     const data = await smartemis.getInterNoFilter();
@@ -245,12 +347,14 @@ onMounted(async () => {
     ThirdInterDisplay.value = inters.value[2];
     setInterval(updateIntersDisplay, 5000);
     okay.value = true;
+    
+    // Déclencher l'animation après que la carte soit prête
+    setTimeout(() => {
+        shouldAnimate.value = true;
+    }, 300);
     //console.log(inters.value);
 });
 
-const giveLink = () => {
-    return `https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=350&height=800&center=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat}&zoom=14&marker=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat};type:circle;color:%23ff0000;size:x-large;icon:sos;icontype:material;iconsize:small;strokecolor:%23ff0000&scaleFactor=1&apiKey=75c6e5ac06e84d3a95473195e7af529d`;
-};
 
 let currentIndex = ref(0);
 
