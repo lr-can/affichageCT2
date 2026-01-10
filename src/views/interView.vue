@@ -157,6 +157,12 @@ import VUrbxnuit from '../assets/sounds/VUrbxnuit.mp3';
 import departAssure from '../assets/sounds/departAssure.mp3';
 import endTime from '../assets/sounds/endTime.mp3';
 import tempsEcoule from '../assets/sounds/tempsEcoule.mp3';
+import DFU from '../assets/sounds/DFU.mp3';
+import DVR from '../assets/sounds/DVR.mp3';
+import DFUR from '../assets/sounds/DFUR.mp3';
+import DFUnuit from '../assets/sounds/DFUnuit.mp3';
+import DVRnuit from '../assets/sounds/DVRnuit.mp3';
+import DFURnuit from '../assets/sounds/DFURnuit.mp3';
 const displayDelay = ref(false);
 const departAssureAudio = new Audio(departAssure);
 const endTimeAudio = new Audio(endTime);
@@ -180,7 +186,10 @@ const typeInterAudioNuit = {
     "DF20": SSUAPnuit,
     'ACC': ACCnuit,
     'VUrbG': VUrbGnuit,
-    'VUrbx': VUrbxnuit
+    'VUrbx': VUrbxnuit,
+    'DFU': DFUnuit,
+    'DVR': DVRnuit,
+    'DFUR': DFURnuit
 };
 const typeInterAudio = {
     'INC': INC,
@@ -191,7 +200,10 @@ const typeInterAudio = {
     'ACC': ACC,
     'DF20': DF20,
     'VUrbG': VUrbG,
-    'VUrbx': VUrbx
+    'VUrbx': VUrbx,
+    'DFU': DFU,
+    'DVR': DVR,
+    'DFUR': DFUR
 };
 const libelleInter = ref();
 const adresseInter = ref();
@@ -246,6 +258,15 @@ onMounted(() => {
             } else if (libelleInter.value.includes("DV")){
                 audio.src = typeInterAudio['DV'];
                 audio_type = 'DV';
+            } else if (libelleInter.value.includes("DFU")){
+                audio.src = typeInterAudio['DFU'];
+                audio_type = 'DFU';
+            } else if (libelleInter.value.includes("DVR")){
+                audio.src = typeInterAudio['DVR'];
+                audio_type = 'DVR';
+            } else if (libelleInter.value.includes("DFUR")){
+                audio.src = typeInterAudio['DFUR'];
+                audio_type = 'DFUR';
             } else {
                 audio.src = typeInterAudio[typeInterClass.value];
             }

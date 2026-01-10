@@ -405,6 +405,7 @@ export const useSmartemis = defineStore('smartemis', () => {
       options
     );
     const result = await response.json();
+    console.log(result);
     return new Audio(result['google/fr-FR-Standard-B'].audio_resource_url);
   };
 

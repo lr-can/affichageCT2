@@ -1,6 +1,6 @@
 <template>
   <navigationMenu 
-    v-if="!interventionCheck"
+    v-if="!interventionCheck && !manoeuvreActive"
     :views="views"
     :current-index="index"
     @view-change="handleViewChange"
@@ -30,6 +30,9 @@
         <img src="./assets/Rhombus.gif" alt="" width="100px" height="auto" :style="{opacity: 0.8}">
       </div>
     </div>
+  </div>
+  <div v-if="manoeuvreActive" id="manoeuvreView">
+    <AffichageManoeuvre :data="manoeuvreData" />
   </div>
   <div v-if="interventionCheck" id="interView">
     <interView :data="interventionData" />
@@ -81,6 +84,10 @@
   </div>
 </template>
 <script setup>
+
+import { db } from './firebase/config';
+import { ref as dbRef, onValue } from 'firebase/database';
+import AffichageManoeuvre from './views/AffichageManoeuvre.vue';
 import clockComponent from './components/clockComponent.vue';
 import ytbBackGround from './components/ytbBackGround.vue';
 import regularBackground from './components/regularBackground.vue';
@@ -101,6 +108,7 @@ import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
 import { useSmartemis } from './store/smartemis';
 import InterEnCours from './views/interEnCours.vue';
+import { onBeforeUnmount } from 'vue';
 const smartemis = useSmartemis();
 
 import IT from './assets/sounds/IT.wav';
@@ -113,6 +121,17 @@ import morePeople from './assets/sounds/morePeople.wav';
 import consigne from './assets/sounds/consigne.mp3';
 
 const weatherStore = useWeather();
+
+const manoeuvreActive = ref(false);
+const manoeuvreData = ref({
+  info: null,
+  manoeuvrants: {},
+  enginsCollonges: []
+});
+
+
+let unsubscribeManoeuvreInfo = null;
+let unsubscribeManoeuvreManoeuvrants = null;
 
 const interventionCheck = ref(false);
 const interventionData = ref({});
@@ -158,6 +177,59 @@ watchEffect(() => {
     }
   }, 200);
 });
+
+// Fonction pour setup les listeners Firebase manœuvre
+const setupManoeuvreListeners = () => {
+  // Listener sur les infos de manœuvre
+  const infoRef = dbRef(db, 'manoeuvre/info');
+  unsubscribeManoeuvreInfo = onValue(infoRef, async (snapshot) => {
+    if (snapshot.exists()) {
+      manoeuvreData.value.info = snapshot.val();
+      manoeuvreActive.value = true;
+      
+      // Charger les autres engins Collonges
+      await loadEnginsCollonges();
+    } else {
+      manoeuvreActive.value = false;
+      manoeuvreData.value.info = null;
+    }
+  });
+
+    // Listener sur les manoeuvrants
+    const manoeuvrantsRef = dbRef(db, 'manoeuvre/manoeuvrants');
+  unsubscribeManoeuvreManoeuvrants = onValue(manoeuvrantsRef, (snapshot) => {
+    if (snapshot.exists()) {
+      manoeuvreData.value.manoeuvrants = snapshot.val();
+    } else {
+      manoeuvreData.value.manoeuvrants = {};
+    }
+  });
+};
+
+
+// Fonction pour charger les autres engins de Collonges
+const loadEnginsCollonges = async () => {
+  try {
+    // Utiliser ta fonction existante getEngins
+    const allEngins = await smartemis.getEngins();
+    
+    // Filtrer pour ne garder que Collonges
+    let enginsCollonges = [];
+    for (const famille of allEngins) {
+      if (famille.engins) {
+        enginsCollonges.push(...famille.engins);
+      }
+    }
+    
+    // Exclure les engins déjà dans la manœuvre
+    const enginsManoeuvre = Object.values(manoeuvreData.value.manoeuvrants).map(a => a.engin);
+    manoeuvreData.value.enginsCollonges = enginsCollonges.filter(e => 
+      !enginsManoeuvre.includes(e.lib) && (e.statut === 'DM' || e.statut === 'Dl')
+    );
+  } catch (err) {
+    console.error('Erreur chargement engins Collonges:', err);
+  }
+};
 
 
 
@@ -243,9 +315,18 @@ const initializeApp = async () => {
       return view;
     });
   }
-  
+  setupManoeuvreListeners();
 }
 initializeApp();
+
+onBeforeUnmount(() => {
+  if (unsubscribeManoeuvreInfo) {
+    unsubscribeManoeuvreInfo();
+  }
+  if (unsubscribeManoeuvreManoeuvrants) {
+    unsubscribeManoeuvreManoeuvrants();
+  }
+});
 
 const waitForInter = setInterval(async () => {
   await smartemis.fetchAllSheetsFromAPI();
@@ -274,6 +355,9 @@ const waitForInter = setInterval(async () => {
   clearInterval(waitForInter);
   clearTimeout(regularTimeout);
   regularTimeout = setTimeout(() => {
+    if (manoeuvreActive.value) {
+      return;
+    }
     window.location.reload();
   }, 15 * 60 * 1000);
 }, 15000);
