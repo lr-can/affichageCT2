@@ -67,7 +67,7 @@
       <div v-show="index == 4 || initialize" key="traffic">
         <trafficView />
       </div>
-      <div v-show="index == 5 || initialize" key="interEnCours">
+      <div v-if="index == 5 || initialize" key="interEnCours">
         <interEnCours />
       </div>
       <div v-show="index == 6 || initialize" key="weatherWarning">
@@ -401,10 +401,18 @@ const main = async () => {
     if (!isManualMode.value) {
       await new Promise((resolve) => setTimeout(resolve, views.value[index.value].time * 1000));
       let next_index = (index.value + 1) % views.value.length;
+      let next_index_2 = (next_index + 1) % views.value.length;
+      let next_index_3 = (next_index_2 + 1) % views.value.length;
       if (views.value[next_index].time === 0) { // if suivant time is 0, skip to next
         next_index = (next_index + 1) % views.value.length;
         if (views.value[next_index.time === 0]){ // if next next time is also 0, skip again
           next_index = (next_index + 1) % views.value.length;
+        }
+        if (views.value[next_index_2.time === 0]){ // if next next next time is also 0, skip again
+          next_index = (next_index_2 + 1) % views.value.length;
+        }
+        if (views.value[next_index_3.time === 0]){ // if next next next next time is also 0, skip again
+          next_index = (next_index_3 + 1) % views.value.length;
         }
       }
       index.value = next_index;

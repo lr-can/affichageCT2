@@ -16,10 +16,10 @@
       <main class="dashboard__content" v-if="clear">
         <!-- Notification Info -->
         <section class="card card--info">
-          <h3 class="card__title" :style="{ textTransform: 'uppercase', whiteSpace: 'pre-wrap', fontSize: '1.3rem' }">{{ firstInter.notificationTitre }}</h3>
+          <h3 class="card__title" :style="{ textTransform: 'uppercase', whiteSpace: 'pre-wrap', fontSize: '1.1rem' }">{{ firstInter.notificationTitre }}</h3>
           <div class="left-align" :style="{textAlign: 'left'}">
           <p class="card__meta">
-            <img class="icon-address" src="../assets/icons/address.svg"  style="height: 2rem; width: auto ; text-transform: uppercase; margin-right: 1rem;" />
+            <img class="icon-address" src="../assets/icons/address.svg"  style="height: 1.5rem; width: auto ; text-transform: uppercase; margin-right: 0.75rem;" />
             <span> {{ firstInter.notificationVille }}</span>
           </p>
         </div>
@@ -27,25 +27,27 @@
 
         <!-- Stations & Vehicles -->
         <section class="card card--stations custom2" v-if="dataInter.details?.length">
-            <div class="custom1">
+            <div class="custom1" :class="{ 'compact-view': dataInter.details.length > 4 }">
           <h2 class="card__title">Véhicules</h2>
-          <div class="stations">
+          <div class="stations" :class="{ 'stations-compact': dataInter.details.length > 4 }">
             <article
               v-for="st in dataInter.details"
               :key="st.stationId"
               class="station"
+              :class="{ 'station-compact': dataInter.details.length > 4 }"
             >
-              <h3 class="station__name" :style="{display: 'flex', flexDirection: 'column', textAlign: 'left', gap: '0.2rem'}">
-                <span style="display: block; font-size: 0.7rem; color: #a7a7a7; line-height: 1;">{{ st.stationName }}</span>
-                <span style="font-size: 1rem; line-height: 1; margin-bottom: 0.3rem;">
+              <h3 class="station__name" :class="{ 'station__name-compact': dataInter.details.length > 4 }" :style="{display: 'flex', flexDirection: dataInter.details.length > 4 ? 'row' : 'column', textAlign: 'left', gap: '0.2rem', alignItems: dataInter.details.length > 4 ? 'center' : 'flex-start'}">
+                <span :style="{display: 'block', fontSize: dataInter.details.length > 4 ? '0.65rem' : '0.7rem', color: '#a7a7a7', lineHeight: '1', marginRight: dataInter.details.length > 4 ? '0.5rem' : '0'}">{{ st.stationName }}</span>
+                <span v-if="dataInter.details.length <= 4" :style="{fontSize: '0.9rem', lineHeight: '1', marginBottom: '0.3rem'}">
                   {{ st.stationFullName.length > 30 ? st.stationFullName.substring(0, 20) + '...' : st.stationFullName }}
                 </span>
               </h3>
-              <div class="vehicles">
+              <div class="vehicles" :class="{ 'vehicles-compact': dataInter.details.length > 4 }" :style="{ fontSize: getVehicleFontSize(st.vehicles?.length || 0) }">
                 <span
                   v-for="v in st.vehicles"
                   :key="v.id"
                   class="chip"
+                  :class="{ 'chip-compact': dataInter.details.length > 4 }"
                   :style="{ backgroundColor: v.backgroundColor, color: v.textColor }"
                 >
                   {{ v.name }}
@@ -59,7 +61,7 @@
         <section class="card card--stations custom2 fifty" v-if="!dataInter.details?.length">
             <div class="custom1">
             <h2 class="card__title">Véhicules</h2>
-            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun véhicule engagé</p>
+            <p :style="{color: '#666', fontStyle: 'italic'}">Aucun véhicule engagé</p>
             </div>
         </section>
   
@@ -80,11 +82,11 @@
 
         <section class="card card--services fifty" v-if="!dataInter.externalServices?.length">
             <h2 class="card__title">Services externes</h2>
-            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun service externe engagé</p>
+            <p :style="{color: '#666', fontStyle: 'italic'}">Aucun service externe engagé</p>
         </section>
 
         <section class="card card--messages custom3" v-if="dataInter.details?.length">
-            <img :src="img_url()" style="height: 170px; width: 170px; border-radius: 8px;" />
+            <img :src="img_url()" style="height: 150px; width: 150px; border-radius: 8px;" />
         </section>
 
         
@@ -105,38 +107,50 @@
         </section>
         <section class="card card--agents fifty" v-if="!dataInter.agents?.length">
             <h2 class="card__title">Agents engagés</h2>
-            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun agent engagé</p>
+            <p :style="{color: '#666', fontStyle: 'italic'}">Aucun agent engagé</p>
         </section>
 
-        <section class="card custom2"></section>
+        <section class="card custom2" style="border: none; box-shadow: none;"></section>
   
         <!-- Messages Carousel -->
         <section class="card card--messages" v-if="dataInter.messages?.length">
           <h2 class="card__title">Messages</h2>
           <div class="message-slider">
-            <div class="message" v-if="currentMsg !== null" :style="{backgroundColor : 'white', borderBottom: '1px solid dimgrey', borderRadius: '1rem'}">
-              <time class="message__time">Il y a {{ calculateDuree(new Date(dataInter.messages[currentMsg].time)) }}</time>
-              <p class="message__content">{{ dataInter.messages[currentMsg].message }}</p>
-            </div>
+            <Transition name="message" mode="out-in">
+              <div 
+                v-if="currentMsg !== null" 
+                :key="currentMsg"
+                class="message"
+              >
+                <time class="message__time">Il y a {{ calculateDuree(new Date(dataInter.messages[currentMsg].time)) }}</time>
+                <p class="message__content">{{ dataInter.messages[currentMsg].message }}</p>
+              </div>
+            </Transition>
             <div class="dots" v-if="dataInter.messages.length > 1">
               <span
                 v-for="(_, idx) in dataInter.messages"
                 :key="idx"
                 class="dot"
                 :class="{ 'dot--active': idx === currentMsg }"
-                :style="{backgroundColor : 'white', borderBottom: '1px solid dimgrey'}"
               ></span>
             </div>
           </div>
         </section>
         <section class="card card--messages fifty" v-if="!dataInter.messages?.length">
             <h2 class="card__title">Messages</h2>
-            <p :style="{color: 'dimgray', fontStyle: 'italic'}">Aucun message</p>
+            <p :style="{color: '#666', fontStyle: 'italic'}">Aucun message</p>
         </section>
 
-                        <!-- Map Image -->
-        <section class="card card--map custom2">
-          <img :src="giveLink()" alt="Carte de l'intervention" />
+                        <!-- Map -->
+        <section class="card card--map custom2" v-if="firstInter">
+          <mapBox2 
+                :lon="firstInter.notificationLon" 
+                :lat="firstInter.notificationLat"
+                :zoom="14"
+                :show-marker="true"
+                :marker-color="'#f60700'"
+                :should-animate="shouldAnimate"
+            />
         </section>
 
       </main>
@@ -145,8 +159,9 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed, watch, Transition } from 'vue';
   import { useSmartemis } from '../store/smartemis';
+  import mapBox2 from '../components/mapBox2.vue';
   
   const smartemis = useSmartemis();
   const clear = ref(false);
@@ -157,6 +172,21 @@
   const currentMsg = ref(0);
   const isFinished = ref(false);
   const lengthMessages = ref(0);
+  const shouldAnimate = ref(false);
+  const lastMessageCount = ref(0);
+  const messageAudioPlayed = ref(new Set());
+  
+  // Audio pour les nouveaux messages
+  import introNotif from '../assets/sounds/introNotif.mp3';
+  const newMessageAudio = new Audio(introNotif);
+  
+  // Fonction pour calculer la taille de police en fonction du nombre d'engins
+  const getVehicleFontSize = (vehicleCount) => {
+    if (vehicleCount <= 3) return '0.8rem';
+    if (vehicleCount <= 6) return '0.75rem';
+    if (vehicleCount <= 10) return '0.7rem';
+    return '0.65rem';
+  };
   
   onMounted(async () => {
     const raw = await smartemis.getInterNoFilter();
@@ -167,9 +197,35 @@
   
     await updateData();
     updateDuration();
+    lastMessageCount.value = dataInter.value.messages?.length || 0;
     setInterval(() => { updateDuration(); updateData(); }, 30000);
     setInterval(() => { cycleMsg(); updateDuree()}, 10000);
     clear.value = true;
+
+        // Déclencher l'animation après que la carte soit prête
+    setTimeout(() => {
+        shouldAnimate.value = true;
+    }, 300);
+  });
+  
+  // Watch pour détecter les nouveaux messages
+  watch(() => dataInter.value.messages?.length, (newLength, oldLength) => {
+    if (newLength > oldLength && newLength > 0) {
+      // Nouveau message détecté
+      const newMessages = dataInter.value.messages.slice(oldLength);
+      newMessages.forEach((msg, index) => {
+        const messageId = `${msg.time}-${msg.message}`;
+        if (!messageAudioPlayed.value.has(messageId) && newMessageAudio) {
+          messageAudioPlayed.value.add(messageId);
+          // Jouer le son une seule fois avec un petit délai pour éviter les doublons
+          setTimeout(() => {
+            if (newMessageAudio) {
+              newMessageAudio.currentTime = 0;
+            }
+          }, index * 100);
+        }
+      });
+    }
   });
   
   async function updateData() {
@@ -212,10 +268,6 @@
       currentMsg.value = (currentMsg.value+1) % dataInter.value.messages.length;
     }
   }
-  
-  const giveLink = () => {
-    return `https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=800&height=800&center=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat}&zoom=16&marker=lonlat:${firstInter.value.notificationLon},${firstInter.value.notificationLat};type:circle;color:%23ff0000;icon:sos;icontype:material;iconsize:small;strokecolor:%23ff0000&scaleFactor=1&apiKey=75c6e5ac06e84d3a95473195e7af529d`;
-};
 
   // Grades icons import
   import Sap2CL from '../assets/grades/Sap 2CL.png';
@@ -325,168 +377,253 @@
     position: relative;
     overflow: hidden;
     min-height: 100vh;
-    color: #525252;
+    color: #1a1a1a;
+    background: #f5f7fa;
   }
   .dashboard__background {
     position: absolute;
     inset: 0;
     background: url('../assets/backgrounds/interEnCours.jpg') center/cover no-repeat;
-    filter: blur(8px) brightness(0.9);
-    transform: scale(1.1);
+    filter: blur(4px) brightness(1.2);
+    transform: scale(1.05);
     z-index: 1;
+    opacity: 0.4;
   }
   .dashboard__header {
     position: relative;
     z-index: 2;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
   }
   .dashboard__header-content {
     max-width: 315px;
     min-width: 315px;
     margin: 0;
     text-align: left;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    padding: 1rem;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-bottom: 3px solid #f60700;
   }
   .dashboard__title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     margin: 0;
     text-transform: uppercase;
+    font-weight: 700;
+    color: #f60700;
+    letter-spacing: 0.05em;
   }
   .dashboard__subtitle {
-    font-size: 1.25rem;
-    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    margin: 0.4rem 0 0;
+    color: #666;
+    font-weight: 500;
   }
   .dashboard__content {
     position: relative;
     z-index: 2;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 2rem;
+    gap: 1.25rem;
+    padding: 1.5rem 2rem;
     transform: translateY(-2rem);
   }
   .card {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 0.75rem;
     padding: 1.25rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.85rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
   }
   .card__title {
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    margin: 0 0 0.65rem;
     text-transform: uppercase;
+    font-weight: 700;
+    color: #f60700;
+    letter-spacing: 0.05em;
+    padding-bottom: 0.45rem;
+    border-bottom: 2px solid #f60700;
   }
   .card--map {
     overflow: hidden;
-
+    padding: 0;
+    height: 100%;
+    min-height: 300px;
   }
-  .card--map img {
+  .card--map :deep(.map) {
     width: 100%;
-    border-radius: 8px;
-    scale: 2.3;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 0.75rem;
   }
   .services {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.45rem;
     overflow-x: auto;
   }
   .vehicles {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.45rem;
     overflow-x: auto;
   }
+  .vehicles-compact {
+    gap: 0.35rem;
+  }
   .card--stations {
-    max-height: 220px;
+    max-height: 200px;
     scrollbar-width: none;
   }
   .card--stations::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Edge */
+    display: none;
   }
   .chip {
-    padding: 0.25rem 0.4rem;
+    padding: 0.35rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
     white-space: nowrap;
-    min-width: 3rem;
+    min-width: 2.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  .chip-compact {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 2rem;
+  }
+  .chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   .chip:first-child {
-    margin-left: 1rem;
+    margin-left: 0;
+  }
+  .stations-compact {
+    flex-direction: column;
+    gap: 0.5rem;
   }
   .station {
     flex: 1 1 200px;
-    margin-bottom: 1rem;
-    padding: 0.3rem;
-    padding-bottom: 0.5rem;
-    padding-left: 0.3rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
+    margin-bottom: 0.85rem;
+    padding: 0.85rem;
+    background-color: #ffffff;
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+  .station-compact {
+    margin-bottom: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .station:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
   .station__name {
-    margin: 0 0 0.2rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.65rem;
+    font-size: 0.9rem;
     text-align: left;
-    padding-left: 0.2rem;
-    font-weight: normal;
-    
+    padding-left: 0;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .station__name-compact {
+    margin: 0;
+    font-size: 0.8rem;
+    flex: 0 0 auto;
   }
   .agents {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.45rem;
     scrollbar-width: none; 
   }
   .agents::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Edge */
+    display: none;
   }
   .agent {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: transform 0.2s ease;
+    padding: 0.65rem;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
   }
   .agent:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(246, 7, 0, 0.15), 0 1px 3px rgba(246, 7, 0, 0.1);
+    background: rgba(255, 250, 250, 1);
   }
   .agent__icon {
-    width: 20px;
-    height: 20px;
-    margin-bottom: 0.25rem;
-    margin-right: 1rem;
-    border-radius: 3px;
-
+    width: 22px;
+    height: 22px;
+    margin-right: 0.65rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
   }
   .agent__name {
-    font-size: 0.9rem;
-    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: left;
     margin: 0;
+    color: #1a1a1a;
   }
   .message-slider {
     position: relative;
     overflow: hidden;
+    min-height: 80px;
   }
   .message {
-    padding: 0.75rem;
+    padding: 0.85rem;
+    background: #ffffff;
+    border-radius: 0.625rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .message-enter-active {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .message-leave-active {
+    transition: all 0.3s ease;
+  }
+  .message-enter-from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+  }
+  .message-leave-to {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
   }
   .message__time {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #666;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.65rem;
+    font-weight: 500;
   }
   .message__content {
-    font-size: 1rem;
-    color: #333;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    color: #1a1a1a;
+    line-height: 1.5;
+    font-weight: 400;
   }
   .dots {
     display: flex;
@@ -495,13 +632,16 @@
     margin-top: 0.5rem;
   }
   .dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #ccc;
+    background: #e0e0e0;
+    transition: all 0.2s ease;
   }
   .dot--active {
-    background: #333;
+    background: #f60700;
+    box-shadow: 0 0 0 2px rgba(246, 7, 0, 0.2);
+    transform: scale(1.2);
   }
   @media (max-width: 600px) {
     .dashboard__content {
@@ -509,7 +649,7 @@
       padding: 1rem;
     }
     .dashboard__title {
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
   }
   .custom2 {
@@ -518,51 +658,74 @@
     padding: 0;
   }
   .custom1 {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 0.75rem;
     padding: 1.25rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    min-height: 575px;
-    max-height: 575px;
+    gap: 0.85rem;
+    min-height: 480px;
+    max-height: 480px;
     overflow-y: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
-    .custom1::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Edge */
-    }
-    .card--agents{
-        min-height: 330px;
-    }
-    .card--info{
-        min-width: 300px;
-    }
-    .card__meta{
-        display: flex;
-        align-items: center;
-        font-size: 0.9rem;
-    }
-    .custom3 {
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .fifty {
-        opacity: 0.5;
-    }
-    .updateTime {
-        position: fixed;
-        bottom: 1rem;
-        left: 3rem;
-        padding: 1rem;
-        font-size: 0.8rem;
-        color: white;
-        margin: 1rem;
-        z-index: 2;
-    }
+  .custom1.compact-view {
+    min-height: 400px;
+    max-height: 400px;
+  }
+  .custom1::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom1::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom1::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+  .custom1::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .card--agents{
+    min-height: 280px;
+  }
+  .card--info{
+    min-width: 300px;
+  }
+  .card__meta{
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+  .custom3 {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .fifty {
+    opacity: 0.5;
+  }
+  .updateTime {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 1.75rem;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.75rem;
+    color: #666;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    font-weight: 500;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
     
   </style>
   

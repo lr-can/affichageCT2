@@ -307,6 +307,13 @@ export const useSmartemis = defineStore('smartemis', () => {
       options
     );
     const result = await response.json();
+    try {
+      if (!result || typeof result.type === "undefined" || result.type === null) {
+        return "Unknown";
+      }
+    } catch (e) {
+      return "Unknown";
+    }
     return result.type;
   };
 
@@ -352,6 +359,7 @@ export const useSmartemis = defineStore('smartemis', () => {
       ...intervention,
       typeInter,
     }));
+    console.log(sortedMappedResult[0]);
     return sortedMappedResult[0];
   };
 

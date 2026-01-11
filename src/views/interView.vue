@@ -38,7 +38,7 @@
                 <div class="infoDetail extServicesInfo">
                     <span><img src="../assets/icons/fireEngine.svg" style="height: 1rem; width: auto;" /></span>
                     <span class="extServicesList">
-                        <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="{ backgroundColor: svc.backgroundColor, color: svc.textColor }">
+                        <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="{ backgroundColor: (svc.textColor === '#ffffff' || svc.textColor === '#FFFFFF') ? 'white' : svc.backgroundColor, color: svc.textColor }">
                             {{ svc.name || svc.id }}
                         </span>
                     </span>
@@ -809,7 +809,7 @@ const generateOtherMeansMessage = () => {
     const stationsToAnnounce = otherStations.slice(0, 3);
     const remainingStations = otherStations.slice(3);
     
-    let message = 'Autres moyens engagés sur l\'intervention : ';
+    let message = ', et Moyens extérieurs : ';
     
     for (const station of stationsToAnnounce) {
         if (station.vehicles && station.vehicles.length > 0) {
@@ -831,11 +831,16 @@ const audioNotifs = async () => {
     // Attendre 1 min 10 (70 secondes) avant de générer le TTS
     await new Promise(resolve => setTimeout(resolve, 70000));
     
-    // Vérifier que les valeurs sont des chaînes avant d'utiliser .split()
-    if (!dateTimeInter.value || typeof dateTimeInter.value !== 'string') {
-        console.error('dateTimeInter.value n\'est pas une chaîne valide:', dateTimeInter.value);
+    // Convertir dateTimeInter en chaîne ISO si c'est un objet Date
+    let dateTimeStr = dateTimeInter.value;
+    if (dateTimeStr instanceof Date) {
+        dateTimeStr = dateTimeStr.toISOString();
+    } else if (!dateTimeStr || typeof dateTimeStr !== 'string') {
+        console.error('dateTimeInter.value n\'est pas une valeur valide:', dateTimeInter.value);
         return;
     }
+    
+    // Vérifier les autres valeurs
     if (!villeInter.value || typeof villeInter.value !== 'string') {
         console.error('villeInter.value n\'est pas une chaîne valide:', villeInter.value);
         return;
@@ -845,12 +850,12 @@ const audioNotifs = async () => {
         return;
     }
     
-    const timePart = dateTimeInter.value.split('T')[1];
+    const timePart = dateTimeStr.split('T')[1];
     const timeParts = timePart ? timePart.split(':') : ['00', '00'];
     let message = `Déclenché à, ${timeParts[0]}:${timeParts[1]}, pour, `;
     message += `${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").replace("DFUR", "").replace("DFU", "").toLowerCase().replace("aggrave", "aggravé").replace("alteration", "altération")},`;
-    message += `sur ${villeInter.value.replace("ST-", "SAINT").toLowerCase().split('-').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join('-')} .`;
-    message += `Moyens engagés : ${vehiculePhonetiques.value || ''} .`;
+    message += `sur ${villeInter.value.replace("ST-", "SAINT").toLowerCase().split('-').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join('-')}.`;
+    message += `Moyens engagés sur l'intervention : ${vehiculePhonetiques.value || ''}`;
      
     // Ajouter les autres moyens engagés si Collonges n'est pas la seule caserne
     const otherMeansMessage = generateOtherMeansMessage();
@@ -1435,6 +1440,7 @@ div {
     padding: 0.15rem 0.35rem;
     border-radius: 999px;
     font-size: 0.65rem;
+    background-color: #e5e5e5;
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     white-space: nowrap;
