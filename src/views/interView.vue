@@ -831,10 +831,26 @@ const audioNotifs = async () => {
     // Attendre 1 min 10 (70 secondes) avant de générer le TTS
     await new Promise(resolve => setTimeout(resolve, 70000));
     
-    let message = `Déclenché à, ${dateTimeInter.value.split('T')[1].split(':')[0]}:${dateTimeInter.value.split('T')[1].split(':')[1]}, pour, `;
+    // Vérifier que les valeurs sont des chaînes avant d'utiliser .split()
+    if (!dateTimeInter.value || typeof dateTimeInter.value !== 'string') {
+        console.error('dateTimeInter.value n\'est pas une chaîne valide:', dateTimeInter.value);
+        return;
+    }
+    if (!villeInter.value || typeof villeInter.value !== 'string') {
+        console.error('villeInter.value n\'est pas une chaîne valide:', villeInter.value);
+        return;
+    }
+    if (!libelleInter.value || typeof libelleInter.value !== 'string') {
+        console.error('libelleInter.value n\'est pas une chaîne valide:', libelleInter.value);
+        return;
+    }
+    
+    const timePart = dateTimeInter.value.split('T')[1];
+    const timeParts = timePart ? timePart.split(':') : ['00', '00'];
+    let message = `Déclenché à, ${timeParts[0]}:${timeParts[1]}, pour, `;
     message += `${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").replace("DFUR", "").replace("DFU", "").toLowerCase().replace("aggrave", "aggravé").replace("alteration", "altération")},`;
     message += `sur ${villeInter.value.replace("ST-", "SAINT").toLowerCase().split('-').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join('-')} .`;
-    message += `Moyens engagés : ${vehiculePhonetiques.value} .`;
+    message += `Moyens engagés : ${vehiculePhonetiques.value || ''} .`;
      
     // Ajouter les autres moyens engagés si Collonges n'est pas la seule caserne
     const otherMeansMessage = generateOtherMeansMessage();
@@ -846,34 +862,44 @@ const audioNotifs = async () => {
     
     // Ajuster les délais : le premier était à 15s, maintenant on a attendu 70s, donc on joue immédiatement
     // Les suivants sont à 2 min et 4 min après le début (donc 50s et 2min50s après le premier)
+    const playAudio = () => {
+        if (interAudio.value) {
+            interAudio.value.play().catch(err => {
+                console.error('Erreur lors de la lecture audio:', err);
+            });
+        } else {
+            console.warn('interAudio.value n\'est pas défini');
+        }
+    };
+
     setTimeout(() => {
         introNotifAudio.play();
-        introNotifAudio.onended = () =>{
-        interAudio.value.play();
+        introNotifAudio.onended = () => {
+            playAudio();
         };
     }, 0);
     setTimeout(()=>{
         introNotifAudio.play();
         introNotifAudio.onended = () =>{
-        interAudio.value.play();
+            playAudio();
         };
     }, 50 * 1000); // 50 secondes après le premier (2 min total depuis le début)
     setTimeout(()=>{
         introNotifAudio.play();
         introNotifAudio.onended = () =>{
-        interAudio.value.play();
+            playAudio();
         };
     }, 2 * 60000 + 50 * 1000); // 2 min 50 après le premier (4 min total depuis le début)
     setTimeout(()=>{
         introNotifAudio.play();
         introNotifAudio.onended = () =>{
-        interAudio.value.play();
+            playAudio();
         };
     }, 4 * 60000); // 4 min après le premier (6 min total depuis le début)
     setTimeout(()=>{
         introNotifAudio.play();
         introNotifAudio.onended = () =>{
-        interAudio.value.play();
+            playAudio();
         };
     }, 6 * 60000); // 6 min après le premier (8 min total depuis le début)
 };
@@ -904,7 +930,9 @@ const getStatus = async () => {
         } else {
             vehicules.value.push(vehicule);
             console.log("New vehicle added:", vehicule);
-            vehiculePhonetiques.value += " , " + vehicule.nomPhonetique;
+            if (vehicule.nomPhonetique && typeof vehicule.nomPhonetique === 'string') {
+                vehiculePhonetiques.value = (vehiculePhonetiques.value || "") + " , " + vehicule.nomPhonetique;
+            }
         } 
     }
     

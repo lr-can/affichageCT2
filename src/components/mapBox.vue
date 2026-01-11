@@ -57,6 +57,12 @@ const handleMapReady = (map) => {
   mapInstance.value = map;
   console.log('Map ready!');
 
+  // Gérer les images manquantes (évite les avertissements)
+  map.on('styleimagemissing', (e) => {
+    // Ignorer silencieusement les images manquantes comme rectangle-yellow-5, rectangle-yellow-6
+    // Ce sont des images du style Mapbox qui ne sont pas critiques
+  });
+
   map.on('load', async () => {
     // Ajout de la couche de bâtiments en 3D uniquement sur la carte principale
     if (!props.showRoute) {
@@ -171,31 +177,62 @@ const addTruckRouteToMap = async (mapInstance, start, end) => {
 
     const route = data.routes[0];
 
-    // Ajouter la trace de l'itinéraire à la carte
-    mapInstance.addSource('truck-route', {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        geometry: route.geometry,
-      },
-    });
+    // Fonction pour ajouter la route à la carte
+    const addRouteToMap = () => {
+      try {
+        // Supprimer la source et la couche existantes si elles existent
+        if (mapInstance.getSource('truck-route')) {
+          if (mapInstance.getLayer('truck-route-line')) {
+            mapInstance.removeLayer('truck-route-line');
+          }
+          mapInstance.removeSource('truck-route');
+        }
 
-    mapInstance.addLayer({
-      id: 'truck-route-line',
-      type: 'line',
-      source: 'truck-route',
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
-      paint: {
-        'line-color': '#f60700',
-        'line-width': 5,
-        'line-opacity': 0.3,
-      },
-    });
+        // Ajouter la trace de l'itinéraire à la carte
+        mapInstance.addSource('truck-route', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: route.geometry,
+          },
+        });
 
-    console.log('Itinéraire ajouté à la carte.');
+        mapInstance.addLayer({
+          id: 'truck-route-line',
+          type: 'line',
+          source: 'truck-route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round',
+          },
+          paint: {
+            'line-color': '#f60700',
+            'line-width': 5,
+            'line-opacity': 0.3,
+          },
+        });
+
+        console.log('Itinéraire ajouté à la carte.');
+      } catch (error) {
+        // Si le style n'est pas chargé, attendre l'événement load
+        if (error.message && error.message.includes('Style is not done loading')) {
+          mapInstance.once('load', () => {
+            addRouteToMap();
+          });
+        } else {
+          throw error;
+        }
+      }
+    };
+
+    // Vérifier si la carte est chargée
+    if (mapInstance.loaded()) {
+      addRouteToMap();
+    } else {
+      mapInstance.once('load', () => {
+        addRouteToMap();
+      });
+    }
   } catch (error) {
     console.error('Erreur lors de la récupération ou de l\'affichage de l\'itinéraire :', error);
   }
