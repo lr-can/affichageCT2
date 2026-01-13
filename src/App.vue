@@ -334,7 +334,7 @@ const waitForInter = setInterval(async () => {
   if (data.identifiant === 'Aucune intervention en cours'){
     return;
   }
-  if (/^🚧 N°\d+\/1 - /.test(data.notification)) {
+  if (!/^🚧 N°\d+\/1 - /.test(data.notification)) {
     //console.log("Intervention is not first ordre départ.")
     let currentAlerteVehicule = currentVehicules.value.filter(vehicule => vehicule.statut == 'AL' || vehicule.statut == 'RE' || vehicule.statut == 'PP' || vehicule.statut == 'DE');
     if (!currentAlerteVehicule || currentAlerteVehicule.length == 0){

@@ -342,7 +342,7 @@ export const useSmartemis = defineStore('smartemis', () => {
     const initialDateTime = sortedResult[0].dateTime;
     let dateTimePlus15Min = new Date(sortedResult[0].dateTime);
     let verif = dateTimePlus15Min.setMinutes(
-      dateTimePlus15Min.getMinutes() + 50
+      dateTimePlus15Min.getMinutes() + 15
     );
     let now = new Date();
     if (now.getTime() > verif) {
