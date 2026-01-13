@@ -852,10 +852,9 @@ const audioNotifs = async () => {
     
     const timePart = dateTimeStr.split('T')[1];
     const timeParts = timePart ? timePart.split(':') : ['00', '00'];
-    let message = `Déclenché à, ${timeParts[0]}:${timeParts[1]}, pour, `;
+    let message = `${vehiculePhonetiques.value || ''}, Déclenché à, ${timeParts[0]}:${timeParts[1]}, pour, `;
     message += `${libelleInter.value.replace("DF20", "").replace("DFE", "").replace("DV", "").replace("DFUR", "").replace("DFU", "").toLowerCase().replace("aggrave", "aggravé").replace("alteration", "altération")},`;
     message += `sur ${villeInter.value.replace("ST-", "SAINT").toLowerCase().split('-').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join('-')}.`;
-    message += `Moyens engagés sur l'intervention : ${vehiculePhonetiques.value || ''}`;
      
     // Ajouter les autres moyens engagés si Collonges n'est pas la seule caserne
     const otherMeansMessage = generateOtherMeansMessage();
@@ -935,7 +934,7 @@ const getStatus = async () => {
         } else {
             vehicules.value.push(vehicule);
             console.log("New vehicle added:", vehicule);
-            if (vehicule.nomPhonetique && typeof vehicule.nomPhonetique === 'string') {
+            if (vehicule.nomPhonetique && typeof vehicule.nomPhonetique === 'string' && vehicule.statut !== 'SL') {
                 vehiculePhonetiques.value = (vehiculePhonetiques.value || "") + " , " + vehicule.nomPhonetique;
             }
         } 
