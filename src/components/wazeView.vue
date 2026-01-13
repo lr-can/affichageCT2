@@ -16,7 +16,7 @@ export default {
     name: 'WazeView',
     computed: {
         wazeUrl() {
-            return `https://embed.waze.com/iframe?zoom=14&lat=45.818473&lon=4.878860`;
+            return `https://embed.waze.com/iframe?zoom=14&lat=45.819873&lon=4.880860`;
         }
     }
 }
