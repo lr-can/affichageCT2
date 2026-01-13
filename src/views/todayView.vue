@@ -264,10 +264,10 @@ const giveDurationBirthday = (date, type='') => {
         return "Demain";
     } else if (days === 1 || days < 2) {
         return "Après-demain";
-    } else if (days >= 5 && days <= 9) {
+    } else if (days >= 5 && days <= 8) {
         return "Dans ~1 sem.";
     } else if (days >= 7){
-        const weeks = Math.floor(days / 7);
+        const weeks = Math.ceil(days / 7);
         if (weeks === 2) {
             return "Dans ~2 sem.";
         }

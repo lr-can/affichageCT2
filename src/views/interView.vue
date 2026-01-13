@@ -26,22 +26,19 @@
                     <div class="consigneMiniText">{{ item.texte }}</div>
                 </div>
             </div>
-            <div class="infoDetail"><span><img src="../assets/icons/number.svg" style="height: 1rem; width: auto;" /></span><span>N°<span style="color: #1a1a1a; font-weight: 600;">{{ numeroInter }}</span></span></div>
-            <div class="infoDetail"><span><img src="../assets/icons/citySign.svg" style="height: 1rem; width: auto;" /></span><span style="color: #1a1a1a;">{{ villeInter.toUpperCase() }}</span></div>
             <div class="infoDetailRow">
-                <div class="infoDetail"><span><img src="../assets/icons/address.svg" style="height: 1rem; width: auto;" /></span><span style="color: #1a1a1a;">{{ adresseInter.toUpperCase() }}</span></div>
-                <div class="infoDetailsRight">
-                    <img v-if="statusImage" :src="statusImage" alt="" width="80px" height="auto">
-                </div>
-            </div>
-            <div v-if="interDetail && interDetail.externalServices && interDetail.externalServices.length" class="infoDetailRow">
-                <div class="infoDetail extServicesInfo">
-                    <span><img src="../assets/icons/fireEngine.svg" style="height: 1rem; width: auto;" /></span>
-                    <span class="extServicesList">
-                        <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="{ backgroundColor: (svc.textColor === '#ffffff' || svc.textColor === '#FFFFFF') ? 'white' : svc.backgroundColor, color: svc.textColor }">
-                            {{ svc.name || svc.id }}
+                <div class="infoDetailsLeft">
+                    <div class="infoDetail"><span><img src="../assets/icons/number.svg" style="height: 1rem; width: auto;" /></span><span>N°<span style="color: #1a1a1a; font-weight: 600;">{{ numeroInter }}</span></span></div>
+                    <div class="infoDetail"><span><img src="../assets/icons/citySign.svg" style="height: 1rem; width: auto;" /></span><span style="color: #1a1a1a;">{{ villeInter.toUpperCase() }}</span></div>
+                    <div class="infoDetail"><span><img src="../assets/icons/address.svg" style="height: 1rem; width: auto;" /></span><span style="color: #1a1a1a;">{{ adresseInter.toUpperCase() }}</span></div>
+                    <div v-if="interDetail && interDetail.externalServices && interDetail.externalServices.length" class="infoDetail extServicesInfo">
+                        <span><img src="../assets/icons/fireEngine.svg" style="height: 1rem; width: auto;" /></span>
+                        <span class="extServicesList">
+                            <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="{ backgroundColor: (svc.textColor === '#ffffff' || svc.textColor === '#FFFFFF') ? 'white' : svc.backgroundColor, color: svc.textColor }">
+                                {{ svc.name || svc.id }}
+                            </span>
                         </span>
-                    </span>
+                    </div>
                 </div>
                 <div class="infoDetailsRight">
                     <img v-if="statusImage" :src="statusImage" alt="" width="80px" height="auto">
@@ -345,6 +342,20 @@ import Capitaine from '../assets/grades/Capitaine.png';
 import Commandant from '../assets/grades/Commandant.png';
 import Professeur from '../assets/grades/Professeur.png';
 import Infirmiere from '../assets/grades/Infirmière.png';
+import statusAL from '../assets/vehicules/statuts/AL.gif';
+import statusPA from '../assets/vehicules/statuts/PA.gif';
+import statusSL from '../assets/vehicules/statuts/SL.gif';
+import statusRD from '../assets/vehicules/statuts/RD.gif';
+import statusRI from '../assets/vehicules/statuts/RI.gif';
+import statusDE from '../assets/vehicules/statuts/DE.gif';
+import statusPP from '../assets/vehicules/statuts/PP.gif';
+import statusMD from '../assets/vehicules/statuts/MD.gif';
+import statusMI from '../assets/vehicules/statuts/MI.gif';
+import statusTH from '../assets/vehicules/statuts/TH.gif';
+import statusAH from '../assets/vehicules/statuts/AH.gif';
+import statusQH from '../assets/vehicules/statuts/QH.gif';
+import statusPC from '../assets/vehicules/statuts/PC.gif';
+import statusRE from '../assets/vehicules/statuts/RE.gif';
 const currentTime = new Date();
 
 const dict_grades = {
@@ -544,27 +555,61 @@ const statusImage = computed(() => {
     
     // Si certains sont en AL
     if (statuts.some(s => s === 'AL')) {
-        return '../assets/vehicules/statuts/AL.gif';
+        return statusAL;
     }
     
     // Si tous sont PA
     if (statuts.every(s => s === 'PA')) {
-        return '../assets/vehicules/statuts/PA.gif';
+        return statusPA;
     }
     
     // Si tous sont SL
     if (statuts.every(s => s === 'SL')) {
-        return '../assets/vehicules/statuts/SL.gif';
+        return statusSL;
     }
     
     // Si certains sont PA (même si d'autres sont SL)
     if (statuts.some(s => s === 'PA')) {
-        return '../assets/vehicules/statuts/PA.gif';
+        return statusPA;
     }
     
     // Si certains sont SL (même si d'autres sont différents)
     if (statuts.some(s => s === 'SL')) {
-        return '../assets/vehicules/statuts/SL.gif';
+        return statusSL;
+    }
+
+    if (statuts.some(s => s === 'TH')) {
+        return statusTH;
+    }
+    if (statuts.some(s => s === 'AH')) {
+        return statusAH;
+    }
+    if (statuts.some(s => s === 'QH')) {
+        return statusQH;
+    }
+    if (statuts.some(s => s === 'PC')) {
+        return statusPC;
+    }
+    if (statuts.some(s => s === 'RE')) {
+        return statusRE;
+    }
+    if (statuts.some(s => s === 'RD')) {
+        return statusRD;
+    }
+    if (statuts.some(s => s === 'RI')) {
+        return statusRI;
+    }
+    if (statuts.some(s => s === 'DE')) {
+        return statusDE;
+    }
+    if (statuts.some(s => s === 'PP')) {
+        return statusPP;
+    }
+    if (statuts.some(s => s === 'MD')) {
+        return statusMD;
+    }
+    if (statuts.some(s => s === 'MI')) {
+        return statusMI;
     }
     
     return null;
@@ -1527,21 +1572,45 @@ div {
     line-height: 1.2;
 }
 .infoDetailsRow {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0;
     margin-top: 0.5rem;
 }
 .infoDetailsRow .infoDetail {
-    flex: 1;
+    flex: 0 1 auto;
     margin-top: 0;
+    width: auto;
+    max-width: 100%;
+}
+.infoDetailsLeft {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    min-width: 40%;
+    width: auto;
+}
+.infoDetailsLeft .infoDetail {
+    width: 40%;
+    margin-top: 0.3rem;
+    max-width: 100%;
+    align-self: flex-start;
+    flex: 0 0 auto !important;
 }
 .infoDetailsRight {
-    flex: 0 0 auto;
+    position: absolute;
+    top: 5rem;
+    right: 3rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-end;
+    margin-top: 0;
 }
 .infoDetail {
     display: flex;
