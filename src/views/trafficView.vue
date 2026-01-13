@@ -80,7 +80,7 @@
                             <div class="train-destination-wrapper">
                                 <div class="destination-main">
                                     <div v-if="train.disruption && !displayInfo2" class="gares_container">
-                                        <div class="auto-scroll train-disruption">
+                                        <div class="auto-scroll train-disruption" :style="{ animationDuration: getScrollDuration(train.disruption) }">
                                             {{ train.disruption }}
                                         </div>
                                     </div>
@@ -89,7 +89,7 @@
                                     </div>
                                 </div>
                                 <div class="gares_container">
-                                    <div class="gares">
+                                    <div class="gares" :style="{ animationDuration: getScrollDuration(train.prochainsArrets) }">
                                         {{ train.prochainsArrets }}
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
                                     {{ train.destination }}
                                 </div>
                                 <div v-if="train.disruption" class="gares_container">
-                                    <div class="auto-scroll train-disruption">
+                                    <div class="auto-scroll train-disruption" :style="{ animationDuration: getScrollDuration(train.disruption) }">
                                         {{ train.disruption }}
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@
                             <div class="train-destination-wrapper">
                                 <div class="destination-main">
                                     <div v-if="train.disruption && !displayInfo2" class="gares_container">
-                                        <div class="auto-scroll train-disruption">
+                                        <div class="auto-scroll train-disruption" :style="{ animationDuration: getScrollDuration(train.disruption) }">
                                             {{ train.disruption }}
                                         </div>
                                     </div>
@@ -157,7 +157,7 @@
                                     </div>
                                 </div>
                                 <div class="gares_container">
-                                    <div class="gares">
+                                    <div class="gares" :style="{ animationDuration: getScrollDuration(train.prochainsArrets) }">
                                         {{ train.prochainsArrets }}
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@
                                     {{ train.destination }}
                                 </div>
                                 <div v-if="train.disruption" class="gares_container">
-                                    <div class="auto-scroll train-disruption">
+                                    <div class="auto-scroll train-disruption" :style="{ animationDuration: getScrollDuration(train.disruption) }">
                                         {{ train.disruption }}
                                     </div>
                                 </div>
@@ -327,6 +327,16 @@ const commercial_modes = {
 
 const giveLogo = (service) => {
     return commercial_modes[service] || sncf_url;
+}
+
+// Calcule la durée de défilement basée sur la longueur du texte
+const getScrollDuration = (text) => {
+    if (!text || typeof text !== 'string') return '15s';
+    const length = text.length;
+    // Durée minimale : 8s, maximale : 40s
+    // Facteur : environ 0.15s par caractère
+    const duration = Math.max(8, Math.min(40, length * 0.15));
+    return `${duration}s`;
 }
 
 </script>
@@ -688,6 +698,7 @@ const giveLogo = (service) => {
 
 .trainNumber {
     min-width: 55px;
+    max-width: 55px;
     font-weight: 600;
     font-size: 0.7rem;
 }
@@ -773,7 +784,7 @@ const giveLogo = (service) => {
     overflow: hidden;
     white-space: nowrap;
     width: fit-content;
-    animation: scroll 10s ease-in-out infinite;
+    animation: scroll ease-in-out infinite;
     color: #333 !important;
 }
 
@@ -800,12 +811,12 @@ const giveLogo = (service) => {
     overflow: hidden;
     white-space: nowrap;
     width: fit-content;
-    animation: scroll 25s linear infinite;
+    animation: scroll linear infinite;
     font-weight: 400;
 }
 .voie {
     flex-shrink: 0;
-    min-width: 32px;
+    min-width: 10px;
     text-align: center;
     font-weight: 700;
     color: #0078f3;
@@ -818,7 +829,7 @@ const giveLogo = (service) => {
 
 .voie_empty {
     flex-shrink: 0;
-    min-width: 32px;
+    min-width: 10px;
     text-align: center;
     font-weight: bold;
     color: transparent;
