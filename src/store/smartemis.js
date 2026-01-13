@@ -342,7 +342,7 @@ export const useSmartemis = defineStore('smartemis', () => {
     const initialDateTime = sortedResult[0].dateTime;
     let dateTimePlus15Min = new Date(sortedResult[0].dateTime);
     let verif = dateTimePlus15Min.setMinutes(
-      dateTimePlus15Min.getMinutes() + 15
+      dateTimePlus15Min.getMinutes() + 50
     );
     let now = new Date();
     if (now.getTime() > verif) {
@@ -515,14 +515,57 @@ export const useSmartemis = defineStore('smartemis', () => {
           })),
         };
       }),
-      externalServices: parsedExt.map((service) => ({
-        id: service.srvCod,
-        name: service.srvLib,
-        iconUrl: service.srvUrl,
-        status: service.srvStatusCod,
-        backgroundColor: `#${service.srvStatusBgRgb}`,
-        textColor: `#${service.srvStatusFgRgb}`,
-      })),
+      externalServices: parsedExt.map((service) => {
+        // Convertir les couleurs RGB hex en format CSS, avec gestion des cas spéciaux
+        // Extraire les valeurs brutes
+        const rawBgRgb = service.srvStatusBgRgb;
+        const rawFgRgb = service.srvStatusFgRgb;
+        
+        // Nettoyer et normaliser les valeurs (supprimer # si présent, trim, uppercase)
+        let bgRgb = '';
+        if (rawBgRgb != null && rawBgRgb !== '') {
+          bgRgb = String(rawBgRgb).trim().replace(/^#/, '').toUpperCase();
+        }
+        
+        let fgRgb = '';
+        if (rawFgRgb != null && rawFgRgb !== '') {
+          fgRgb = String(rawFgRgb).trim().replace(/^#/, '').toUpperCase();
+        }
+        
+        // Convertir en format CSS avec validation stricte
+        let backgroundColor = '#FFFFFF'; // Par défaut blanc
+        if (bgRgb && bgRgb !== '0' && bgRgb.length === 6 && /^[0-9A-F]{6}$/.test(bgRgb)) {
+          backgroundColor = `#${bgRgb}`;
+        } else if (bgRgb && bgRgb.length === 3 && /^[0-9A-F]{3}$/.test(bgRgb)) {
+          // Support des couleurs courtes (ex: FFF -> FFFFFF)
+          backgroundColor = `#${bgRgb[0]}${bgRgb[0]}${bgRgb[1]}${bgRgb[1]}${bgRgb[2]}${bgRgb[2]}`;
+        }
+        
+        let textColor = '#000000'; // Par défaut noir
+        if (fgRgb && fgRgb !== '0' && fgRgb.length === 6 && /^[0-9A-F]{6}$/.test(fgRgb)) {
+          textColor = `#${fgRgb}`;
+        } else if (fgRgb && fgRgb.length === 3 && /^[0-9A-F]{3}$/.test(fgRgb)) {
+          // Support des couleurs courtes (ex: 000 -> 000000)
+          textColor = `#${fgRgb[0]}${fgRgb[0]}${fgRgb[1]}${fgRgb[1]}${fgRgb[2]}${fgRgb[2]}`;
+        }
+        
+        // Correction automatique des contrastes pour la lisibilité
+        if (backgroundColor === '#FFFFFF' && textColor === '#FFFFFF') {
+          textColor = '#000000';
+        }
+        if (backgroundColor === '#000000' && textColor === '#000000') {
+          textColor = '#FFFFFF';
+        }
+        
+        return {
+          id: service.srvCod,
+          name: service.srvLib || service.srvCod,
+          iconUrl: service.srvUrl,
+          status: service.srvStatusCod,
+          backgroundColor,
+          textColor,
+        };
+      }),
       messages: parsedMessages,
       agents,
       status,

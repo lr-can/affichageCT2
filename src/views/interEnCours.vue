@@ -144,8 +144,8 @@
                         <!-- Map -->
         <section class="card card--map custom2" v-if="firstInter">
           <mapBox2 
-                :lon="firstInter.notificationLon" 
-                :lat="firstInter.notificationLat"
+                :lon="Number(firstInter.notificationLon)" 
+                :lat="Number(firstInter.notificationLat)"
                 :zoom="14"
                 :show-marker="true"
                 :marker-color="'#f60700'"

@@ -9,8 +9,8 @@
         <!-- Carte avec l'intervention principale -->
         <div class="card mapCard">
             <mapBox2 
-                :lon="firstInter.notificationLon" 
-                :lat="firstInter.notificationLat"
+                :lon="Number(firstInter.notificationLon)" 
+                :lat="Number(firstInter.notificationLat)"
                 :zoom="14"
                 :show-marker="true"
                 :marker-color="'#f60700'"

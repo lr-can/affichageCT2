@@ -33,8 +33,8 @@
                     <div class="infoDetail"><span><img src="../assets/icons/address.svg" style="height: 1rem; width: auto;" /></span><span style="color: #1a1a1a;">{{ adresseInter.toUpperCase() }}</span></div>
                     <div v-if="interDetail && interDetail.externalServices && interDetail.externalServices.length" class="infoDetail extServicesInfo">
                         <span><img src="../assets/icons/fireEngine.svg" style="height: 1rem; width: auto;" /></span>
-                        <span class="extServicesList">
-                            <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="{ backgroundColor: (svc.textColor === '#ffffff' || svc.textColor === '#FFFFFF') ? 'white' : svc.backgroundColor, color: svc.textColor }">
+                        <span class="extServicesList" v-if="interDetail.externalServices.length > 0">
+                            <span v-for="svc in interDetail.externalServices" :key="svc.id" class="serviceChipInline" :style="svc.backgroundColor && svc.textColor ? `background-color: ${svc.backgroundColor} !important; color: ${svc.textColor} !important;` : ''">
                                 {{ svc.name || svc.id }}
                             </span>
                         </span>
@@ -472,6 +472,7 @@ const updateInterDetail = async () => {
             }
         }
         interDetail.value = detail;
+        console.log(interDetail.value);
     } catch (e) {
         // silencieux
     }
@@ -1473,22 +1474,30 @@ div {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
+    max-width: 90%;
+    width: 90%;
+    min-width: 90%;
 }
 .extServicesList{
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
     align-items: center;
+    max-width: 80%;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 .serviceChipInline{
     padding: 0.15rem 0.35rem;
     border-radius: 999px;
-    font-size: 0.65rem;
-    background-color: #e5e5e5;
-    font-weight: 600;
+    font-size: 0.60rem;
+    font-weight: 400;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     white-space: nowrap;
     line-height: 1.2;
+    /* Les couleurs sont définies via style inline depuis le template */
+    /* Le style global div { color: #1a1a1a; } ne s'applique pas aux spans */
 }
 .SSUAP {
     background-color: #1f8d49;
@@ -1644,6 +1653,12 @@ div {
     opacity: 1;
     color: #1a1a1a;
     filter: none;
+}
+/* Exclure les chips de services externes du filtre */
+.infoDetail .extServicesList,
+.infoDetail .extServicesList span,
+.infoDetail .serviceChipInline {
+    filter: none !important;
 }
 .infoVehicule{
     background: rgba(255, 255, 255, 1);
