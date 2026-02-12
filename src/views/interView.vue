@@ -855,7 +855,7 @@ const generateOtherMeansMessage = () => {
     const stationsToAnnounce = otherStations.slice(0, 3);
     const remainingStations = otherStations.slice(3);
     
-    let message = ', et Moyens extérieurs : ';
+    let message = 'Moyens extérieurs : ';
     
     for (const station of stationsToAnnounce) {
         if (station.vehicles && station.vehicles.length > 0) {

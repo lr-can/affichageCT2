@@ -79,6 +79,9 @@
       <div v-show="(index == 8 || initialize) && pavoisementAndHommage" key="hommage">
         <hommageView :evenement="pavoisementAndHommage" />
       </div>
+      <div v-show="index == 9 || initialize" key="asupPotential">
+        <asupPotentialView />
+      </div>
       </TransitionGroup>
     </div>
   </div>
@@ -103,6 +106,7 @@ import vehiculeViewNight from './views/vehiculeViewNight.vue';
 import weatherWarning from './views/weatherWarning.vue';
 import consignesView from './views/consignesView.vue';
 import hommageView from './views/hommageView.vue';
+import asupPotentialView from './views/asupPotentialView.vue';
 import { computed, ref } from 'vue';
 import { watchEffect } from 'vue';
 import { useWeather } from './store/weather';
@@ -383,6 +387,8 @@ const views = ref([
     time: 0},
   {viewName : 'hommage',
     time: 0},
+  {viewName : 'asupPotential',
+    time: 20},
 ]);
 
 const handleViewChange = (newIndex) => {
