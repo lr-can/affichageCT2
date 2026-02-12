@@ -17,13 +17,13 @@
                 <h2>Réseau TCL</h2>
             </div>
             <div v-if="tcl && tcl.length > 0" class="tcl-info">
-                <div v-for="stop in validTCLStops" :key="stop.arret" class="stop-card">
+                <div v-for="stop in validTCLStops" :key="`${stop.arret}-${stop.ligne}`" class="stop-card">
                     <div class="stop-header">
-                        <img v-if="stop.ligne" :src="giveSource(stop.ligne)" alt="" height="18px" width="auto">
+                        <img v-if="stop.ligne" :src="giveSource(stop.ligne)" :alt="`Ligne ${stop.ligne}`" class="line-icon">
                         <div class="stop-name">{{ stop.arret || 'Arrêt inconnu' }}</div>
                     </div>
                     <div v-if="stop.buses && stop.buses.length > 0" class="buses-list">
-                        <div v-for="bus in stop.buses" :key="`${bus.direction}-${bus.prochainDepart}`" 
+                        <div v-for="bus in stop.buses" :key="`${bus.gid || bus.direction}-${bus.prochainDepart}-${bus.ensuiteDepart}`"
                              :class="[giveBusClass(bus.prochainDepart), { 'bus-hors-service': isBusHorsService(bus) }]" 
                              class="bus-item">
                             <div class="bus-direction"><i>{{ bus.direction || 'Direction inconnue' }}</i></div>
@@ -200,6 +200,10 @@ const displayInfo1 = ref(true);
 const asAwait = ref(false);
 const displayInfo2 = ref(false);
 const transportation = useTransportation();
+const lineAssets = import.meta.glob('../assets/transport/*.svg', {
+    eager: true,
+    import: 'default',
+});
 onMounted(async () => {
     await transportation.fetchAllSheetsFromAPI();
     tcl.value = transportation.tcl;
@@ -222,15 +226,10 @@ setInterval(() => {
 }, 3000);
 
 const giveSource = (ligne) => {
-    if (!ligne || ligne.trim() === '') {
-        return new URL(`../assets/transport/TCL.svg`, import.meta.url).href;
-    }
-    try {
-        return new URL(`../assets/transport/${ligne}.svg`, import.meta.url).href;
-    } catch (e) {
-        return new URL(`../assets/transport/TCL.svg`, import.meta.url).href;
-    }
-}
+    const normalizedLine = ligne ? String(ligne).trim() : '';
+    if (normalizedLine === '') return lineAssets['../assets/transport/TCL.svg'];
+    return lineAssets[`../assets/transport/${normalizedLine}.svg`] || lineAssets['../assets/transport/TCL.svg'];
+};
 const giveClass = (type, comment) => {
     if (type === 'container') {
         if (comment.includes(' h ')) {
@@ -265,7 +264,9 @@ const giveClass = (type, comment) => {
 // Filtre les arrêts valides (avec nom d'arrêt)
 const validTCLStops = computed(() => {
     if (!tcl.value || !Array.isArray(tcl.value)) return [];
-    return tcl.value.filter(stop => stop && stop.arret && stop.arret.trim() !== '');
+    return tcl.value.filter(
+        (stop) => stop && stop.arret && stop.arret.trim() !== '' && Array.isArray(stop.buses) && stop.buses.length > 0
+    );
 });
 
 // Vérifie si un bus est hors service (HS)
@@ -295,7 +296,7 @@ const giveBusClass = (prochainDepart) => {
 }
 const giveBlinkClass = (prochainDepart) => {
     if (!prochainDepart) return '';
-    if (prochainDepart === '1 min' || prochainDepart === '2 min' || prochainDepart === 'Proche'){
+    if (prochainDepart === '0 min' || prochainDepart === '1 min' || prochainDepart === '2 min' || prochainDepart === 'Proche'){
         return 'blinkTime';
     }
     return '';
@@ -490,61 +491,76 @@ const getScrollDuration = (text) => {
 
 .stop-card {
     background: rgba(255, 255, 255, 0.6);
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-bottom: 0.4rem;
+    border-radius: 7px;
+    padding: 0.35rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-height: 0;
 }
 
 .stop-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
 .stop-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
+    padding-bottom: 0.25rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    font-size: 0.75rem;
+    font-size: 0.62rem;
     color: #1a1a1a;
+}
+
+.line-icon {
+    height: 14px;
+    width: auto;
+    flex-shrink: 0;
 }
 
 .stop-name {
     flex: 1;
+    font-size: 0.62rem;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .buses-list {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.15rem;
 }
 
 .bus-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.3rem 0.4rem;
+    gap: 0.3rem;
+    padding: 0.2rem 0.25rem;
     background: rgba(0, 0, 0, 0.02);
     border-radius: 5px;
     transition: all 0.2s ease;
 }
 
 .bus-item:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .next-departure, .ensuite-departure {
-    min-width: 45px;
+    min-width: 34px;
     text-align: center;
     font-weight: 600;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 }
 
 .next-departure {
@@ -553,7 +569,7 @@ const getScrollDuration = (text) => {
 
 .ensuite-departure {
     color: #878787;
-    font-size: 0.65rem;
+    font-size: 0.56rem;
 }
 
 .bus-direction {
@@ -562,7 +578,7 @@ const getScrollDuration = (text) => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: #333;
 }
 .crossedText {
@@ -873,8 +889,13 @@ const getScrollDuration = (text) => {
 
 .tcl-info {
     flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: min-content;
+    gap: 0.35rem;
+    align-content: start;
     overflow-y: auto;
-    padding-right: 0.4rem;
+    padding-right: 0.25rem;
     min-height: 0;
 }
 
