@@ -69,7 +69,8 @@ const viewLabels = {
   'interEnCours': { label: 'Intervention en cours', icon: '🔥', color: '#e74c3c' },
   'weatherWarning': { label: 'Alerte météo', icon: '⚠️', color: '#f1c40f' },
   'consignes': { label: 'Consignes', icon: '📋', color: '#fd4a45' },
-  'hommage': { label: 'Hommage', icon: '🇫🇷', color: '#34495e' }
+  'hommage': { label: 'Hommage', icon: '🇫🇷', color: '#34495e' },
+  'asupPotential': { label: 'Potentiel ASUP', icon: '💊', color: '#1c3b64' }
 };
 
 const availableViews = computed(() => {
