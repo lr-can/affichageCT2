@@ -256,7 +256,7 @@ const buildVsavCard = (key, label) => {
   const unavailableCount = gestureTypes.filter((v) => v === 0).length;
 
   let badgeClass = 'badge-critical';
-  let badgeLabel = 'Indisponible';
+  let badgeLabel = 'Critique';
   if (unavailableCount === 0) {
     badgeClass = 'badge-good';
     badgeLabel = 'Disponible';
