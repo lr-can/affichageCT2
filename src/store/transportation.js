@@ -49,30 +49,56 @@ export const useTransportation = defineStore('transportation', () => {
     //console.log('✅ Données transports mises à jour à', lastUpdate.value.toLocaleTimeString());
   };
 
+  const parseDepartureMinutes = (value) => {
+    if (!value || typeof value !== 'string') return Number.POSITIVE_INFINITY;
+    if (value.trim().toLowerCase() === 'proche') return 0;
+    const match = value.match(/(\d+)/);
+    if (!match) return Number.POSITIVE_INFINITY;
+    return Number.parseInt(match[1], 10);
+  };
+
   // --- 🚏 Traitement TCL (Feuille 6) ---
   const processTCL = () => {
     const data = sheetsData.value['Feuille 6'] || [];
+    const groupedStops = new Map();
 
-    // Regrouper par arrêt
-    tcl.value = data.reduce((acc, curr) => {
-      let stop = acc.find((item) => item.arret === curr.arret);
-      if (!stop) {
-        stop = {
-          arret: curr.arret,
-          ligne: curr.ligne,
+    for (const curr of data) {
+      if (!curr || !curr.arret || curr.arret.trim() === '') continue;
+      const arret = curr.arret.trim();
+      const ligne = curr.ligne ? String(curr.ligne).trim() : '';
+      const key = `${arret}__${ligne}`;
+
+      if (!groupedStops.has(key)) {
+        groupedStops.set(key, {
+          arret,
+          ligne,
           service: curr.service,
+          gid: curr.gid,
           buses: [],
-        };
-        acc.push(stop);
+        });
       }
 
-      stop.buses.push({
+      groupedStops.get(key).buses.push({
+        gid: curr.gid,
+        ligne,
         direction: curr.direction,
         prochainDepart: curr.prochainDepart,
         ensuiteDepart: curr.ensuiteDepart,
       });
-      return acc;
-    }, []);
+    }
+
+    tcl.value = Array.from(groupedStops.values())
+      .map((stop) => ({
+        ...stop,
+        buses: stop.buses.sort(
+          (a, b) => parseDepartureMinutes(a.prochainDepart) - parseDepartureMinutes(b.prochainDepart)
+        ),
+      }))
+      .sort((a, b) => {
+        const aNext = parseDepartureMinutes(a.buses[0]?.prochainDepart);
+        const bNext = parseDepartureMinutes(b.buses[0]?.prochainDepart);
+        return aNext - bNext;
+      });
   };
 
   // --- 🚄 Traitement SNCF (Feuille 7) ---
