@@ -209,7 +209,7 @@ const getMetricClass = (value) => {
   if (value === 0) {
     return 'metric-critical';
   }
-  if (value < 3) {
+  if (value < 2) {
     return 'metric-warning';
   }
   return 'metric-good';
@@ -219,7 +219,7 @@ const getStockTextClass = (value) => {
   if (value === 0) {
     return 'stock-critical';
   }
-  if (value < 3) {
+  if (value < 2) {
     return 'stock-warning';
   }
   return 'stock-good';
@@ -250,10 +250,10 @@ const buildVsavCard = (key, label) => {
 
   let badgeClass = 'badge-critical';
   let badgeLabel = 'Indisponible';
-  if (gestureCapacity >= 3) {
+  if (gestureCapacity >= 2) {
     badgeClass = 'badge-good';
     badgeLabel = 'Disponible';
-  } else if (gestureCapacity > 0) {
+  } else if (gestureCapacity === 1) {
     badgeClass = 'badge-warning';
     badgeLabel = 'Sous tension';
   }
