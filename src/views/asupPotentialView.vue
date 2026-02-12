@@ -246,14 +246,21 @@ const buildVsavCard = (key, label) => {
     chlorureSodium: getStock(source, 'chlorureSodium'),
   };
 
-  const gestureCapacity = metrics.brumisationTotalMax;
+  const gestureTypes = [
+    metrics.naloxone,
+    metrics.allergie,
+    metrics.brumisationAdulte,
+    metrics.brumisationEnfant,
+    metrics.brumisationTotalMax,
+  ];
+  const unavailableCount = gestureTypes.filter((v) => v === 0).length;
 
   let badgeClass = 'badge-critical';
   let badgeLabel = 'Indisponible';
-  if (gestureCapacity >= 2) {
+  if (unavailableCount === 0) {
     badgeClass = 'badge-good';
     badgeLabel = 'Disponible';
-  } else if (gestureCapacity === 1) {
+  } else if (unavailableCount === 1) {
     badgeClass = 'badge-warning';
     badgeLabel = 'Sous tension';
   }
