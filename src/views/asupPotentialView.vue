@@ -52,6 +52,18 @@
                   <strong>{{ card.stock.nyxoid }}</strong>
                 </div>
                 <div>
+                  <span>Anapen 150</span>
+                  <strong>{{ card.stock.anapen150 }}</strong>
+                </div>
+                <div>
+                  <span>Anapen 300</span>
+                  <strong>{{ card.stock.anapen300 }}</strong>
+                </div>
+                <div>
+                  <span>Anapen 500</span>
+                  <strong>{{ card.stock.anapen500 }}</strong>
+                </div>
+                <div>
                   <span>Anapen total</span>
                   <strong>{{ card.stock.anapenTotal }}</strong>
                 </div>
@@ -215,6 +227,9 @@ const buildVsavCard = (key, label) => {
 
   const stock = {
     nyxoid: getStock(source, 'nyxoid'),
+    anapen150: getStock(source, 'anapen150'),
+    anapen300: getStock(source, 'anapen300'),
+    anapen500: getStock(source, 'anapen500'),
     anapenTotal: getStock(source, 'anapenTotal'),
     salbutamolAdulte: getStock(source, 'salbutamolAdulte'),
     salbutamolEnfant: getStock(source, 'salbutamolEnfant'),
