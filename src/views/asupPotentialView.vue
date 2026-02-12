@@ -464,16 +464,18 @@ onBeforeUnmount(() => {
 
 .content-layout {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.45rem;
+  grid-template-rows: auto auto;
+  gap: 0.32rem;
   flex: 1;
   min-height: 0;
+  align-content: center;
 }
 
 .panel-header {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  margin-top: 0.2rem;
 }
 
 .panel-header h1 {
@@ -675,6 +677,8 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 0.4rem;
   min-height: 0;
+  max-height: 128px;
+  overflow: hidden;
 }
 
 .gestures-header {
@@ -707,6 +711,7 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.34rem;
   min-height: 0;
+  align-items: center;
   overflow-y: auto;
   padding-right: 0.1rem;
 }
