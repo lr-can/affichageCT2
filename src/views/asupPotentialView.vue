@@ -17,62 +17,120 @@
         {{ errorMessage }}
       </div>
 
-      <div v-else class="vsav-grid">
-        <article v-for="card in vsavCards" :key="card.key" class="vsav-card">
-          <div class="vsav-card-header">
-            <h2>{{ card.label }}</h2>
-            <span class="availability-badge" :class="card.badgeClass">{{ card.badgeLabel }}</span>
+      <div v-else class="content-layout">
+        <div class="vsav-grid">
+          <article v-for="card in vsavCards" :key="card.key" class="vsav-card">
+            <div class="vsav-card-header">
+              <h2>{{ card.label }}</h2>
+              <span class="availability-badge" :class="card.badgeClass">{{ card.badgeLabel }}</span>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric">
+                <span>Naloxone</span>
+                <strong>{{ card.metrics.naloxone }}</strong>
+              </div>
+              <div class="metric">
+                <span>Allergie</span>
+                <strong>{{ card.metrics.allergie }}</strong>
+              </div>
+              <div class="metric">
+                <span>Brumi. adulte</span>
+                <strong>{{ card.metrics.brumisationAdulte }}</strong>
+              </div>
+              <div class="metric">
+                <span>Brumi. enfant</span>
+                <strong>{{ card.metrics.brumisationEnfant }}</strong>
+              </div>
+              <div class="metric metric-wide">
+                <span>Brumisation totale max</span>
+                <strong>{{ card.metrics.brumisationTotalMax }}</strong>
+              </div>
+            </div>
+
+            <div class="stock-summary">
+              <h3>Stock utilisable</h3>
+              <div class="stock-grid">
+                <div>
+                  <span>Nyxoid</span>
+                  <strong>{{ card.stock.nyxoid }}</strong>
+                </div>
+                <div>
+                  <span>Anapen total</span>
+                  <strong>{{ card.stock.anapenTotal }}</strong>
+                </div>
+                <div>
+                  <span>Salbutamol adulte</span>
+                  <strong>{{ card.stock.salbutamolAdulte }}</strong>
+                </div>
+                <div>
+                  <span>Salbutamol enfant</span>
+                  <strong>{{ card.stock.salbutamolEnfant }}</strong>
+                </div>
+                <div class="stock-wide">
+                  <span>NaCl</span>
+                  <strong>{{ card.stock.chlorureSodium }}</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <section class="gestures-section">
+          <div class="gestures-header">
+            <h2>3 derniers gestes ASUP</h2>
+            <span v-if="gesturesLastRefresh" class="gestures-meta">
+              MàJ {{ gesturesLastRefresh.toLocaleTimeString('fr-FR') }}
+            </span>
           </div>
 
-          <div class="metrics-grid">
-            <div class="metric">
-              <span>Naloxone</span>
-              <strong>{{ card.metrics.naloxone }}</strong>
-            </div>
-            <div class="metric">
-              <span>Allergie</span>
-              <strong>{{ card.metrics.allergie }}</strong>
-            </div>
-            <div class="metric">
-              <span>Brumi. adulte</span>
-              <strong>{{ card.metrics.brumisationAdulte }}</strong>
-            </div>
-            <div class="metric">
-              <span>Brumi. enfant</span>
-              <strong>{{ card.metrics.brumisationEnfant }}</strong>
-            </div>
-            <div class="metric metric-wide">
-              <span>Brumisation totale max</span>
-              <strong>{{ card.metrics.brumisationTotalMax }}</strong>
-            </div>
+          <div v-if="isGesturesLoading && !hasLatestGestures" class="gestures-state">
+            Chargement des derniers gestes...
           </div>
 
-          <div class="stock-summary">
-            <h3>Stock utilisable</h3>
-            <div class="stock-grid">
-              <div>
-                <span>Nyxoid</span>
-                <strong>{{ card.stock.nyxoid }}</strong>
-              </div>
-              <div>
-                <span>Anapen total</span>
-                <strong>{{ card.stock.anapenTotal }}</strong>
-              </div>
-              <div>
-                <span>Salbutamol adulte</span>
-                <strong>{{ card.stock.salbutamolAdulte }}</strong>
-              </div>
-              <div>
-                <span>Salbutamol enfant</span>
-                <strong>{{ card.stock.salbutamolEnfant }}</strong>
-              </div>
-              <div class="stock-wide">
-                <span>NaCl</span>
-                <strong>{{ card.stock.chlorureSodium }}</strong>
-              </div>
-            </div>
+          <div v-else-if="gesturesErrorMessage && !hasLatestGestures" class="gestures-state state-error">
+            {{ gesturesErrorMessage }}
           </div>
-        </article>
+
+          <div v-else class="gestures-grid">
+            <article v-for="gesture in latestGestureCards" :key="gesture.idUtilisation" class="gesture-card">
+              <div class="gesture-card-top">
+                <span class="gesture-acte">{{ gesture.acteSoinLabel }}</span>
+                <span class="gesture-date">{{ gesture.dateLabel }}</span>
+              </div>
+
+              <div class="gesture-main-row">
+                <div class="gesture-field">
+                  <span>Intervention</span>
+                  <strong>{{ gesture.interventionLabel }}</strong>
+                </div>
+                <div class="gesture-field">
+                  <span>Agent</span>
+                  <strong>{{ gesture.agentLabel }}</strong>
+                </div>
+              </div>
+
+              <div class="gesture-main-row">
+                <div class="gesture-field gesture-field-wide">
+                  <span>Médecin prescripteur</span>
+                  <strong class="text-ellipsis">{{ gesture.medecinLabel }}</strong>
+                </div>
+              </div>
+
+              <div v-if="gesture.notificationTitre" class="gesture-context">
+                {{ gesture.notificationTitre }}
+              </div>
+
+              <div v-if="gesture.commentaire" class="gesture-comment">
+                {{ gesture.commentaire }}
+              </div>
+            </article>
+          </div>
+
+          <div v-if="gesturesErrorMessage && hasLatestGestures" class="gestures-warning">
+            {{ gesturesErrorMessage }} (affichage de la dernière valeur connue)
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -84,10 +142,14 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 const isLoading = ref(true);
 const errorMessage = ref('');
 const lastRefresh = ref(null);
+const isGesturesLoading = ref(true);
+const gesturesErrorMessage = ref('');
+const gesturesLastRefresh = ref(null);
 const asupByVsav = ref({
   vsav1: null,
   vsav2: null,
 });
+const latestGesturesRaw = ref([]);
 
 const asNumber = (value) => {
   const parsed = Number(value);
@@ -145,9 +207,87 @@ const vsavCards = computed(() => [
   buildVsavCard('vsav2', 'VSAV 2'),
 ]);
 
-const hasAnyData = computed(
-  () => Boolean(asupByVsav.value.vsav1) || Boolean(asupByVsav.value.vsav2)
-);
+const hasLatestGestures = computed(() => latestGesturesRaw.value.length > 0);
+
+const hasAnyData = computed(() => {
+  return (
+    Boolean(asupByVsav.value.vsav1) ||
+    Boolean(asupByVsav.value.vsav2) ||
+    hasLatestGestures.value
+  );
+});
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return 'Date inconnue';
+  }
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Date inconnue';
+  }
+
+  const dateLabel = parsedDate.toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  const timeLabel = parsedDate.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${dateLabel} • ${timeLabel}`;
+};
+
+const formatActeSoin = (value) => {
+  const code = (value || '').toString().trim();
+  if (!code) {
+    return 'Acte inconnu';
+  }
+  const labelMap = {
+    ecg: 'ECG',
+    naloxone: 'Naloxone',
+    allergie: 'Allergie',
+    paracetamol: 'Paracétamol',
+    asthme: 'Brumisation',
+    glucagon: 'Glucagon',
+    methoxyflurane: 'Methoxyflurane',
+  };
+  return labelMap[code] || `${code.charAt(0).toUpperCase()}${code.slice(1)}`;
+};
+
+const normalizeText = (value) => (value || '').toString().trim();
+
+const latestGestureCards = computed(() => {
+  return latestGesturesRaw.value.slice(0, 3).map((gesture) => {
+    const agentName = [gesture?.agent?.prenomAgent, gesture?.agent?.nomAgent]
+      .map(normalizeText)
+      .filter(Boolean)
+      .join(' ');
+    const agentGrade = normalizeText(gesture?.agent?.grade);
+    const medecinLabel = [
+      normalizeText(gesture?.medecinPrescripteur?.civiliteExercice),
+      normalizeText(gesture?.medecinPrescripteur?.prenomExercice),
+      normalizeText(gesture?.medecinPrescripteur?.nomExercice),
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const interventionLabel = gesture?.numIntervention || gesture?.interventionDetails?.numeroInter
+      ? `N°${gesture?.numIntervention || gesture?.interventionDetails?.numeroInter}`
+      : 'Non renseignée';
+
+    return {
+      idUtilisation: gesture?.idUtilisation || `${gesture?.dateActe || ''}-${interventionLabel}`,
+      acteSoinLabel: formatActeSoin(gesture?.acteSoin),
+      dateLabel: formatDateTime(gesture?.dateActe),
+      interventionLabel,
+      agentLabel: agentGrade ? `${agentName || 'Inconnu'} · ${agentGrade}` : agentName || 'Inconnu',
+      medecinLabel: medecinLabel || 'Non renseigné',
+      notificationTitre: normalizeText(gesture?.interventionDetails?.notificationTitre),
+      commentaire: normalizeText(gesture?.commentaire),
+    };
+  });
+});
 
 const statusText = computed(() => {
   if (isLoading.value && !hasAnyData.value) {
@@ -202,11 +342,46 @@ const fetchAsupAvailability = async () => {
   }
 };
 
+const fetchLastAsupGestures = async () => {
+  if (!hasLatestGestures.value) {
+    isGesturesLoading.value = true;
+  }
+
+  try {
+    const response = await fetch('https://api.cms-collonges.fr/getLastAsupGestures', {
+      headers: {
+        accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const list = Array.isArray(payload?.data) ? payload.data : [];
+    latestGesturesRaw.value = [...list]
+      .sort((a, b) => new Date(b.dateActe) - new Date(a.dateActe))
+      .slice(0, 3);
+    gesturesLastRefresh.value = new Date();
+    gesturesErrorMessage.value = '';
+  } catch (error) {
+    console.error('Erreur lors de la récupération des derniers gestes ASUP:', error);
+    gesturesErrorMessage.value = 'Impossible de récupérer les derniers gestes ASUP.';
+  } finally {
+    isGesturesLoading.value = false;
+  }
+};
+
+const fetchAllAsupData = async () => {
+  await Promise.all([fetchAsupAvailability(), fetchLastAsupGestures()]);
+};
+
 let refreshTimer = null;
 
 onMounted(async () => {
-  await fetchAsupAvailability();
-  refreshTimer = setInterval(fetchAsupAvailability, 60000);
+  await fetchAllAsupData();
+  refreshTimer = setInterval(fetchAllAsupData, 60000);
 });
 
 onBeforeUnmount(() => {
@@ -236,6 +411,14 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.content-layout {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(220px, 0.8fr);
+  gap: 0.9rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .panel-header {
@@ -286,7 +469,6 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.2rem;
-  flex: 1;
   min-height: 0;
 }
 
@@ -408,5 +590,156 @@ onBeforeUnmount(() => {
 
 .stock-wide {
   grid-column: 1 / -1;
+}
+
+.gestures-section {
+  border-radius: 18px;
+  padding: 0.9rem;
+  background: rgba(16, 36, 65, 0.06);
+  border: 1px solid rgba(16, 36, 65, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.gestures-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.gestures-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #102441;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.gestures-meta {
+  font-size: 0.8rem;
+  color: #4d617d;
+}
+
+.gestures-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #3b4a5e;
+  font-weight: 600;
+}
+
+.gestures-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.gesture-card {
+  border-radius: 14px;
+  padding: 0.8rem;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(240, 246, 255, 0.96));
+  border: 1px solid rgba(16, 36, 65, 0.1);
+  box-shadow: 0 8px 20px rgba(16, 36, 65, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.gesture-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gesture-acte {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.52rem;
+  border-radius: 999px;
+  color: #0f7a3c;
+  background: rgba(26, 144, 73, 0.18);
+}
+
+.gesture-date {
+  font-size: 0.74rem;
+  color: #4d617d;
+  font-weight: 500;
+}
+
+.gesture-main-row {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.gesture-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  flex: 1;
+}
+
+.gesture-field span {
+  font-size: 0.72rem;
+  color: #5a6d8a;
+}
+
+.gesture-field strong {
+  font-size: 0.85rem;
+  color: #102441;
+}
+
+.gesture-field-wide {
+  flex: 1;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gesture-context {
+  font-size: 0.74rem;
+  color: #1f4c7c;
+  background: rgba(31, 76, 124, 0.08);
+  border-radius: 9px;
+  padding: 0.35rem 0.45rem;
+}
+
+.gesture-comment {
+  font-size: 0.74rem;
+  color: #3b4a5e;
+  background: rgba(16, 36, 65, 0.05);
+  border-radius: 9px;
+  padding: 0.35rem 0.45rem;
+  white-space: pre-line;
+}
+
+.gestures-warning {
+  font-size: 0.74rem;
+  color: #b52121;
+}
+
+@media (max-width: 1500px) {
+  .gestures-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .vsav-grid,
+  .gestures-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
