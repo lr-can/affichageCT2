@@ -49,35 +49,35 @@
               <div class="stock-grid">
                 <div>
                   <span>Nyxoid</span>
-                  <strong>{{ card.stock.nyxoid }}</strong>
+                  <strong :class="getStockTextClass(card.stock.nyxoid)">{{ card.stock.nyxoid }}</strong>
                 </div>
                 <div>
                   <span>Anapen 150</span>
-                  <strong>{{ card.stock.anapen150 }}</strong>
+                  <strong :class="getStockTextClass(card.stock.anapen150)">{{ card.stock.anapen150 }}</strong>
                 </div>
                 <div>
                   <span>Anapen 300</span>
-                  <strong>{{ card.stock.anapen300 }}</strong>
+                  <strong :class="getStockTextClass(card.stock.anapen300)">{{ card.stock.anapen300 }}</strong>
                 </div>
                 <div>
                   <span>Anapen 500</span>
-                  <strong>{{ card.stock.anapen500 }}</strong>
+                  <strong :class="getStockTextClass(card.stock.anapen500)">{{ card.stock.anapen500 }}</strong>
                 </div>
                 <div>
                   <span>Anapen total</span>
-                  <strong>{{ card.stock.anapenTotal }}</strong>
+                  <strong :class="getStockTextClass(card.stock.anapenTotal)">{{ card.stock.anapenTotal }}</strong>
                 </div>
                 <div>
                   <span>Salbutamol adulte</span>
-                  <strong>{{ card.stock.salbutamolAdulte }}</strong>
+                  <strong :class="getStockTextClass(card.stock.salbutamolAdulte)">{{ card.stock.salbutamolAdulte }}</strong>
                 </div>
                 <div>
                   <span>Salbutamol enfant</span>
-                  <strong>{{ card.stock.salbutamolEnfant }}</strong>
+                  <strong :class="getStockTextClass(card.stock.salbutamolEnfant)">{{ card.stock.salbutamolEnfant }}</strong>
                 </div>
                 <div class="stock-wide">
                   <span>NaCl</span>
-                  <strong>{{ card.stock.chlorureSodium }}</strong>
+                  <strong :class="getStockTextClass(card.stock.chlorureSodium)">{{ card.stock.chlorureSodium }}</strong>
                 </div>
               </div>
             </div>
@@ -213,6 +213,16 @@ const getMetricClass = (value) => {
     return 'metric-warning';
   }
   return 'metric-good';
+};
+
+const getStockTextClass = (value) => {
+  if (value === 0) {
+    return 'stock-critical';
+  }
+  if (value < 3) {
+    return 'stock-warning';
+  }
+  return 'stock-good';
 };
 
 const buildVsavCard = (key, label) => {
@@ -443,7 +453,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   border-radius: 16px;
-  padding: 0.9rem;
+  padding: 0.6rem;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
   display: flex;
@@ -454,8 +464,8 @@ onBeforeUnmount(() => {
 
 .content-layout {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) minmax(170px, 0.85fr);
-  gap: 0.55rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.45rem;
   flex: 1;
   min-height: 0;
 }
@@ -491,7 +501,8 @@ onBeforeUnmount(() => {
 .vsav-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
+  gap: 0.45rem;
+  align-items: start;
   min-height: 0;
 }
 
@@ -504,6 +515,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 0.45rem;
   overflow: hidden;
+  height: auto;
 }
 
 .vsav-card-header {
@@ -601,9 +613,9 @@ onBeforeUnmount(() => {
 }
 
 .stock-summary {
-  margin-top: auto;
+  margin-top: 0.2rem;
   border-radius: 10px;
-  padding: 0.45rem;
+  padding: 0.35rem;
   background: rgba(16, 36, 65, 0.04);
 }
 
@@ -618,14 +630,14 @@ onBeforeUnmount(() => {
 .stock-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.25rem 0.5rem;
+  gap: 0.18rem 0.45rem;
 }
 
 .stock-grid > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .stock-grid span {
@@ -638,13 +650,25 @@ onBeforeUnmount(() => {
   font-size: 0.74rem;
 }
 
+.stock-grid strong.stock-good {
+  color: #0f7a3c;
+}
+
+.stock-grid strong.stock-warning {
+  color: #be4700;
+}
+
+.stock-grid strong.stock-critical {
+  color: #b52121;
+}
+
 .stock-wide {
   grid-column: 1 / -1;
 }
 
 .gestures-section {
   border-radius: 12px;
-  padding: 0.55rem;
+  padding: 0.4rem;
   background: rgba(16, 36, 65, 0.06);
   border: 1px solid rgba(16, 36, 65, 0.1);
   display: flex;
@@ -681,7 +705,7 @@ onBeforeUnmount(() => {
 .gestures-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.42rem;
+  gap: 0.34rem;
   min-height: 0;
   overflow-y: auto;
   padding-right: 0.1rem;
@@ -689,7 +713,7 @@ onBeforeUnmount(() => {
 
 .gesture-card {
   border-radius: 10px;
-  padding: 0.48rem;
+  padding: 0.4rem;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(240, 246, 255, 0.96));
   border: 1px solid rgba(16, 36, 65, 0.1);
   box-shadow: 0 8px 20px rgba(16, 36, 65, 0.08);
@@ -717,7 +741,7 @@ onBeforeUnmount(() => {
 
 .gesture-main-row {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .gesture-field {
