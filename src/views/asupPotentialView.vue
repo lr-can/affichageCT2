@@ -450,8 +450,8 @@ onBeforeUnmount(() => {
 }
 
 .panel {
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 80%;
   border-radius: 16px;
   padding: 0.6rem;
   background: rgba(255, 255, 255, 0.94);
@@ -460,6 +460,8 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 0.65rem;
   overflow: hidden;
+  margin: 0 auto;
+  margin-top: 6%;
 }
 
 .content-layout {
@@ -469,6 +471,7 @@ onBeforeUnmount(() => {
   flex: 1;
   min-height: 0;
   align-content: center;
+  max-height: 100%;
 }
 
 .panel-header {
@@ -480,7 +483,7 @@ onBeforeUnmount(() => {
 
 .panel-header h1 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 2rem;
   color: #102441;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -492,7 +495,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   flex: 1;
   color: #3b4a5e;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -529,14 +532,14 @@ onBeforeUnmount(() => {
 
 .vsav-card-header h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #102441;
 }
 
 .availability-badge {
   padding: 0.2rem 0.45rem;
   border-radius: 999px;
-  font-size: 0.64rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -550,11 +553,27 @@ onBeforeUnmount(() => {
 .badge-warning {
   background: rgba(252, 93, 0, 0.18);
   color: #be4700;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 1;
+  }
 }
 
 .badge-critical {
   background: rgba(246, 7, 0, 0.16);
   color: #b52121;
+  animation: pulse 1s infinite;
 }
 
 .metrics-grid {
@@ -676,9 +695,9 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  min-height: 0;
-  max-height: 128px;
+  min-height: 100%;
   overflow: hidden;
+
 }
 
 .gestures-header {
@@ -725,6 +744,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  min-height: 90%;
 }
 
 .gesture-card-top {
@@ -806,6 +826,8 @@ onBeforeUnmount(() => {
 .agent-inline {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.3rem;
   min-width: 0;
 }
