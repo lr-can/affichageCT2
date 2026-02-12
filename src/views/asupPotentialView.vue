@@ -26,23 +26,23 @@
             </div>
 
             <div class="metrics-grid">
-              <div class="metric">
+              <div class="metric" :class="getMetricClass(card.metrics.naloxone)">
                 <span>Naloxone</span>
                 <strong>{{ card.metrics.naloxone }}</strong>
               </div>
-              <div class="metric">
+              <div class="metric" :class="getMetricClass(card.metrics.allergie)">
                 <span>Allergie</span>
                 <strong>{{ card.metrics.allergie }}</strong>
               </div>
-              <div class="metric">
+              <div class="metric" :class="getMetricClass(card.metrics.brumisationAdulte)">
                 <span>Brumi. adulte</span>
                 <strong>{{ card.metrics.brumisationAdulte }}</strong>
               </div>
-              <div class="metric">
+              <div class="metric" :class="getMetricClass(card.metrics.brumisationEnfant)">
                 <span>Brumi. enfant</span>
                 <strong>{{ card.metrics.brumisationEnfant }}</strong>
               </div>
-              <div class="metric metric-wide">
+              <div class="metric metric-wide" :class="getMetricClass(card.metrics.brumisationTotalMax)">
                 <span>Brumisation totale max</span>
                 <strong>{{ card.metrics.brumisationTotalMax }}</strong>
               </div>
@@ -161,6 +161,16 @@ const getGestes = (vsavData, key) =>
 
 const getStock = (vsavData, key) => asNumber(vsavData?.stockUtilisable?.[key]);
 
+const getMetricClass = (value) => {
+  if (value === 0) {
+    return 'metric-critical';
+  }
+  if (value < 3) {
+    return 'metric-warning';
+  }
+  return 'metric-good';
+};
+
 const buildVsavCard = (key, label) => {
   const source = asupByVsav.value[key] || {};
   const metrics = {
@@ -179,15 +189,14 @@ const buildVsavCard = (key, label) => {
     chlorureSodium: getStock(source, 'chlorureSodium'),
   };
 
-  const globalPotential =
-    metrics.naloxone + metrics.allergie + metrics.brumisationTotalMax;
+  const gestureCapacity = metrics.brumisationTotalMax;
 
   let badgeClass = 'badge-critical';
   let badgeLabel = 'Indisponible';
-  if (globalPotential >= 8) {
+  if (gestureCapacity >= 3) {
     badgeClass = 'badge-good';
     badgeLabel = 'Disponible';
-  } else if (globalPotential > 0) {
+  } else if (gestureCapacity > 0) {
     badgeClass = 'badge-warning';
     badgeLabel = 'Sous tension';
   }
@@ -536,6 +545,21 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(16, 36, 65, 0.08);
 }
 
+.metric.metric-good {
+  background: rgba(26, 144, 73, 0.1);
+  border-color: rgba(26, 144, 73, 0.25);
+}
+
+.metric.metric-warning {
+  background: rgba(252, 93, 0, 0.12);
+  border-color: rgba(252, 93, 0, 0.3);
+}
+
+.metric.metric-critical {
+  background: rgba(246, 7, 0, 0.12);
+  border-color: rgba(246, 7, 0, 0.3);
+}
+
 .metric span {
   color: #4d617d;
   font-size: 0.88rem;
@@ -544,6 +568,18 @@ onBeforeUnmount(() => {
 .metric strong {
   color: #102441;
   font-size: 1.1rem;
+}
+
+.metric.metric-good strong {
+  color: #0f7a3c;
+}
+
+.metric.metric-warning strong {
+  color: #be4700;
+}
+
+.metric.metric-critical strong {
+  color: #b52121;
 }
 
 .metric-wide {
